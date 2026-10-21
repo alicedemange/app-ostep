@@ -1214,38 +1214,78 @@
         }
 
         let activeRecognition = null;
-        function toggleRecord(targetFieldId, statusId) {
-            const statusEl = document.getElementById(statusId);
-            const targetField = document.getElementById(targetFieldId);
+let activeTargetFieldId = null;
 
-            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                alert("Utilisez le micro de votre clavier virtuel.");
-                return;
-            }
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (activeRecognition) {
-                activeRecognition.stop();
-                activeRecognition = null;
-                statusEl.style.display = 'none';
-                return;
-            }
-            const recognition = new SpeechRecognition();
-            recognition.lang = 'fr-FR';
-            recognition.interimResults = false;
-            recognition.continuous = false;
-            activeRecognition = recognition;
-            statusEl.style.display = 'inline';
+function toggleRecord(targetFieldId, statusId) {
+    const statusEl = document.getElementById(statusId);
+    const targetField = document.getElementById(targetFieldId);
 
-            recognition.onresult = function(event) {
-                let transcript = event.results[0][0].transcript;
-                targetField.value = targetField.value ? targetField.value + " " + transcript : transcript;
-            };
-            recognition.onerror = recognition.onend = function() {
-                statusEl.style.display = 'none';
-                activeRecognition = null;
-            };
-            recognition.start();
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        alert("La dictée vocale n'est pas supportée par ce navigateur. Utilisez le micro de votre clavier virtuel.");
+        return;
+    }
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    // Si une dictée est déjà en cours, on l'arrête
+    if (activeRecognition && activeTargetFieldId === targetFieldId) {
+        activeRecognition.stop();
+        return;
+    }
+
+    // Si une autre dictée tournait ailleurs, on la coupe proprement
+    if (activeRecognition) {
+        activeRecognition.stop();
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'fr-FR';
+    recognition.interimResults = true; // Permet de voir le texte s'écrire en direct si supporté
+    recognition.continuous = true;  // Garde l'écoute active plus longtemps
+
+    activeRecognition = recognition;
+    activeTargetFieldId = targetFieldId;
+    statusEl.style.display = 'inline';
+
+    recognition.onresult = function(event) {
+        let interimTranscript = '';
+        let finalTranscript = '';
+
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+            if (event.results[i].isFinal) {
+                finalTranscript += event.results[i][0].transcript;
+            } else {
+                interimTranscript += event.results[i][0].transcript;
+            }
         }
+
+        if (finalTranscript) {
+            targetField.value = targetField.value ? targetField.value + " " + finalTranscript.trim() : finalTranscript.trim();
+        }
+    };
+
+    recognition.onerror = function(event) {
+        console.warn("Erreur dictée vocale : ", event.error);
+        statusEl.style.display = 'none';
+        activeRecognition = null;
+        activeTargetFieldId = null;
+    };
+
+    recognition.onend = function() {
+        statusEl.style.display = 'none';
+        activeRecognition = null;
+        activeTargetFieldId = null;
+    };
+
+    try {
+        recognition.start();
+    } catch (e) {
+        console.error(e);
+        statusEl.style.display = 'none';
+        activeRecognition = null;
+        activeTargetFieldId = null;
+    }
+}
 
         function populateSelects() {
             let selectConsult = document.getElementById('consultPatientSelect');
