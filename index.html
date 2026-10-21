@@ -8,7 +8,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     
-    <!-- Icône / Miniature PWA et Apple Touch Icon -->
+    <!-- Icône / Miniature PWA -->
     <link rel="apple-touch-icon" href="Fichier 3.svg">
     <link rel="manifest" href="manifest.json">
 
@@ -278,12 +278,12 @@
             justify-content: space-between;
             align-items: center;
             margin-top: 10px;
-            gap: 10px;
+            gap: 6px;
         }
 
         .tool-btn {
-            padding: 6px 12px;
-            font-size: 0.85rem;
+            padding: 8px 10px;
+            font-size: 0.8rem;
             width: auto;
         }
 
@@ -311,8 +311,8 @@
 
         .audio-controls button {
             width: auto;
-            padding: 10px 15px;
-            font-size: 0.9rem;
+            padding: 8px 12px;
+            font-size: 0.85rem;
         }
 
         .recording-status {
@@ -348,10 +348,6 @@
             text-decoration: underline;
         }
 
-        .list-item.is-difficult .list-info h4 {
-            color: var(--danger);
-        }
-
         .list-info p {
             font-size: 0.8rem;
             color: var(--gray);
@@ -379,13 +375,34 @@
             font-weight: 500;
         }
 
+        .photo-thumb-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
         .doc-thumbnail {
-            width: 70px;
-            height: 70px;
+            width: 75px;
+            height: 75px;
             object-fit: cover;
             border-radius: 6px;
             border: 1px solid #DDD;
+        }
+
+        .delete-photo-btn {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 11px;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
     </style>
 </head>
@@ -443,10 +460,58 @@
                     <span>📂</span>
                     <h3>Historique des consultations</h3>
                 </div>
-                <div class="dash-tile" onclick="showView('notesView')" style="grid-column: span 2;">
+                <div class="dash-tile" onclick="showView('notesView')">
                     <span>🎙️</span>
                     <h3>Notes rapides (Terrain)</h3>
                 </div>
+                <div class="dash-tile" onclick="showView('proProfileView')">
+                    <span>👤</span>
+                    <h3>Mon Espace Pro (CR)</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- ESPACE PRO / EN-TÊTE COMPTE RENDU -->
+        <div id="proProfileView" class="view">
+            <div class="card">
+                <h2 class="section-title">👤 Profil Professionnel & En-tête des Rapports</h2>
+                <form id="proProfileForm" onsubmit="saveProProfile(event)">
+                    <div class="row">
+                        <div class="form-group">
+                            <label>Prénom</label>
+                            <input type="text" id="proFirstName" value="Lyna">
+                        </div>
+                        <div class="form-group">
+                            <label>Nom</label>
+                            <input type="text" id="proLastName" value="Nicolaescu">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <label>Téléphone</label>
+                            <input type="tel" id="proPhone" value="06 44 84 66 92">
+                        </div>
+                        <div class="form-group">
+                            <label>E-mail</label>
+                            <input type="email" id="proEmail" value="lynanicolaescu@gmail.com">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Statut / Titre (apparaît sous le nom)</label>
+                        <input type="text" id="proStatus" value="Étudiante en 4ème année d'ostéopathie animale, EOOA">
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <label>N° SIRET (Optionnel)</label>
+                            <input type="text" id="proSiret" placeholder="En cours de création...">
+                        </div>
+                        <div class="form-group">
+                            <label>Adresse Pro / Cabinet (Optionnel)</label>
+                            <input type="text" id="proAddress" placeholder="31000 Toulouse...">
+                        </div>
+                    </div>
+                    <button type="submit">💾 Enregistrer mes coordonnées pro</button>
+                </form>
             </div>
         </div>
 
@@ -534,30 +599,38 @@
                                     <div class="color-dot" style="background: #5F998E;" onclick="setPenColor('#5F998E')" title="Normal"></div>
                                     <div class="color-dot" style="background: #1D3557;" onclick="setPenColor('#1D3557')" title="Autre"></div>
                                 </div>
-                                <button type="button" class="tool-btn secondary" onclick="clearCanvas()">Effacer annotations</button>
+                                <div>
+                                    <button type="button" class="tool-btn secondary" onclick="undoCanvas()">↩️ Annuler dernier trait</button>
+                                    <button type="button" class="tool-btn danger" onclick="clearCanvas()">🗑️ Effacer tout</button>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Photos de consultation -->
-                    <h3 style="font-size: 0.95rem; color: var(--accent); margin: 20px 0 10px 0;">📸 Photos de la Séance (Posture, Allures...)</h3>
+                    <h3 style="font-size: 0.95rem; color: var(--accent); margin: 20px 0 10px 0;">📸 Photos de la Séance</h3>
                     <div class="form-group">
                         <label>Prendre une photo ou importer depuis la galerie</label>
                         <input type="file" id="consultPhotosInput" accept="image/*" multiple onchange="handleConsultPhotos(event)">
-                        <div id="consultPhotosPreview" style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px;"></div>
+                        <div id="consultPhotosPreview" style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;"></div>
                     </div>
 
                     <!-- Protocole Ostéopathique -->
                     <h3 style="font-size: 0.95rem; color: var(--accent); margin: 20px 0 10px 0;">3. Bilan & Protocole Ostéo</h3>
                     
                     <div class="form-group">
-                        <label>Anamnèse & Motif de consultation</label>
-                        <textarea id="anamnesis" rows="2" placeholder="Baisse de forme, raideur..."></textarea>
+                        <label>Motif de consultation</label>
+                        <input type="text" id="consultReason" placeholder="Baisse de forme, boiterie, contrôle routine...">
                     </div>
 
                     <div class="form-group">
-                        <label>Bilan dynamique</label>
-                        <textarea id="dynamicBilan" rows="2" placeholder="Allures, aplombs..."></textarea>
+                        <label>Anamnèse et commémoratifs</label>
+                        <textarea id="anamnesis" rows="2" placeholder="Antécédents, mode de vie, activité..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Bilan statique et/ou dynamique</label>
+                        <textarea id="dynamicBilan" rows="2" placeholder="Examen statique, allures, aplombs..."></textarea>
                         <div class="audio-controls">
                             <button type="button" class="secondary" onclick="toggleRecord('dynamicBilan', 'statusBilan')">🎙️ Dicter</button>
                             <span id="statusBilan" class="recording-status">🔴 Enregistrement...</span>
@@ -566,7 +639,7 @@
 
                     <div class="form-group">
                         <label>Tests ostéopathiques & Restrictions</label>
-                        <textarea id="osteotests" rows="3" placeholder="Restrictions articulaires, vertébrales..."></textarea>
+                        <textarea id="osteotests" rows="3" placeholder="Restrictions articulaires, vertébrales, viscérales..."></textarea>
                         <div class="audio-controls">
                             <button type="button" class="secondary" onclick="toggleRecord('osteotests', 'statusTests')">🎙️ Dicter</button>
                             <span id="statusTests" class="recording-status">🔴 Enregistrement...</span>
@@ -574,8 +647,8 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Traitement / Corrections</label>
-                        <textarea id="treatment" rows="2" placeholder="Techniques tissulaires, thrusts..."></textarea>
+                        <label>Traitement</label>
+                        <textarea id="treatment" rows="2" placeholder="Techniques tissulaires, structurelles..."></textarea>
                     </div>
 
                     <div class="form-group">
@@ -585,7 +658,7 @@
 
                     <div class="form-group">
                         <label>Conseils post-séance</label>
-                        <textarea id="advice" rows="2" placeholder="48h de repos..."></textarea>
+                        <textarea id="advice" rows="2" placeholder="48h de repos, réhabilitation progressive..."></textarea>
                     </div>
 
                     <button type="submit" style="margin-top: 15px;">💾 Enregistrer et Générer le Rapport</button>
@@ -593,14 +666,14 @@
             </div>
         </div>
 
-        <!-- FICHE PATIENT DÉTAILLÉE (DOSSIER MÉDICAL & DOCS) -->
+        <!-- FICHE PATIENT DÉTAILLÉE -->
         <div id="patientDetailView" class="view">
             <div class="card">
                 <button class="secondary" style="width: auto; margin-bottom: 15px;" onclick="showView('patientsView')">⬅️ Retour aux fiches patients</button>
                 <h2 id="detailPatientName" class="section-title">🐾 Dossier Médical Patient</h2>
                 <div id="patientInfoSummary" style="margin-bottom: 20px; font-size: 0.9rem; background: var(--primary-light); padding: 12px; border-radius: 8px;"></div>
 
-                <h3 style="font-size: 1rem; color: var(--accent); margin-bottom: 10px;">📁 Documents & Imagerie (Radios, Comptes rendus véto, Photos...)</h3>
+                <h3 style="font-size: 1rem; color: var(--accent); margin-bottom: 10px;">📁 Documents & Imagerie (Radios, CR Véto...)</h3>
                 <form id="patientDocForm" onsubmit="uploadPatientDocument(event)">
                     <div class="row">
                         <div class="form-group">
@@ -613,15 +686,15 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Sélectionner le fichier / photo</label>
+                            <label>Fichier / Photo</label>
                             <input type="file" id="docFileInput" accept="image/*,.pdf" required>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>Titre ou description du document</label>
-                        <input type="text" id="docTitle" placeholder="Ex: Radio boulet antérieur gauche - Dr Martin">
+                        <label>Titre du document</label>
+                        <input type="text" id="docTitle" placeholder="Ex: Radio boulet antérieur droit">
                     </div>
-                    <button type="submit" style="background: var(--accent);">➕ Ajouter au dossier du patient</button>
+                    <button type="submit" style="background: var(--accent);">➕ Ajouter au dossier</button>
                 </form>
 
                 <h3 style="font-size: 1rem; color: var(--primary); margin: 25px 0 10px 0;">📂 Fichiers classés</h3>
@@ -631,7 +704,7 @@
             </div>
         </div>
 
-        <!-- BRIQUE : LIEUX DE CONSULTATION -->
+        <!-- LIEUX DE CONSULTATION -->
         <div id="locationsView" class="view">
             <div class="card">
                 <h2 id="locationFormTitle" class="section-title">📍 Gestion des Lieux & Écuries</h2>
@@ -653,7 +726,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>Adresse & Infos d'accès (Code portail, indications...)</label>
+                        <label>Adresse & Infos d'accès</label>
                         <textarea id="locDetails" rows="2" placeholder="Lieu-dit, 31290 Villefranche..."></textarea>
                     </div>
 
@@ -670,7 +743,7 @@
             </div>
         </div>
 
-        <!-- BRIQUE : FICHES PATIENTS -->
+        <!-- FICHES PATIENTS -->
         <div id="patientsView" class="view">
             <div class="card">
                 <h2 id="patientFormTitle" class="section-title">🐾 Gestion des Fiches Patients</h2>
@@ -718,7 +791,7 @@
                                 <select id="patAddress" style="flex: 1;">
                                     <option value="Clinique">Clinique (Par défaut)</option>
                                 </select>
-                                <button type="button" class="secondary" style="width: auto; padding: 0 12px; font-size: 0.8rem;" onclick="quickAddLocationFromPatient()" title="Créer un nouveau lieu rapidement">➕ Lieu</button>
+                                <button type="button" class="secondary" style="width: auto; padding: 0 12px; font-size: 0.8rem;" onclick="quickAddLocationFromPatient()">➕ Lieu</button>
                             </div>
                         </div>
                     </div>
@@ -750,7 +823,7 @@
             <div class="card">
                 <h2 class="section-title">📍 Patients Groupés par Lieux & Écuries</h2>
                 <div class="form-group">
-                    <input type="text" id="searchPatients" placeholder="🔍 Recherche semi-prédictive (animal, écurie, propriétaire...)" oninput="loadPatients()">
+                    <input type="text" id="searchPatients" placeholder="🔍 Recherche semi-prédictive..." oninput="loadPatients()">
                 </div>
                 <div id="patientsListContainer">
                     <p style="font-size: 0.9rem; color: var(--gray); text-align: center;">Chargement des patients...</p>
@@ -763,7 +836,7 @@
             <div class="card">
                 <h2 class="section-title">📂 Historique des Consultations</h2>
                 <div class="form-group">
-                    <input type="text" id="searchHistory" placeholder="🔍 Rechercher par animal, propriétaire, lieu..." oninput="loadHistory()">
+                    <input type="text" id="searchHistory" placeholder="🔍 Rechercher..." oninput="loadHistory()">
                 </div>
                 <div id="historyListContainer">
                     <p style="font-size: 0.9rem; color: var(--gray); text-align: center;">Chargement de l'historique...</p>
@@ -825,12 +898,37 @@
         let currentActivePatientId = null;
         let currentConsultPhotos = [];
 
-        // Synchronisation temps réel avec Firestore
+        // Profil Pro (Lyna Nicolaescu par défaut)
+        let proProfile = JSON.parse(localStorage.getItem('osteoProProfile')) || {
+            firstName: 'Lyna',
+            lastName: 'Nicolaescu',
+            phone: '06 44 84 66 92',
+            email: 'lynanicolaescu@gmail.com',
+            status: 'Étudiante en 4ème année d\'ostéopathie animale, EOOA',
+            siret: '',
+            address: ''
+        };
+
+        function saveProProfile(e) {
+            e.preventDefault();
+            proProfile = {
+                firstName: document.getElementById('proFirstName').value,
+                lastName: document.getElementById('proLastName').value,
+                phone: document.getElementById('proPhone').value,
+                email: document.getElementById('proEmail').value,
+                status: document.getElementById('proStatus').value,
+                siret: document.getElementById('proSiret').value,
+                address: document.getElementById('proAddress').value
+            };
+            localStorage.setItem('osteoProProfile', JSON.stringify(proProfile));
+            alert('Profil professionnel sauvegardé !');
+            showView('homeView');
+        }
+
+        // Synchronisation Firestore
         db.collection("patients").onSnapshot((snapshot) => {
             patientsData = [];
-            snapshot.forEach((doc) => {
-                patientsData.push({ id: doc.id, ...doc.data() });
-            });
+            snapshot.forEach((doc) => { patientsData.push({ id: doc.id, ...doc.data() }); });
             loadPatients();
             loadLocations();
             populateSelects();
@@ -838,9 +936,7 @@
 
         db.collection("consultations").onSnapshot((snapshot) => {
             consultationsData = [];
-            snapshot.forEach((doc) => {
-                consultationsData.push({ id: doc.id, ...doc.data() });
-            });
+            snapshot.forEach((doc) => { consultationsData.push({ id: doc.id, ...doc.data() }); });
             consultationsData.sort((a, b) => b.timestamp - a.timestamp);
             loadHistory();
             loadPatients();
@@ -849,18 +945,14 @@
 
         db.collection("quicknotes").onSnapshot((snapshot) => {
             quickNotesData = [];
-            snapshot.forEach((doc) => {
-                quickNotesData.push({ id: doc.id, ...doc.data() });
-            });
+            snapshot.forEach((doc) => { quickNotesData.push({ id: doc.id, ...doc.data() }); });
             quickNotesData.sort((a, b) => b.timestamp - a.timestamp);
             loadQuickNotes();
         });
 
         db.collection("locations").onSnapshot((snapshot) => {
             locationsData = [];
-            snapshot.forEach((doc) => {
-                locationsData.push({ id: doc.id, ...doc.data() });
-            });
+            snapshot.forEach((doc) => { locationsData.push({ id: doc.id, ...doc.data() }); });
             loadLocations();
             populateSelects();
             updateDashboardStats();
@@ -868,16 +960,11 @@
 
         function updateDashboardStats() {
             document.getElementById('statTotalConsult').innerText = consultationsData.length;
-
             const now = new Date();
             const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay() + 1));
             startOfWeek.setHours(0,0,0,0);
 
-            let weekCount = consultationsData.filter(c => {
-                if(!c.consultDate) return false;
-                let cDate = new Date(c.consultDate);
-                return cDate >= startOfWeek;
-            }).length;
+            let weekCount = consultationsData.filter(c => c.consultDate && new Date(c.consultDate) >= startOfWeek).length;
             document.getElementById('statWeekConsult').innerText = weekCount;
 
             let locationCounts = {};
@@ -891,117 +978,18 @@
             for (let loc in locationCounts) {
                 if (locationCounts[loc] > maxCount) {
                     maxCount = locationCounts[loc];
-                    topLoc = `${loc} (${maxCount} consultations)`;
+                    topLoc = `${loc} (${maxCount} consult.)`;
                 }
             }
             document.getElementById('statTopLocation').innerText = topLoc;
         }
 
-        function saveLocation(e) {
-            e.preventDefault();
-            const editId = document.getElementById('editLocationId').value;
-            const name = document.getElementById('locName').value.trim();
-            const manager = document.getElementById('locManager').value.trim();
-            const phone = document.getElementById('locPhone').value.trim();
-            const details = document.getElementById('locDetails').value.trim();
-
-            if(!name) return;
-
-            const locData = { name, manager, phone, details, timestamp: Date.now() };
-
-            if(editId) {
-                db.collection("locations").doc(editId).update(locData).then(() => {
-                    resetLocationForm();
-                    alert("Lieu mis à jour avec succès !");
-                });
-            } else {
-                db.collection("locations").add(locData).then(() => {
-                    resetLocationForm();
-                    alert("Lieu ajouté avec succès !");
-                });
-            }
-        }
-
-        function resetLocationForm() {
-            document.getElementById('locationForm').reset();
-            document.getElementById('editLocationId').value = "";
-            document.getElementById('locationFormTitle').innerText = "📍 Gestion des Lieux & Écuries";
-            document.getElementById('locSubmitBtn').innerText = "➕ Enregistrer le Lieu";
-            document.getElementById('locCancelBtn').style.display = "none";
-        }
-
-        function editLocation(id) {
-            const l = locationsData.find(item => item.id === id);
-            if(!l) return;
-            document.getElementById('editLocationId').value = l.id;
-            document.getElementById('locName').value = l.name;
-            document.getElementById('locManager').value = l.manager || '';
-            document.getElementById('locPhone').value = l.phone || '';
-            document.getElementById('locDetails').value = l.details || '';
-            document.getElementById('locationFormTitle').innerText = "✏️ Modifier le Lieu";
-            document.getElementById('locSubmitBtn').innerText = "💾 Mettre à jour le Lieu";
-            document.getElementById('locCancelBtn').style.display = "block";
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function deleteLocation(id) {
-            if(confirm("Supprimer ce lieu ?")) {
-                db.collection("locations").doc(id).delete();
-            }
-        }
-
-        function loadLocations() {
-            const container = document.getElementById('locationsListContainer');
-            if(!container) return;
-
-            let allLocs = [{ id: 'clinique-def', name: 'Clinique', manager: 'Cabinet principal', phone: '', details: 'Lieu par défaut' }, ...locationsData];
-
-            container.innerHTML = '';
-            allLocs.forEach(l => {
-                let count = patientsData.filter(p => (p.address || 'Clinique') === l.name).length;
-                let isClinique = l.id === 'clinique-def';
-
-                container.innerHTML += `
-                    <div class="list-item" style="flex-direction:column; align-items:flex-start;">
-                        <div style="display:flex; justify-content:space-between; width:100%; align-items:flex-start;">
-                            <div class="list-info">
-                                <h4>📍 ${l.name}</h4>
-                                <p>Gérant : ${l.manager || 'N/C'} • Tél : ${l.phone || 'N/C'}</p>
-                                ${l.details ? `<p style="font-size:0.75rem; margin-top:2px;">📌 ${l.details}</p>` : ''}
-                                <div style="margin-top:6px;">
-                                    <span style="background:var(--primary-light); color:var(--primary); font-size:0.75rem; padding:3px 8px; border-radius:12px; font-weight:600;">🐴 ${count} animal / chevaux suivis</span>
-                                </div>
-                            </div>
-                            <div class="actions-group">
-                                ${!isClinique ? `
-                                    <button class="secondary" style="background:#4A5568;" onclick="editLocation('${l.id}')">✏️</button>
-                                    <button class="danger" onclick="deleteLocation('${l.id}')">🗑️</button>
-                                ` : ''}
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        function quickAddLocationFromPatient() {
-            let newLoc = prompt("Nom de la nouvelle écurie / lieu :");
-            if(newLoc && newLoc.trim() !== '') {
-                newLoc = newLoc.trim();
-                db.collection("locations").add({ name: newLoc, manager: '', phone: '', details: '', timestamp: Date.now() }).then(() => {
-                    setTimeout(() => {
-                        populateSelects();
-                        document.getElementById('patAddress').value = newLoc;
-                    }, 500);
-                });
-            }
-        }
-
-        const speciesSkeletons = {
-            "Cheval": "Fiche consultation cheval.pdf",
-            "Chien": "Fiche consultation chien.pdf",
-            "Chat": "Fiche consultation chat.pdf",
-            "Vache": "Fiche consultation vache.pdf"
+        // SVG Vectoriels Garantis pour les squelettes
+        const baseSkeletonsSVG = {
+            "Cheval": `<svg viewBox="0 0 600 350" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><path d="M 50,150 Q 80,100 120,90 Q 200,85 280,120 L 350,130 Q 420,90 480,110 L 520,200 L 510,270 L 480,270 L 470,200 L 350,200 L 320,270 L 290,270 L 310,200 L 200,200 L 190,270 L 160,270 L 180,200 L 120,180 L 80,200 L 70,270 L 40,270 L 50,180 Z" fill="#F9FAFB" stroke="#5F998E" stroke-width="3"/><text x="180" y="40" fill="#2B2D42" font-size="16" font-weight="bold">Schéma Anatomique : Cheval</text></svg>`,
+            "Chien": `<svg viewBox="0 0 600 350" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><path d="M 60,140 Q 90,90 130,90 Q 210,90 290,130 L 340,140 Q 410,100 460,120 L 490,210 L 480,260 L 450,260 L 440,210 L 330,210 L 310,260 L 280,260 L 300,210 L 190,210 L 180,260 L 150,260 L 170,210 L 120,190 L 90,210 L 80,260 L 50,260 L 60,190 Z" fill="#F9FAFB" stroke="#5F998E" stroke-width="3"/><text x="180" y="40" fill="#2B2D42" font-size="16" font-weight="bold">Schéma Anatomique : Chien</text></svg>`,
+            "Chat": `<svg viewBox="0 0 600 350" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><path d="M 60,130 Q 90,80 130,80 Q 210,80 280,120 L 330,130 Q 400,90 450,110 L 480,200 L 470,250 L 440,250 L 430,200 L 320,200 L 300,250 L 270,250 L 290,200 L 180,200 L 170,250 L 140,250 L 160,200 L 110,180 L 80,200 L 70,250 L 40,250 L 50,180 Z" fill="#F9FAFB" stroke="#5F998E" stroke-width="3"/><text x="180" y="40" fill="#2B2D42" font-size="16" font-weight="bold">Schéma Anatomique : Chat</text></svg>`,
+            "Vache": `<svg viewBox="0 0 600 350" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><path d="M 40,140 Q 80,100 130,90 Q 220,85 300,120 L 360,130 Q 440,80 500,100 L 540,210 L 520,270 L 480,270 L 470,210 L 360,210 L 330,270 L 290,270 L 310,210 L 200,210 L 190,270 L 150,270 L 170,210 L 110,180 L 80,210 L 70,270 L 35,270 L 40,180 Z" fill="#F9FAFB" stroke="#5F998E" stroke-width="3"/><text x="180" y="40" fill="#2B2D42" font-size="16" font-weight="bold">Schéma Anatomique : Vache</text></svg>`
         };
 
         let customSkeletonImage = null;
@@ -1009,6 +997,7 @@
         const ctx = canvas.getContext('2d');
         let isDrawing = false;
         let penColor = '#EA5B0C';
+        let drawHistory = [];
 
         function showView(viewId) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -1032,6 +1021,7 @@
                 if(viewId === 'patientsView') { document.getElementById('headerTitle').innerText = "Fiches Patients"; loadPatients(); populateSelects(); }
                 if(viewId === 'historyView') { document.getElementById('headerTitle').innerText = "Historique"; loadHistory(); }
                 if(viewId === 'notesView') { document.getElementById('headerTitle').innerText = "Notes Rapides"; populateSelects(); }
+                if(viewId === 'proProfileView') { document.getElementById('headerTitle').innerText = "Profil Professionnel"; }
             }
         }
 
@@ -1041,37 +1031,70 @@
             document.getElementById('consultFormTitle').innerText = "📝 Nouvelle Consultation";
             document.getElementById('consultDateInput').valueAsDate = new Date();
             currentConsultPhotos = [];
-            document.getElementById('consultPhotosPreview').innerHTML = '';
+            renderConsultPhotosPreview();
             showView('consultView');
             initCanvas();
         }
 
         function handleConsultPhotos(e) {
             const files = e.target.files;
-            const preview = document.getElementById('consultPhotosPreview');
             for(let file of files) {
                 const reader = new FileReader();
                 reader.onload = function(evt) {
                     currentConsultPhotos.push(evt.target.result);
-                    preview.innerHTML += `<img src="${evt.target.result}" class="doc-thumbnail">`;
+                    renderConsultPhotosPreview();
                 };
                 reader.readAsDataURL(file);
             }
+        }
+
+        function renderConsultPhotosPreview() {
+            const preview = document.getElementById('consultPhotosPreview');
+            preview.innerHTML = '';
+            currentConsultPhotos.forEach((p, index) => {
+                preview.innerHTML += `
+                    <div class="photo-thumb-wrapper">
+                        <img src="${p}" class="doc-thumbnail">
+                        <button type="button" class="delete-photo-btn" onclick="deleteConsultPhoto(${index})">✕</button>
+                    </div>
+                `;
+            });
+        }
+
+        function deleteConsultPhoto(index) {
+            currentConsultPhotos.splice(index, 1);
+            renderConsultPhotosPreview();
         }
 
         function initCanvas(existingImageSrc = null) {
             const wrapper = canvas.parentElement;
             canvas.width = wrapper.clientWidth;
             canvas.height = 280;
+            drawHistory = [];
             
             if (existingImageSrc) {
                 const img = new Image();
                 img.onload = function() {
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    saveCanvasState();
                 };
                 img.src = existingImageSrc;
             } else {
+                updateSkeleton();
+            }
+        }
+
+        function saveCanvasState() {
+            drawHistory.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+        }
+
+        function undoCanvas() {
+            if (drawHistory.length > 1) {
+                drawHistory.pop();
+                ctx.putImageData(drawHistory[drawHistory.length - 1], 0, 0);
+            } else if (drawHistory.length === 1) {
+                drawHistory.pop();
                 updateSkeleton();
             }
         }
@@ -1084,17 +1107,17 @@
 
             if (species === 'Custom' && customSkeletonImage) {
                 ctx.drawImage(customSkeletonImage, 0, 0, canvas.width, canvas.height);
-            } else if (speciesSkeletons[species]) {
+                saveCanvasState();
+            } else if (baseSkeletonsSVG[species]) {
                 const img = new Image();
+                const svgBlob = new Blob([baseSkeletonsSVG[species]], {type: 'image/svg+xml;charset=utf-8'});
+                const url = URL.createObjectURL(svgBlob);
                 img.onload = function() {
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    URL.revokeObjectURL(url);
+                    saveCanvasState();
                 };
-                img.src = speciesSkeletons[species];
-            } else {
-                ctx.fillStyle = '#6B7280';
-                ctx.font = '14px sans-serif';
-                ctx.textAlign = 'center';
-                ctx.fillText("Aucun squelette chargé pour cette espèce.", canvas.width / 2, canvas.height / 2);
+                img.src = url;
             }
         }
 
@@ -1116,7 +1139,7 @@
         }
 
         function setPenColor(color) { penColor = color; }
-        function clearCanvas() { updateSkeleton(); }
+        function clearCanvas() { initCanvas(); }
 
         function getPos(e) {
             const rect = canvas.getBoundingClientRect();
@@ -1148,7 +1171,12 @@
             ctx.lineTo(pos.x, pos.y);
             ctx.stroke();
         }
-        function stopDraw() { isDrawing = false; }
+        function stopDraw() {
+            if (isDrawing) {
+                isDrawing = false;
+                saveCanvasState();
+            }
+        }
 
         let activeRecognition = null;
         function toggleRecord(targetFieldId, statusId) {
@@ -1156,7 +1184,7 @@
             const targetField = document.getElementById(targetFieldId);
 
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                alert("La dictée vocale n'est pas supportée par ce navigateur. Utilisez le micro de votre clavier virtuel.");
+                alert("Utilisez le micro de votre clavier virtuel.");
                 return;
             }
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -1234,7 +1262,6 @@
             }
         }
 
-        // Gestion formulaire Patient
         document.getElementById('patientForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const editId = document.getElementById('editPatientId').value;
@@ -1255,17 +1282,15 @@
             };
 
             if (editId) {
-                db.collection("patients").doc(editId).update(patient)
-                  .then(() => {
-                      resetPatientForm();
-                      alert('Fiche patient mise à jour dans le cloud !');
-                  });
+                db.collection("patients").doc(editId).update(patient).then(() => {
+                    resetPatientForm();
+                    alert('Fiche patient mise à jour !');
+                });
             } else {
-                db.collection("patients").add(patient)
-                  .then(() => {
-                      resetPatientForm();
-                      alert('Patient enregistré dans le cloud !');
-                  });
+                db.collection("patients").add(patient).then(() => {
+                    resetPatientForm();
+                    alert('Patient enregistré !');
+                });
             }
         });
 
@@ -1337,7 +1362,7 @@
                         docs.push(newDoc);
                         db.collection("patients").doc(currentActivePatientId).update({ documents: docs }).then(() => {
                             document.getElementById('patientDocForm').reset();
-                            alert("Document ajouté au dossier du patient !");
+                            alert("Document ajouté au dossier !");
                             openPatientDetail(currentActivePatientId);
                         });
                     }
@@ -1358,12 +1383,12 @@
             container.innerHTML = '';
             docs.forEach(d => {
                 container.innerHTML += `
-                    <div class="list-item" style="align-items:center;">
+                    <div class="list-item">
                         <div style="display:flex; gap:12px; align-items:center;">
                             <img src="${d.dataUrl}" class="doc-thumbnail" onclick="window.open('${d.dataUrl}')" title="Agrandir">
                             <div class="list-info">
                                 <h4>📂 ${d.title}</h4>
-                                <p>Catégorie : <strong>${d.category}</strong> • Ajouté le : ${d.date}</p>
+                                <p>Catégorie : <strong>${d.category}</strong> • ${d.date}</p>
                             </div>
                         </div>
                         <button class="danger" onclick="deletePatientDoc('${d.id}')">🗑️</button>
@@ -1435,8 +1460,8 @@
                         <div class="list-item ${difficultClass}" style="flex-direction:column; align-items:flex-start;">
                             <div style="display:flex; justify-content:space-between; width:100%; align-items:flex-start;">
                                 <div class="list-info">
-                                    <h4 onclick="openPatientDetail('${p.id}')">📂 ${p.animalName} (${p.species}) - ${p.breedAge || ''} (Ouvrir dossier)</h4>
-                                    <p>Propriétaire : ${p.owner} • Tél : ${p.phone || 'N/C'} • Mail : ${p.email || 'N/C'}</p>
+                                    <h4 onclick="openPatientDetail('${p.id}')">📂 ${p.animalName} (${p.species}) - ${p.breedAge || ''}</h4>
+                                    <p>Propriétaire : ${p.owner} • Tél : ${p.phone || 'N/C'}</p>
                                     ${p.history ? `<p style="font-size:0.75rem; margin-top:4px;">📝 <em>${p.history}</em></p>` : ''}
                                     <div style="margin-top:6px;">${alertsHtml}</div>
                                 </div>
@@ -1458,7 +1483,7 @@
                     <div class="location-section">
                         <div class="location-title">
                             <span>📍 ${location}</span>
-                            <span style="font-size: 0.8rem; font-weight: normal; background: var(--white); padding: 2px 8px; border-radius: 12px; border: 1px solid #DDD;">${grouped[location].length} patient(s)</span>
+                            <span style="font-size: 0.8rem; background: var(--white); padding: 2px 8px; border-radius: 12px; border: 1px solid #DDD;">${grouped[location].length} patient(s)</span>
                         </div>
                         ${htmlList}
                     </div>
@@ -1467,7 +1492,7 @@
         }
 
         function deletePatient(id) {
-            if(confirm("Supprimer ce patient du cloud ?")) {
+            if(confirm("Supprimer ce patient ?")) {
                 db.collection("patients").doc(id).delete();
             }
         }
@@ -1488,7 +1513,7 @@
             };
             db.collection("quicknotes").add(note).then(() => {
                 this.reset();
-                alert('Note rapide enregistrée dans le cloud !');
+                alert('Note rapide enregistrée !');
             });
         });
 
@@ -1516,9 +1541,7 @@
             });
         }
 
-        function deleteQuickNote(id) {
-            db.collection("quicknotes").doc(id).delete();
-        }
+        function deleteQuickNote(id) { db.collection("quicknotes").doc(id).delete(); }
 
         // Soumission Consultation
         document.getElementById('consultForm').addEventListener('submit', function(e) {
@@ -1542,6 +1565,7 @@
                 animalSpecies: document.getElementById('animalSpecies').value,
                 sketchCombined: canvas.toDataURL(),
                 photos: currentConsultPhotos,
+                consultReason: document.getElementById('consultReason').value || '',
                 anamnesis: document.getElementById('anamnesis').value,
                 dynamicBilan: document.getElementById('dynamicBilan').value,
                 osteotests: document.getElementById('osteotests').value,
@@ -1555,21 +1579,19 @@
                     document.getElementById('consultForm').reset();
                     document.getElementById('editConsultId').value = "";
                     showView('historyView');
-                    alert('Consultation mise à jour dans le cloud !');
+                    alert('Consultation mise à jour !');
                 });
             } else {
                 db.collection("consultations").add(consultation).then(() => {
                     document.getElementById('consultForm').reset();
                     document.getElementById('editConsultId').value = "";
                     showView('historyView');
-                    alert('Consultation enregistrée dans le cloud !');
+                    alert('Consultation enregistrée !');
                 });
             }
         });
 
-        function loadHistory() {
-            renderHistory();
-        }
+        function loadHistory() { renderHistory(); }
 
         function renderHistory() {
             const search = document.getElementById('searchHistory') ? document.getElementById('searchHistory').value.toLowerCase().trim() : '';
@@ -1590,7 +1612,7 @@
             container.innerHTML = '';
             filtered.forEach(c => {
                 let reminderBtn = c.nextConsultDate && c.ownerEmail ? `
-                    <a class="secondary" style="padding:6px 10px; font-size:0.8rem; text-decoration:none; display:inline-block; border-radius:6px; background:#EA5B0C; color:#fff;" href="mailto:${c.ownerEmail}?subject=Rappel%20-%20Suivi%20ost%C3%A9opathique%20${encodeURIComponent(c.animalName)}&body=Bonjour%20${encodeURIComponent(c.ownerName)},%0A%0ALe%20suivi%20ost%C3%A9opathique%20de%20${encodeURIComponent(c.animalName)}%20pr%C3%A9conis%C3%A9%20pour%20le%20${c.nextConsultDate}%20approche.%0A%0APensez%20a%20prendre%20contact%20pour%20fixer%20un%20rendez-vous.%0A%0ABien%20cordialement,%0ALynette%20Ost%C3%A9oAnimal">✉️ Rappel RDV</a>
+                    <a class="secondary" style="padding:6px 10px; font-size:0.8rem; text-decoration:none; display:inline-block; border-radius:6px; background:#EA5B0C; color:#fff;" href="mailto:${c.ownerEmail}?subject=Rappel%20-%20Suivi%20ost%C3%A9opathique%20${encodeURIComponent(c.animalName)}&body=Bonjour%20${encodeURIComponent(c.ownerName)},%0A%0ALe%20suivi%20ost%C3%A9opathique%20de%20${encodeURIComponent(c.animalName)}%20pr%C3%A9conis%C3%A9%20pour%20le%20${c.nextConsultDate}%20approche.%0A%0APensez%20a%20prendre%20contact%20pour%20fixer%20un%20rendez-vous.%0A%0ABien%20cordialement,%0A${encodeURIComponent(proProfile.firstName + ' ' + proProfile.lastName)}">✉️ Rappel RDV</a>
                 ` : '';
 
                 container.innerHTML += `
@@ -1629,6 +1651,7 @@
             document.getElementById('ownerAddress').value = c.ownerAddress || 'Clinique';
             document.getElementById('animalName').value = c.animalName;
             document.getElementById('animalSpecies').value = c.animalSpecies;
+            document.getElementById('consultReason').value = c.consultReason || '';
             document.getElementById('anamnesis').value = c.anamnesis;
             document.getElementById('dynamicBilan').value = c.dynamicBilan;
             document.getElementById('osteotests').value = c.osteotests;
@@ -1637,17 +1660,12 @@
             document.getElementById('advice').value = c.advice;
 
             currentConsultPhotos = c.photos || [];
-            const preview = document.getElementById('consultPhotosPreview');
-            preview.innerHTML = '';
-            currentConsultPhotos.forEach(p => {
-                preview.innerHTML += `<img src="${p}" class="doc-thumbnail">`;
-            });
-
+            renderConsultPhotosPreview();
             initCanvas(c.sketchCombined);
         }
 
         function deleteConsultation(id) {
-            if(confirm("Supprimer ce compte rendu du cloud ?")) {
+            if(confirm("Supprimer ce compte rendu ?")) {
                 db.collection("consultations").doc(id).delete();
             }
         }
@@ -1675,21 +1693,38 @@
                     <title>Compte Rendu - ${c.animalName}</title>
                     <style>
                         body { font-family: Arial, sans-serif; padding: 30px; color: #333; max-width: 800px; margin: auto; line-height: 1.5; }
-                        h1 { color: #5F998E; border-bottom: 2px solid #5F998E; padding-bottom: 10px; font-size: 1.4rem; }
+                        .pro-header { background: #5F998E; color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+                        .pro-header h2 { margin: 0; font-size: 1.3rem; }
+                        .pro-header p { margin: 2px 0 0 0; font-size: 0.85rem; opacity: 0.9; }
+                        h1 { color: #5F998E; border-bottom: 2px solid #5F998E; padding-bottom: 10px; font-size: 1.3rem; margin-top: 10px; }
                         .header-info { background: #F4F6F4; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
                         .section { margin-bottom: 15px; }
                         .section h3 { color: #5F998E; font-size: 1rem; margin-bottom: 5px; border-left: 3px solid #EA5B0C; padding-left: 8px; }
                         .section p { background: #FAFAFA; padding: 10px; border-radius: 6px; white-space: pre-line; border: 1px solid #eee; }
                         .sketch-view { text-align: center; margin: 15px 0; }
                         .sketch-view img { max-width: 100%; border: 1px solid #ccc; border-radius: 6px; }
-                        .btn-group { display: flex; gap: 10px; margin-top: 20px; }
-                        .btn { padding: 12px 24px; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; text-decoration: none; text-align: center; display: inline-block; }
+                        .btn-group { display: flex; gap: 10px; margin-top: 25px; padding-top: 15px; border-top: 2px solid #eee; }
+                        .btn { padding: 12px 20px; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 0.95rem; font-weight: bold; text-decoration: none; text-align: center; display: inline-block; }
+                        .btn-back { background: #4A5568; }
                         .btn-print { background: #5F998E; }
                         .btn-email { background: #EA5B0C; }
                         @media print { .btn-group { display: none; } }
                     </style>
                 </head>
                 <body>
+                    <div class="pro-header">
+                        <div>
+                            <h2>${proProfile.firstName} ${proProfile.lastName}</h2>
+                            <p>${proProfile.status}</p>
+                            ${proProfile.siret ? `<p>SIRET : ${proProfile.siret}</p>` : ''}
+                        </div>
+                        <div style="text-align: right;">
+                            <p>📞 ${proProfile.phone}</p>
+                            <p>✉️ ${proProfile.email}</p>
+                            ${proProfile.address ? `<p>📍 ${proProfile.address}</p>` : ''}
+                        </div>
+                    </div>
+
                     <h1>Compte Rendu de Consultation Ostéopathique</h1>
                     <div class="header-info">
                         <div>
@@ -1713,16 +1748,18 @@
 
                     ${photosHtml}
 
-                    <div class="section"><h3>1. Anamnèse / Motif</h3><p>${c.anamnesis || 'Non renseigné'}</p></div>
-                    <div class="section"><h3>2. Bilan Dynamique</h3><p>${c.dynamicBilan || 'Non renseigné'}</p></div>
-                    <div class="section"><h3>3. Tests Ostéopathiques</h3><p>${c.osteotests || 'Non renseigné'}</p></div>
-                    <div class="section"><h3>4. Traitement Effectué</h3><p>${c.treatment || 'Non renseigné'}</p></div>
-                    ${c.vetNotes ? `<div class="section"><h3>5. Notes & Confrères (Véto, Maréchal...)</h3><p>${c.vetNotes}</p></div>` : ''}
-                    <div class="section"><h3>6. Conseils Post-Séance</h3><p>${c.advice || 'Non renseigné'}</p></div>
+                    ${c.consultReason ? `<div class="section"><h3>1. Motif de Consultation</h3><p>${c.consultReason}</p></div>` : ''}
+                    <div class="section"><h3>2. Anamnèse et commémoratifs</h3><p>${c.anamnesis || 'Non renseigné'}</p></div>
+                    <div class="section"><h3>3. Bilan statique et/ou dynamique</h3><p>${c.dynamicBilan || 'Non renseigné'}</p></div>
+                    <div class="section"><h3>4. Tests Ostéopathiques</h3><p>${c.osteotests || 'Non renseigné'}</p></div>
+                    <div class="section"><h3>5. Traitement</h3><p>${c.treatment || 'Non renseigné'}</p></div>
+                    ${c.vetNotes ? `<div class="section"><h3>6. Notes & Confrères (Véto, Maréchal...)</h3><p>${c.vetNotes}</p></div>` : ''}
+                    <div class="section"><h3>7. Conseils Post-Séance</h3><p>${c.advice || 'Non renseigné'}</p></div>
                     
                     <div class="btn-group">
+                        <button class="btn btn-back" onclick="window.close()">⬅️ Revenir à l'application</button>
                         <button class="btn btn-print" onclick="window.print()">🖨️ Imprimer / Enregistrer en PDF</button>
-                        ${c.ownerEmail ? `<a class="btn btn-email" href="mailto:${c.ownerEmail}?subject=Compte rendu ostéopathie - ${c.animalName}&body=Bonjour,%0A%0AVoici le compte rendu de la consultation ostéopathique pour ${c.animalName} du ${c.consultDate || c.date}.%0A%0AProchain RDV préconisé : ${c.nextConsultDate || 'N/C'}%0AAnamnèse : ${encodeURIComponent(c.anamnesis)}%0ATraitement : ${encodeURIComponent(c.treatment)}%0AConseils : ${encodeURIComponent(c.advice)}">✉️ Envoyer par e-mail</a>` : ''}
+                        ${c.ownerEmail ? `<a class="btn btn-email" href="mailto:${c.ownerEmail}?subject=Compte rendu ostéopathie - ${c.animalName}&body=Bonjour,%0A%0AVoici le compte rendu de la consultation ostéopathique pour ${c.animalName} du ${c.consultDate || c.date}.%0A%0AProchain RDV préconisé : ${c.nextConsultDate || 'N/C'}%0ABien cordialement,%0A${encodeURIComponent(proProfile.firstName + ' ' + proProfile.lastName)}">✉️ Envoyer par e-mail</a>` : ''}
                     </div>
                 </body>
                 </html>
