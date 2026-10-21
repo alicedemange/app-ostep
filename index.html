@@ -307,6 +307,7 @@
             gap: 10px;
             align-items: center;
             margin-top: 5px;
+            flex-wrap: wrap;
         }
 
         .audio-controls button {
@@ -462,7 +463,7 @@
                 </div>
                 <div class="dash-tile" onclick="showView('notesView')">
                     <span>🎙️</span>
-                    <h3>Notes rapides (Terrain)</h3>
+                    <h3>Notes vocales (Terrain)</h3>
                 </div>
                 <div class="dash-tile" onclick="showView('proProfileView')">
                     <span>👤</span>
@@ -632,18 +633,22 @@
                         <label>Bilan statique et/ou dynamique</label>
                         <textarea id="dynamicBilan" rows="2" placeholder="Examen statique, allures, aplombs..."></textarea>
                         <div class="audio-controls">
-                            <button type="button" class="secondary" onclick="toggleRecord('dynamicBilan', 'statusBilan')">🎙️ Dicter</button>
+                            <button type="button" class="secondary" onclick="startAudioRecord('dynamicBilanAudio', 'statusBilan')">🎙️ Enregistrer un mémo</button>
+                            <button type="button" class="danger" onclick="stopAudioRecord('statusBilan')">⏹️ Stop</button>
                             <span id="statusBilan" class="recording-status">🔴 Enregistrement...</span>
                         </div>
+                        <div id="dynamicBilanAudioContainer" style="margin-top: 5px;"></div>
                     </div>
 
                     <div class="form-group">
                         <label>Tests ostéopathiques & Restrictions</label>
                         <textarea id="osteotests" rows="3" placeholder="Restrictions articulaires, vertébrales, viscérales..."></textarea>
                         <div class="audio-controls">
-                            <button type="button" class="secondary" onclick="toggleRecord('osteotests', 'statusTests')">🎙️ Dicter</button>
+                            <button type="button" class="secondary" onclick="startAudioRecord('osteotestsAudio', 'statusTests')">🎙️ Enregistrer un mémo</button>
+                            <button type="button" class="danger" onclick="stopAudioRecord('statusTests')">⏹️ Stop</button>
                             <span id="statusTests" class="recording-status">🔴 Enregistrement...</span>
                         </div>
+                        <div id="osteotestsAudioContainer" style="margin-top: 5px;"></div>
                     </div>
 
                     <div class="form-group">
@@ -860,7 +865,7 @@
         <!-- NOTES RAPIDES -->
         <div id="notesView" class="view">
             <div class="card">
-                <h2 class="section-title">🎙️ Notes Rapides (Terrain)</h2>
+                <h2 class="section-title">🎙️ Notes Vocales (Terrain)</h2>
                 <form id="quickNoteForm">
                     <div class="form-group">
                         <label>Associer à un Patient (Optionnel)</label>
@@ -869,21 +874,26 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Note / Dictée vocale</label>
-                        <textarea id="quickNoteContent" rows="4" placeholder="Ex: Asymétrie épaule gauche..."></textarea>
+                        <label>Titre / Sujet de la note</label>
+                        <input type="text" id="quickNoteTitle" placeholder="Ex: Vérif aplombs postérieurs...">
+                    </div>
+                    <div class="form-group">
+                        <label>Enregistrement vocal</label>
                         <div class="audio-controls">
-                            <button type="button" class="secondary" onclick="toggleRecord('quickNoteContent', 'statusQuick')">🎙️ Dicter</button>
+                            <button type="button" class="secondary" onclick="startAudioRecord('quickNoteAudio', 'statusQuick')">🎙️ Enregistrer</button>
+                            <button type="button" class="danger" onclick="stopAudioRecord('statusQuick')">⏹️ Stop</button>
                             <span id="statusQuick" class="recording-status">🔴 Enregistrement...</span>
                         </div>
+                        <div id="quickNoteAudioContainer" style="margin-top: 10px;"></div>
                     </div>
-                    <button type="submit">💾 Enregistrer la Note Rapide</button>
+                    <button type="submit">💾 Enregistrer la Note Vocale</button>
                 </form>
             </div>
 
             <div class="card">
-                <h2 class="section-title">⚡ Notes Volantes</h2>
+                <h2 class="section-title">⚡ Mémos Vocaux Enregistrés</h2>
                 <div id="quickNotesListContainer">
-                    <p style="font-size: 0.9rem; color: var(--gray); text-align: center;">Aucune note rapide.</p>
+                    <p style="font-size: 0.9rem; color: var(--gray); text-align: center;">Aucun mémo vocal.</p>
                 </div>
             </div>
         </div>
@@ -912,7 +922,12 @@
         let currentActiveLocationName = null;
         let currentConsultPhotos = [];
 
-        // Fonction utilitaire pour formater les dates en JJ/MM/AAAA
+        // Variables pour l'enregistrement audio (MediaRecorder)
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let activeAudioContainerId = null;
+        let currentRecordedAudioUrl = {};
+
         function formatDate(dateStr) {
             if (!dateStr) return '';
             if (dateStr.includes('-')) {
@@ -1007,12 +1022,12 @@
             document.getElementById('statTopLocation').innerText = topLoc;
         }
 
-        // Squelettes (Liens d'images hébergées)
+        // Squelettes avec tes liens Postimages
         const speciesSkeletons = {
             "Cheval": "https://i.postimg.cc/FR7TJg0L/1cheval.png",
             "Chien": "https://i.postimg.cc/26V0BFnv/chien.png",
             "Chat": "https://i.postimg.cc/4dmWhbpc/chat.png",
-            "Vache": "ttps://i.postimg.cc/G2HXsJvm/vache.png"
+            "Vache": "https://i.postimg.cc/G2HXsJvm/vache.png"
         };
 
         let customSkeletonImage = null;
@@ -1043,7 +1058,7 @@
                 if(viewId === 'locationsView') { document.getElementById('headerTitle').innerText = "Lieux de consultation"; loadLocations(); }
                 if(viewId === 'patientsView') { document.getElementById('headerTitle').innerText = "Fiches Patients"; loadPatients(); populateSelects(); }
                 if(viewId === 'historyView') { document.getElementById('headerTitle').innerText = "Historique"; loadHistory(); }
-                if(viewId === 'notesView') { document.getElementById('headerTitle').innerText = "Notes Rapides"; populateSelects(); }
+                if(viewId === 'notesView') { document.getElementById('headerTitle').innerText = "Notes Vocales"; populateSelects(); }
                 if(viewId === 'proProfileView') { document.getElementById('headerTitle').innerText = "Profil Professionnel"; }
             }
         }
@@ -1054,6 +1069,9 @@
             document.getElementById('consultFormTitle').innerText = "📝 Nouvelle Consultation";
             document.getElementById('consultDateInput').valueAsDate = new Date();
             currentConsultPhotos = [];
+            currentRecordedAudioUrl = {};
+            document.getElementById('dynamicBilanAudioContainer').innerHTML = '';
+            document.getElementById('osteotestsAudioContainer').innerHTML = '';
             renderConsultPhotosPreview();
             showView('consultView');
             initCanvas();
@@ -1140,7 +1158,7 @@
                 ctx.fillStyle = '#6B7280';
                 ctx.font = '14px sans-serif';
                 ctx.textAlign = 'center';
-                ctx.fillText("Aucun squelette défini (Utilisez l'import ci-dessus)", canvas.width / 2, canvas.height / 2);
+                ctx.fillText("Aucun squelette défini", canvas.width / 2, canvas.height / 2);
                 saveCanvasState();
             }
         }
@@ -1213,79 +1231,56 @@
             }
         }
 
-        let activeRecognition = null;
-let activeTargetFieldId = null;
+        // ENREGISTREUR AUDIO (MÉMOS VOCAUX)
+        function startAudioRecord(containerId, statusId) {
+            activeAudioContainerId = containerId;
+            const statusEl = document.getElementById(statusId);
 
-function toggleRecord(targetFieldId, statusId) {
-    const statusEl = document.getElementById(statusId);
-    const targetField = document.getElementById(targetFieldId);
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                alert("Votre navigateur ne supporte pas l'enregistrement audio.");
+                return;
+            }
 
-    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-        alert("La dictée vocale n'est pas supportée par ce navigateur. Utilisez le micro de votre clavier virtuel.");
-        return;
-    }
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
 
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                    mediaRecorder.ondataavailable = event => {
+                        audioChunks.push(event.data);
+                    };
 
-    // Si une dictée est déjà en cours, on l'arrête
-    if (activeRecognition && activeTargetFieldId === targetFieldId) {
-        activeRecognition.stop();
-        return;
-    }
+                    mediaRecorder.onstop = () => {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                        const reader = new FileReader();
+                        reader.readAsDataURL(audioBlob);
+                        reader.onloadend = () => {
+                            const base64Audio = reader.result;
+                            currentRecordedAudioUrl[activeAudioContainerId] = base64Audio;
+                            
+                            const container = document.getElementById(activeAudioContainerId + 'Container');
+                            if (container) {
+                                container.innerHTML = `<audio controls src="${base64Audio}" style="width:100%; margin-top:5px;"></audio>`;
+                            }
+                        };
+                        stream.getTracks().forEach(track => track.stop());
+                    };
 
-    // Si une autre dictée tournait ailleurs, on la coupe proprement
-    if (activeRecognition) {
-        activeRecognition.stop();
-    }
+                    mediaRecorder.start();
+                    statusEl.style.display = 'inline';
+                })
+                .catch(err => {
+                    alert("Erreur d'accès au micro : " + err);
+                });
+        }
 
-    const recognition = new SpeechRecognition();
-    recognition.lang = 'fr-FR';
-    recognition.interimResults = true; // Permet de voir le texte s'écrire en direct si supporté
-    recognition.continuous = true;  // Garde l'écoute active plus longtemps
-
-    activeRecognition = recognition;
-    activeTargetFieldId = targetFieldId;
-    statusEl.style.display = 'inline';
-
-    recognition.onresult = function(event) {
-        let interimTranscript = '';
-        let finalTranscript = '';
-
-        for (let i = event.resultIndex; i < event.results.length; ++i) {
-            if (event.results[i].isFinal) {
-                finalTranscript += event.results[i][0].transcript;
-            } else {
-                interimTranscript += event.results[i][0].transcript;
+        function stopAudioRecord(statusId) {
+            const statusEl = document.getElementById(statusId);
+            if (mediaRecorder && mediaRecorder.state !== "inactive") {
+                mediaRecorder.stop();
+                statusEl.style.display = 'none';
             }
         }
-
-        if (finalTranscript) {
-            targetField.value = targetField.value ? targetField.value + " " + finalTranscript.trim() : finalTranscript.trim();
-        }
-    };
-
-    recognition.onerror = function(event) {
-        console.warn("Erreur dictée vocale : ", event.error);
-        statusEl.style.display = 'none';
-        activeRecognition = null;
-        activeTargetFieldId = null;
-    };
-
-    recognition.onend = function() {
-        statusEl.style.display = 'none';
-        activeRecognition = null;
-        activeTargetFieldId = null;
-    };
-
-    try {
-        recognition.start();
-    } catch (e) {
-        console.error(e);
-        statusEl.style.display = 'none';
-        activeRecognition = null;
-        activeTargetFieldId = null;
-    }
-}
 
         function populateSelects() {
             let selectConsult = document.getElementById('consultPatientSelect');
@@ -1711,17 +1706,21 @@ function toggleRecord(targetFieldId, statusId) {
             loadPatientIntoConsult();
         }
 
+        // Soumission Note Vocale / Rapide
         document.getElementById('quickNoteForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const note = {
                 date: new Date().toLocaleDateString('fr-FR'),
                 timestamp: Date.now(),
                 patientId: document.getElementById('quickNotePatient').value,
-                content: document.getElementById('quickNoteContent').value
+                title: document.getElementById('quickNoteTitle').value.trim() || 'Mémo vocal',
+                audioData: currentRecordedAudioUrl['quickNoteAudio'] || null
             };
             db.collection("quicknotes").add(note).then(() => {
                 this.reset();
-                alert('Note rapide enregistrée !');
+                currentRecordedAudioUrl['quickNoteAudio'] = null;
+                document.getElementById('quickNoteAudioContainer').innerHTML = '';
+                alert('Mémo vocal enregistré !');
             });
         });
 
@@ -1730,20 +1729,25 @@ function toggleRecord(targetFieldId, statusId) {
             if(!container) return;
 
             if (quickNotesData.length === 0) {
-                container.innerHTML = '<p style="font-size: 0.9rem; color: var(--gray); text-align: center;">Aucune note rapide.</p>';
+                container.innerHTML = '<p style="font-size: 0.9rem; color: var(--gray); text-align: center;">Aucun mémo vocal.</p>';
                 return;
             }
             container.innerHTML = '';
             quickNotesData.forEach(n => {
                 let pat = patientsData.find(p => p.id == n.patientId);
                 let patName = pat ? `🐾 ${pat.animalName} (${pat.owner})` : '📌 Note libre';
+                let audioHtml = n.audioData ? `<audio controls src="${n.audioData}" style="width:100%; margin-top:8px;"></audio>` : '<p style="color:var(--gray); font-size:0.8rem;">Aucun audio</p>';
+
                 container.innerHTML += `
-                    <div class="list-item">
-                        <div class="list-info">
-                            <h4>${patName} • <span style="font-size:0.75rem; color:var(--gray);">${n.date}</span></h4>
-                            <p style="margin-top:4px; white-space: pre-line; color:var(--text);">${n.content}</p>
+                    <div class="list-item" style="flex-direction:column; align-items:flex-start;">
+                        <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+                            <div class="list-info">
+                                <h4>${n.title || 'Mémo vocal'} • <span style="font-size:0.75rem; color:var(--gray);">${n.date}</span></h4>
+                                <p>${patName}</p>
+                            </div>
+                            <button class="danger" onclick="deleteQuickNote('${n.id}')">🗑️</button>
                         </div>
-                        <button class="danger" onclick="deleteQuickNote('${n.id}')">🗑️</button>
+                        <div style="width:100%;">${audioHtml}</div>
                     </div>
                 `;
             });
@@ -1773,6 +1777,8 @@ function toggleRecord(targetFieldId, statusId) {
                 animalSpecies: document.getElementById('animalSpecies').value,
                 sketchCombined: canvas.toDataURL(),
                 photos: currentConsultPhotos,
+                audioBilan: currentRecordedAudioUrl['dynamicBilanAudio'] || null,
+                audioTests: currentRecordedAudioUrl['osteotestsAudio'] || null,
                 consultReason: document.getElementById('consultReason').value || '',
                 anamnesis: document.getElementById('anamnesis').value,
                 dynamicBilan: document.getElementById('dynamicBilan').value,
@@ -1870,6 +1876,22 @@ function toggleRecord(targetFieldId, statusId) {
 
             currentConsultPhotos = c.photos || [];
             renderConsultPhotosPreview();
+
+            currentRecordedAudioUrl = {};
+            if(c.audioBilan) {
+                currentRecordedAudioUrl['dynamicBilanAudio'] = c.audioBilan;
+                document.getElementById('dynamicBilanAudioContainer').innerHTML = `<audio controls src="${c.audioBilan}" style="width:100%; margin-top:5px;"></audio>`;
+            } else {
+                document.getElementById('dynamicBilanAudioContainer').innerHTML = '';
+            }
+
+            if(c.audioTests) {
+                currentRecordedAudioUrl['osteotestsAudio'] = c.audioTests;
+                document.getElementById('osteotestsAudioContainer').innerHTML = `<audio controls src="${c.audioTests}" style="width:100%; margin-top:5px;"></audio>`;
+            } else {
+                document.getElementById('osteotestsAudioContainer').innerHTML = '';
+            }
+
             initCanvas(c.sketchCombined);
         }
 
@@ -1894,6 +1916,9 @@ function toggleRecord(targetFieldId, statusId) {
                     </div>
                 `;
             }
+
+            let audioBilanHtml = c.audioBilan ? `<div class="section"><h3>Mémo vocal - Bilan dynamique</h3><audio controls src="${c.audioBilan}" style="width:100%;"></audio></div>` : '';
+            let audioTestsHtml = c.audioTests ? `<div class="section"><h3>Mémo vocal - Tests ostéopathiques</h3><audio controls src="${c.audioTests}" style="width:100%;"></audio></div>` : '';
 
             const formattedConsultDate = formatDate(c.consultDate || c.date);
             const formattedNextDate = formatDate(c.nextConsultDate);
@@ -1962,8 +1987,18 @@ function toggleRecord(targetFieldId, statusId) {
 
                     ${c.consultReason ? `<div class="section"><h3>1. Motif de Consultation</h3><p>${c.consultReason}</p></div>` : ''}
                     <div class="section"><h3>2. Anamnèse et commémoratifs</h3><p>${c.anamnesis || 'Non renseigné'}</p></div>
-                    <div class="section"><h3>3. Bilan statique et/ou dynamique</h3><p>${c.dynamicBilan || 'Non renseigné'}</p></div>
-                    <div class="section"><h3>4. Tests Ostéopathiques</h3><p>${c.osteotests || 'Non renseigné'}</p></div>
+                    <div class="section">
+                        <h3>3. Bilan statique et/ou dynamique</h3>
+                        <p>${c.dynamicBilan || 'Non renseigné'}</p>
+                    </div>
+                    ${audioBilanHtml}
+
+                    <div class="section">
+                        <h3>4. Tests Ostéopathiques</h3>
+                        <p>${c.osteotests || 'Non renseigné'}</p>
+                    </div>
+                    ${audioTestsHtml}
+
                     <div class="section"><h3>5. Traitement</h3><p>${c.treatment || 'Non renseigné'}</p></div>
                     ${c.vetNotes ? `<div class="section"><h3>6. Notes & Confrères (Véto, Maréchal...)</h3><p>${c.vetNotes}</p></div>` : ''}
                     <div class="section"><h3>7. Conseils Post-Séance</h3><p>${c.advice || 'Non renseigné'}</p></div>
