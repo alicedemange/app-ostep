@@ -355,7 +355,7 @@
         <div id="homeView" class="view active">
             <div class="welcome-card">
                 <h2>Bonjour Lynette 👋</h2>
-                <p>Prête pour vos consultations sur le terrain ? Gérez vos patients et comptes rendus en toute simplicité.</p>
+                <p>Prête pour tes consultations sur le terrain ? Gére tes patients et comptes rendus en toute simplicité.</p>
             </div>
 
             <div style="text-align: center;">
@@ -502,8 +502,10 @@
         <!-- FICHES PATIENTS -->
         <div id="patientsView" class="view">
             <div class="card">
-                <h2 class="section-title">🐾 Gestion des Fiches Patients</h2>
+                <h2 id="patientFormTitle" class="section-title">🐾 Gestion des Fiches Patients</h2>
                 <form id="patientForm">
+                    <input type="hidden" id="editPatientId" value="">
+                    
                     <div class="form-group">
                         <label>Nom de l'Animal</label>
                         <input type="text" id="patAnimalName" required placeholder="Ex: Boston">
@@ -564,7 +566,8 @@
                         </label>
                     </div>
 
-                    <button type="submit">➕ Enregistrer le Patient</button>
+                    <button type="submit" id="patientSubmitBtn">➕ Enregistrer le Patient</button>
+                    <button type="button" id="patientCancelBtn" class="secondary" style="display:none; margin-top:8px;" onclick="resetPatientForm()">Annuler la modification</button>
                 </form>
             </div>
 
@@ -829,10 +832,14 @@
             }
         }
 
+        // Gestion formulaire Patient (Création ou Modification)
         document.getElementById('patientForm').addEventListener('submit', function(e) {
             e.preventDefault();
+            const editId = document.getElementById('editPatientId').value;
+            let patients = JSON.parse(localStorage.getItem('osteo_patients') || '[]');
+
             const patient = {
-                id: Date.now(),
+                id: editId ? Number(editId) : Date.now(),
                 animalName: document.getElementById('patAnimalName').value,
                 species: document.getElementById('patSpecies').value,
                 breedAge: document.getElementById('patBreedAge').value,
@@ -844,13 +851,49 @@
                 isDifficult: document.getElementById('patIsDifficult').checked,
                 ownerMandatory: document.getElementById('patOwnerMandatory').checked
             };
-            let patients = JSON.parse(localStorage.getItem('osteo_patients') || '[]');
-            patients.unshift(patient);
+
+            if (editId) {
+                patients = patients.map(p => p.id == editId ? patient : p);
+            } else {
+                patients.unshift(patient);
+            }
+
             localStorage.setItem('osteo_patients', JSON.stringify(patients));
-            this.reset();
+            resetPatientForm();
             loadPatients();
-            alert('Patient enregistré avec succès !');
+            alert(editId ? 'Fiche patient mise à jour !' : 'Patient enregistré avec succès !');
         });
+
+        function resetPatientForm() {
+            document.getElementById('patientForm').reset();
+            document.getElementById('editPatientId').value = "";
+            document.getElementById('patientFormTitle').innerText = "🐾 Gestion des Fiches Patients";
+            document.getElementById('patientSubmitBtn').innerText = "➕ Enregistrer le Patient";
+            document.getElementById('patientCancelBtn').style.display = "none";
+        }
+
+        function editPatient(id) {
+            let patients = JSON.parse(localStorage.getItem('osteo_patients') || '[]');
+            const p = patients.find(item => item.id === id);
+            if (!p) return;
+
+            document.getElementById('editPatientId').value = p.id;
+            document.getElementById('patAnimalName').value = p.animalName;
+            document.getElementById('patSpecies').value = p.species;
+            document.getElementById('patBreedAge').value = p.breedAge || '';
+            document.getElementById('patOwner').value = p.owner;
+            document.getElementById('patPhone').value = p.phone || '';
+            document.getElementById('patEmail').value = p.email || '';
+            document.getElementById('patAddress').value = p.address || '';
+            document.getElementById('patHistory').value = p.history || '';
+            document.getElementById('patIsDifficult').checked = p.isDifficult || false;
+            document.getElementById('patOwnerMandatory').checked = p.ownerMandatory || false;
+
+            document.getElementById('patientFormTitle').innerText = "✏️ Modifier la Fiche Patient";
+            document.getElementById('patientSubmitBtn').innerText = "💾 Mettre à jour le Patient";
+            document.getElementById('patientCancelBtn').style.display = "block";
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
 
         function loadPatients() {
             let patients = JSON.parse(localStorage.getItem('osteo_patients') || '[]');
@@ -892,6 +935,7 @@
                             </div>
                             <div class="actions-group">
                                 <button class="secondary" onclick="startConsultForPatient(${p.id})">📝 Consulter</button>
+                                <button class="secondary" style="background:#4A5568;" onclick="editPatient(${p.id})">✏️</button>
                                 <button class="danger" onclick="deletePatient(${p.id})">🗑️</button>
                             </div>
                         </div>
@@ -978,7 +1022,7 @@
             let consultationDate = new Date().toLocaleDateString('fr-FR');
             if (editId) {
                 let existing = consultations.find(c => c.id == editId);
-                if (existing) consultationDate = existing.date; // Conserver la date d'origine si modification
+                if (existing) consultationDate = existing.date;
             }
 
             const consultation = {
@@ -1063,7 +1107,6 @@
             document.getElementById('treatment').value = c.treatment;
             document.getElementById('advice').value = c.advice;
 
-            // Charger le schéma annoté d'origine dans le canvas
             initCanvas(c.sketchCombined);
         }
 
