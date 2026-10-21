@@ -384,14 +384,14 @@
                 <span class="offline-badge">☁️ Synchronisation Cloud Firebase Active</span>
             </div>
 
-            <div class="dashboard-grid">
+            <div class="dashboard-grid" style="margin-bottom: 15px;">
                 <div class="dash-tile" onclick="startNewConsult()">
                     <span>📝</span>
                     <h3>Faire une consultation</h3>
                 </div>
                 <div class="dash-tile" onclick="showView('patientsView')">
                     <span>🐾</span>
-                    <h3>Fiches patients & Lieux</h3>
+                    <h3>Fiches patients</h3>
                 </div>
                 <div class="dash-tile" onclick="showView('historyView')">
                     <span>📂</span>
@@ -400,6 +400,18 @@
                 <div class="dash-tile" onclick="showView('notesView')">
                     <span>🎙️</span>
                     <h3>Notes rapides</h3>
+                </div>
+            </div>
+
+            <!-- GESTION DES LIEUX DEPUIS L'ACCUEIL -->
+            <div class="card">
+                <h2 class="section-title">📍 Gestion des Lieux & Écuries</h2>
+                <form id="locationForm" onsubmit="addNewLocation(event)" style="display: flex; gap: 8px; margin-bottom: 12px;">
+                    <input type="text" id="newLocationName" placeholder="Ex: Haras de Lauragais..." required style="flex: 1;">
+                    <button type="submit" style="width: auto; padding: 10px 15px;">➕ Ajouter</button>
+                </form>
+                <div id="locationsContainer">
+                    <p style="font-size: 0.85rem; color: var(--gray); text-align: center;">Aucun lieu personnalisé.</p>
                 </div>
             </div>
         </div>
@@ -436,7 +448,9 @@
                         </div>
                         <div class="form-group">
                             <label>Lieu / Écurie</label>
-                            <input type="text" id="ownerAddress" placeholder="Ex: Écurie des Prés (Toulouse)">
+                            <select id="ownerAddress">
+                                <option value="Clinique">Clinique (Par défaut)</option>
+                            </select>
                         </div>
                     </div>
 
@@ -565,8 +579,9 @@
                         </div>
                         <div class="form-group">
                             <label>Lieu / Écurie de rattachement</label>
-                            <input type="text" id="patAddress" list="locationsList" placeholder="Ex: Écurie des Prés (ou nouveau lieu)">
-                            <datalist id="locationsList"></datalist>
+                            <select id="patAddress">
+                                <option value="Clinique">Clinique (Par défaut)</option>
+                            </select>
                         </div>
                     </div>
 
@@ -668,6 +683,7 @@
         let patientsData = [];
         let consultationsData = [];
         let quickNotesData = [];
+        let locationsData = [];
 
         // Synchronisation temps réel avec Firestore
         db.collection("patients").onSnapshot((snapshot) => {
@@ -698,6 +714,64 @@
             loadQuickNotes();
         });
 
+        db.collection("locations").onSnapshot((snapshot) => {
+            locationsData = [];
+            snapshot.forEach((doc) => {
+                locationsData.push({ id: doc.id, ...doc.data() });
+            });
+            loadLocations();
+            populateSelects();
+        });
+
+        function addNewLocation(e) {
+            e.preventDefault();
+            const input = document.getElementById('newLocationName');
+            const locName = input.value.trim();
+            if(!locName) return;
+
+            // Vérifier si existe déjà
+            if(locationsData.some(l => l.name.toLowerCase() === locName.toLowerCase())) {
+                alert("Ce lieu existe déjà !");
+                return;
+            }
+
+            db.collection("locations").add({ name: locName, timestamp: Date.now() }).then(() => {
+                input.value = '';
+                alert("Lieu ajouté avec succès !");
+            });
+        }
+
+        function deleteLocation(id) {
+            if(confirm("Supprimer ce lieu ?")) {
+                db.collection("locations").doc(id).delete();
+            }
+        }
+
+        function loadLocations() {
+            const container = document.getElementById('locationsContainer');
+            if(!container) return;
+
+            let allLocs = ['Clinique', ...locationsData.map(l => l.name)];
+            // Retirer les doublons éventuels
+            allLocs = [...new Set(allLocs)];
+
+            if (locationsData.length === 0) {
+                container.innerHTML = '<p style="font-size: 0.85rem; color: var(--gray); text-align: center; margin-bottom:8px;">Aucun lieu personnalisé (Seule la "Clinique" est active).</p>';
+                return;
+            }
+
+            container.innerHTML = '';
+            locationsData.forEach(l => {
+                let count = patientsData.filter(p => (p.address || 'Clinique') === l.name).length;
+                container.innerHTML += `
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: #FFF; padding: 8px 12px; border-radius: 6px; margin-bottom: 6px; border: 1px solid #E5E7EB;">
+                        <span style="font-size: 0.9rem; font-weight: 500; color: var(--primary);">📍 ${l.name} <span style="font-size: 0.75rem; color: var(--gray); font-weight: normal;">(${count} animal/aux)</span></span>
+                        <button type="button" class="danger" style="width: auto; padding: 4px 8px; font-size: 0.75rem;" onclick="deleteLocation('${l.id}')">🗑️</button>
+                    </div>
+                `;
+            });
+        }
+
         const skeletons = {
             "Cheval": "M 50,150 Q 80,100 120,90 Q 200,85 280,120 L 350,130 Q 420,90 480,110 L 520,200 L 510,270 L 480,270 L 470,200 L 350,200 L 320,270 L 290,270 L 310,200 L 200,200 L 190,270 L 160,270 L 180,200 L 120,180 L 80,200 L 70,270 L 40,270 L 50,180 Z",
             "Chien": "M 60,140 Q 90,90 130,90 Q 210,90 290,130 L 340,140 Q 410,100 460,120 L 490,210 L 480,260 L 450,260 L 440,210 L 330,210 L 310,260 L 280,260 L 300,210 L 190,210 L 180,260 L 150,260 L 170,210 L 120,190 L 90,210 L 80,260 L 50,260 L 60,190 Z",
@@ -719,10 +793,11 @@
             if (viewId === 'homeView') {
                 homeBtn.style.display = 'none';
                 document.getElementById('headerTitle').innerText = "OstéoAnimal - Lynette";
+                loadLocations();
             } else {
                 homeBtn.style.display = 'block';
-                if(viewId === 'consultView') { document.getElementById('headerTitle').innerText = "Consultation"; }
-                if(viewId === 'patientsView') { document.getElementById('headerTitle').innerText = "Fiches Patients & Lieux"; loadPatients(); }
+                if(viewId === 'consultView') { document.getElementById('headerTitle').innerText = "Consultation"; populateSelects(); }
+                if(viewId === 'patientsView') { document.getElementById('headerTitle').innerText = "Fiches Patients & Lieux"; loadPatients(); populateSelects(); }
                 if(viewId === 'historyView') { document.getElementById('headerTitle').innerText = "Historique"; loadHistory(); }
                 if(viewId === 'notesView') { document.getElementById('headerTitle').innerText = "Notes Rapides"; populateSelects(); }
             }
@@ -877,27 +952,36 @@
         function populateSelects() {
             let selectConsult = document.getElementById('consultPatientSelect');
             let selectNote = document.getElementById('quickNotePatient');
+            let selectConsultAddr = document.getElementById('ownerAddress');
+            let selectPatAddr = document.getElementById('patAddress');
             
-            if(!selectConsult || !selectNote) return;
-
-            selectConsult.innerHTML = '<option value="">-- Choisir dans mes fiches patients --</option>';
-            selectNote.innerHTML = '<option value="">-- Note libre / Non assignée --</option>';
-
-            patientsData.forEach(p => {
-                selectConsult.innerHTML += `<option value="${p.id}">${p.animalName} (${p.species}) - ${p.owner}</option>`;
-                selectNote.innerHTML += `<option value="${p.id}">${p.animalName} (${p.owner})</option>`;
-            });
-
-            // Mettre à jour la liste des suggestions de lieux (datalist)
-            const datalist = document.getElementById('locationsList');
-            if(datalist) {
-                datalist.innerHTML = '';
-                let locations = [...new Set(patientsData.map(p => p.address ? p.address.trim() : '').filter(Boolean))];
-                if(!locations.includes('Clinique')) locations.unshift('Clinique');
-                locations.forEach(loc => {
-                    datalist.innerHTML += `<option value="${loc}">`;
+            if(selectConsult) {
+                selectConsult.innerHTML = '<option value="">-- Choisir dans mes fiches patients --</option>';
+                patientsData.forEach(p => {
+                    selectConsult.innerHTML += `<option value="${p.id}">${p.animalName} (${p.species}) - ${p.owner}</option>`;
                 });
             }
+
+            if(selectNote) {
+                selectNote.innerHTML = '<option value="">-- Note libre / Non assignée --</option>';
+                patientsData.forEach(p => {
+                    selectNote.innerHTML += `<option value="${p.id}">${p.animalName} (${p.owner})</option>`;
+                });
+            }
+
+            let allLocations = ['Clinique', ...locationsData.map(l => l.name)];
+            allLocations = [...new Set(allLocations)];
+
+            [selectConsultAddr, selectPatAddr].forEach(sel => {
+                if(sel) {
+                    let currentVal = sel.value;
+                    sel.innerHTML = '';
+                    allLocations.forEach(loc => {
+                        sel.innerHTML += `<option value="${loc}">${loc}</option>`;
+                    });
+                    sel.value = allLocations.includes(currentVal) ? currentVal : 'Clinique';
+                }
+            });
         }
 
         function loadPatientIntoConsult() {
@@ -927,7 +1011,7 @@
                 owner: document.getElementById('patOwner').value,
                 phone: document.getElementById('patPhone').value,
                 email: document.getElementById('patEmail').value,
-                address: document.getElementById('patAddress').value.trim() || 'Clinique',
+                address: document.getElementById('patAddress').value || 'Clinique',
                 history: document.getElementById('patHistory').value,
                 isDifficult: document.getElementById('patIsDifficult').checked,
                 ownerMandatory: document.getElementById('patOwnerMandatory').checked,
@@ -986,7 +1070,6 @@
 
             let query = searchInput ? searchInput.value.toLowerCase().trim() : '';
 
-            // Filtrer selon la recherche semi-prédictive
             let filtered = patientsData.filter(p => 
                 p.animalName.toLowerCase().includes(query) ||
                 p.owner.toLowerCase().includes(query) ||
@@ -996,11 +1079,9 @@
 
             if (filtered.length === 0) {
                 container.innerHTML = '<p style="font-size: 0.9rem; color: var(--gray); text-align: center;">Aucun patient trouvé.</p>';
-                populateSelects();
                 return;
             }
 
-            // Grouper les patients par lieu / écurie
             let grouped = {};
             filtered.forEach(p => {
                 let loc = p.address ? p.address : 'Clinique';
@@ -1062,7 +1143,6 @@
                     </div>
                 `;
             }
-            populateSelects();
         }
 
         function deletePatient(id) {
@@ -1296,6 +1376,8 @@
                 </html>
             `);
         }
+
+        loadLocations();
     </script>
 </body>
 </html>
