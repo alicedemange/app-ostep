@@ -1098,21 +1098,19 @@
             }
         }
 
-        function updateSkeleton() {
+      function updateSkeleton() {
             const species = document.getElementById('animalSpecies').value;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = '#FFFFFF';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             if (species === 'Custom' && customSkeletonImage) {
-                ctx.drawImage(customSkeletonImage, 0, 0, canvas.width, canvas.height);
-                saveCanvasState();
+                drawScaledImage(customSkeletonImage);
             } else if (speciesSkeletons[species] && speciesSkeletons[species] !== "") {
                 const img = new Image();
                 img.crossOrigin = "anonymous";
                 img.onload = function() {
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    saveCanvasState();
+                    drawScaledImage(img);
                 };
                 img.src = speciesSkeletons[species];
             } else {
@@ -1122,6 +1120,17 @@
                 ctx.fillText("Aucun squelette défini (Utilisez l'import ci-dessus)", canvas.width / 2, canvas.height / 2);
                 saveCanvasState();
             }
+        }
+
+        function drawScaledImage(img) {
+            let hRatio = canvas.width / img.width;
+            let vRatio = canvas.height / img.height;
+            let ratio = Math.min(hRatio, vRatio);
+            let centerShiftX = (canvas.width - img.width * ratio) / 2;
+            let centerShiftY = (canvas.height - img.height * ratio) / 2;
+            
+            ctx.drawImage(img, 0, 0, img.width, img.height, centerShiftX, centerShiftY, img.width * ratio, img.height * ratio);
+            saveCanvasState();
         }
 
         function loadCustomSkeleton(e) {
