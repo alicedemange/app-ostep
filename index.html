@@ -1433,7 +1433,7 @@
             container.innerHTML = '';
             filtered.forEach(c => {
                 let reminderBtn = c.nextConsultDate && c.ownerEmail ? `
-                    <a class="secondary" style="padding:6px 10px; font-size:0.8rem; text-decoration:none; display:inline-block; border-radius:6px; background:#D4A373; color:#fff;" href="mailto:${c.ownerEmail}?subject=Rappel%20rappel%20-%20Suivi%20ost%C3%A9opathique%20${encodeURIComponent(c.animalName)}&body=Bonjour%20${encodeURIComponent(c.ownerName)},%0A%0ALe%20suivi%20ost%C3%A9opathique%20de%20${encodeURIComponent(c.animalName)}%20pr%C3%A9conis%C3%A9%20pour%20le%20${c.nextConsultDate}%20approche.%0A%0APens%C3%A9es%20-%20Prenez%20contact%20pour%20fixer%20un%20rendez-vous.%0A%0ABien%20cordialement,%0ALynette%20Ost%C3%A9oAnimal">✉️ Rappel RDV</a>
+                    <a class="secondary" style="padding:6px 10px; font-size:0.8rem; text-decoration:none; display:inline-block; border-radius:6px; background:#D4A373; color:#fff;" href="mailto:${c.ownerEmail}?subject=Rappel%20-%20Suivi%20ost%C3%A9opathique%20${encodeURIComponent(c.animalName)}&body=Bonjour%20${encodeURIComponent(c.ownerName)},%0A%0ALe%20suivi%20ost%C3%A9opathique%20de%20${encodeURIComponent(c.animalName)}%20pr%C3%A9conis%C3%A9%20pour%20le%20${c.nextConsultDate}%20approche.%0A%0APensez%20a%20prendre%20contact%20pour%20fixer%20un%20rendez-vous.%0A%0ABien%20cordialement,%0ALynette%20Ost%C3%A9oAnimal">✉️ Rappel RDV</a>
                 ` : '';
 
                 container.innerHTML += `
