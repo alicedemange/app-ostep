@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OstéoAnimal - Lynette</title>
+    <style>
+        :root {
+            --primary: #2C5E4B;
+            --primary-light: #E8F0EC;
+            --accent: #D4A373;
+            --bg: #F4F6F4;
+            --text: #2B2D42;
+            --white: #FFFFFF;
+            --gray: #8D99AE;
+            --danger: #E63946;
+            --danger-light: #FDE8E8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            padding-bottom: 50px;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: var(--white);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .back-home-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .container {
+            max-width: 650px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+
+        .view {
+            display: none;
+        }
+        .view.active {
+            display: block;
+        }
+
+        .welcome-card {
+            background: linear-gradient(135deg, var(--primary), #1e3f32);
+            color: white;
+            border-radius: 14px;
+            padding: 25px 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .welcome-card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .welcome-card p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .dash-tile {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.03);
+            cursor: pointer;
+            transition: transform 0.1s;
+            border: 1px solid #E5E7EB;
+        }
+
+        .dash-tile:active {
+            transform: scale(0.97);
+        }
+
+        .dash-tile span {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .dash-tile h3 {
+            font-size: 0.95rem;
+            color: var(--primary);
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+
+        h2.section-title {
+            font-size: 1.1rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--primary-light);
+            padding-bottom: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--text);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #D1D5DB;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: #F9FAFB;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--white);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #F9FAFB;
+            padding: 12px;
+            border: 1px solid #D1D5DB;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .checkbox-group input {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--danger);
+        }
+
+        .row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .row .form-group {
+            flex: 1;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: var(--white);
+            border: none;
+            padding: 14px 20px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        button.secondary {
+            background-color: var(--accent);
+        }
+
+        button.danger {
+            background-color: var(--danger);
+        }
+
+        .sketch-container {
+            border: 2px dashed #D1D5DB;
+            border-radius: 8px;
+            background: #FAFAFA;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .canvas-wrapper {
+            position: relative;
+            width: 100%;
+            height: 280px;
+            background-color: #FFF;
+            border: 1px solid #E5E7EB;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+            touch-action: none;
+        }
+
+        .sketch-tools {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            gap: 10px;
+        }
+
+        .tool-btn {
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            width: auto;
+        }
+
+        .color-picker {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .color-dot {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid #fff;
+            box-shadow: 0 0 2px rgba(0,0,0,0.3);
+        }
+
+        .audio-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-top: 5px;
+        }
+
+        .audio-controls button {
+            width: auto;
+            padding: 10px 15px;
+            font-size: 0.9rem;
+        }
+
+        .recording-status {
+            font-size: 0.85rem;
+            color: var(--danger);
+            font-weight: bold;
+            display: none;
+        }
+
+        .list-item {
+            padding: 12px;
+            border-bottom: 1px solid #EEE;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+
+        .list-item.is-difficult {
+            background-color: var(--danger-light);
+            border: 1px solid #F5C6CB;
+        }
+
+        .list-info h4 {
+            font-size: 0.95rem;
+            color: var(--primary);
+        }
+
+        .list-item.is-difficult .list-info h4 {
+            color: var(--danger);
+        }
+
+        .list-info p {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        .actions-group {
+            display: flex;
+            gap: 6px;
+        }
+
+        .actions-group button {
+            padding: 6px 10px;
+            font-size: 0.8rem;
+            width: auto;
+        }
+
+        .offline-badge {
+            display: inline-block;
+            background: var(--primary-light);
+            color: var(--primary);
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 20px;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1 id="headerTitle">OstéoAnimal - Lynette</h1>
+        <button id="homeBtn" class="back-home-btn" style="display:none;" onclick="showView('homeView')">🏠 Accueil</button>
+    </header>
+
+    <div class="container">
+        
+        <!-- ACCUEIL -->
+        <div id="homeView" class="view active">
+            <div class="welcome-card">
+                <h2>Bonjour Lynette 👋</h2>
+                <p>Prête pour vos consultations sur le terrain ? Gérez vos patients et comptes rendus en toute simplicité.</p>
+            </div>
+
+            <div style="text-align: center;">
+                <span class="offline-badge">🟢 Mode Hybride Actif</span>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="dash-tile" onclick="startNewConsult()">
+                    <span>📝</span>
+                    <h3>Faire une consultation</h3>
+                </div>
+                <div class="dash-tile" onclick="showView('patientsView')">
+                    <span>🐾</span>
+                    <h3>Fiches patients</h3>
+                </div>
+                <div class="dash-tile" onclick="showView('historyView')">
+                    <span>📂</span>
+                    <h3>Historique des consultations</h3>
+                </div>
+                <div class="dash-tile" onclick="showView('notesView')">
+                    <span>🎙️</span>
+                    <h3>Notes rapides</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAIRE UNE CONSULTATION -->
+        <div id="consultView" class="view">
+            <div class="card">
+                <h2 id="consultFormTitle" class="section-title">📝 Nouvelle Consultation</h2>
+                <form id="consultForm">
+                    <input type="hidden" id="editConsultId" value="">
+                    
+                    <div class="form-group">
+                        <label>Sélectionner un patient existant (Optionnel)</label>
+                        <select id="consultPatientSelect" onchange="loadPatientIntoConsult()">
+                            <option value="">-- Choisir dans mes fiches patients --</option>
+                        </select>
+                    </div>
+
+                    <h3 style="font-size: 0.95rem; color: var(--accent); margin-bottom: 10px;">1. Informations Animal & Propriétaire</h3>
+                    <div class="row">
+                        <div class="form-group">
+                            <label>Nom du Propriétaire</label>
+                            <input type="text" id="ownerName" placeholder="Ex: Claire Martin">
+                        </div>
+                        <div class="form-group">
+                            <label>Téléphone</label>
+                            <input type="tel" id="ownerPhone" placeholder="06 00 00 00 00">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <label>E-mail</label>
+                            <input type="email" id="ownerEmail" placeholder="claire@exemple.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Adresse (Optionnel)</label>
+                            <input type="text" id="ownerAddress" placeholder="Écurie des Prés, 31290...">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group">
+                            <label>Nom de l'Animal</label>
+                            <input type="text" id="animalName" placeholder="Ex: Foley">
+                        </div>
+                        <div class="form-group">
+                            <label>Espèce</label>
+                            <select id="animalSpecies" onchange="updateSkeleton()">
+                                <option value="Cheval">Cheval</option>
+                                <option value="Chien">Chien</option>
+                                <option value="Chat">Chat</option>
+                                <option value="Vache">Vache</option>
+                                <option value="Custom">Autre / Squelette importé</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Importer votre propre squelette (Optionnel)</label>
+                        <input type="file" id="customSkeletonInput" accept="image/*" onchange="loadCustomSkeleton(event)">
+                    </div>
+
+                    <!-- Schéma et Annotations Stylet -->
+                    <h3 style="font-size: 0.95rem; color: var(--accent); margin: 20px 0 10px 0;">2. Schéma Anatomique & Annotations (Stylet)</h3>
+                    <div class="form-group">
+                        <div class="sketch-container">
+                            <div class="canvas-wrapper">
+                                <canvas id="sketchCanvas"></canvas>
+                            </div>
+                            <div class="sketch-tools">
+                                <div class="color-picker">
+                                    <div class="color-dot" style="background: #E63946;" onclick="setPenColor('#E63946')" title="Blocage / Douleur"></div>
+                                    <div class="color-dot" style="background: #2C5E4B;" onclick="setPenColor('#2C5E4B')" title="Normal"></div>
+                                    <div class="color-dot" style="background: #1D3557;" onclick="setPenColor('#1D3557')" title="Autre"></div>
+                                </div>
+                                <button type="button" class="tool-btn secondary" onclick="clearCanvas()">Effacer annotations</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Protocole Ostéopathique -->
+                    <h3 style="font-size: 0.95rem; color: var(--accent); margin: 20px 0 10px 0;">3. Bilan & Protocole Ostéo</h3>
+                    
+                    <div class="form-group">
+                        <label>Anamnèse & Motif de consultation</label>
+                        <textarea id="anamnesis" rows="2" placeholder="Baisse de forme, raideur..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Bilan dynamique</label>
+                        <textarea id="dynamicBilan" rows="2" placeholder="Allures, aplombs..."></textarea>
+                        <div class="audio-controls">
+                            <button type="button" class="secondary" onclick="toggleRecord('dynamicBilan', 'statusBilan')">🎙️ Dicter</button>
+                            <span id="statusBilan" class="recording-status">🔴 Enregistrement...</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tests ostéopathiques & Restrictions</label>
+                        <textarea id="osteotests" rows="3" placeholder="Restrictions articulaires, vertébrales..."></textarea>
+                        <div class="audio-controls">
+                            <button type="button" class="secondary" onclick="toggleRecord('osteotests', 'statusTests')">🎙️ Dicter</button>
+                            <span id="statusTests" class="recording-status">🔴 Enregistrement...</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Traitement / Corrections</label>
+                        <textarea id="treatment" rows="2" placeholder="Techniques tissulaires, thrusts..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Conseils post-séance</label>
+                        <textarea id="advice" rows="2" placeholder="48h de repos..."></textarea>
+                    </div>
+
+                    <button type="submit" style="margin-top: 15px;">💾 Enregistrer et Générer le Rapport</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- FICHES PATIENTS -->
+        <div id="patientsView" class="view">
+            <div class="card">
+                <h2 class="section-title">🐾 Gestion des Fiches Patients</h2>
+                <form id="patientForm">
+                    <div class="form-group">
+                        <label>Nom de l'Animal</label>
+                        <input type="text" id="patAnimalName" required placeholder="Ex: Boston">
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <label>Espèce</label>
+                            <select id="patSpecies">
+                                <option value="Cheval">Cheval</option>
+                                <option value="Chien">Chien</option>
+                                <option value="Chat">Chat</option>
+                                <option value="Vache">Vache</option>
+                                <option value="Autre">Autre</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Race / Âge</label>
+                            <input type="text" id="patBreedAge" placeholder="Ex: 15 ans / Pur-sang">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <label>Nom du Propriétaire</label>
+                            <input type="text" id="patOwner" required placeholder="Ex: Marc Dubois">
+                        </div>
+                        <div class="form-group">
+                            <label>Téléphone</label>
+                            <input type="tel" id="patPhone" placeholder="06 00 00 00 00">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <label>E-mail</label>
+                            <input type="email" id="patEmail" placeholder="marc@exemple.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Adresse (Optionnel)</label>
+                            <input type="text" id="patAddress" placeholder="Lieu-dit, Ville...">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Spécificités & Comportement (Antécédents, âge, tempérament)</label>
+                        <textarea id="patHistory" rows="2" placeholder="Chirurgie passée, sensible au dos..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="checkbox-group">
+                            <input type="checkbox" id="patIsDifficult">
+                            <span>⚠️ <strong>Animal difficile / Risque (mord, botte, tape, âgé...)</strong></span>
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="checkbox-group">
+                            <input type="checkbox" id="patOwnerMandatory">
+                            <span>👤 <strong>Présence du propriétaire impérative pendant la séance</strong></span>
+                        </label>
+                    </div>
+
+                    <button type="submit">➕ Enregistrer le Patient</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2 class="section-title">📋 Liste des Patients & Historique Intégré</h2>
+                <div id="patientsListContainer">
+                    <p style="font-size: 0.9rem; color: var(--gray); text-align: center;">Aucun patient enregistré.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- HISTORIQUE -->
+        <div id="historyView" class="view">
+            <div class="card">
+                <h2 class="section-title">📂 Historique des Consultations</h2>
+                <div class="form-group">
+                    <input type="text" id="searchHistory" placeholder="Rechercher par animal, propriétaire..." oninput="loadHistory()">
+                </div>
+                <div id="historyListContainer">
+                    <p style="font-size: 0.9rem; color: var(--gray); text-align: center;">Aucune consultation archivée.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- NOTES RAPIDES -->
+        <div id="notesView" class="view">
+            <div class="card">
+                <h2 class="section-title">🎙️ Notes Rapides (Terrain)</h2>
+                <form id="quickNoteForm">
+                    <div class="form-group">
+                        <label>Associer à un Patient (Optionnel)</label>
+                        <select id="quickNotePatient">
+                            <option value="">-- Note libre / Non assignée --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Note / Dictée vocale</label>
+                        <textarea id="quickNoteContent" rows="4" placeholder="Ex: Asymétrie épaule gauche..."></textarea>
+                        <div class="audio-controls">
+                            <button type="button" class="secondary" onclick="toggleRecord('quickNoteContent', 'statusQuick')">🎙️ Dicter</button>
+                            <span id="statusQuick" class="recording-status">🔴 Enregistrement...</span>
+                        </div>
+                    </div>
+                    <button type="submit">💾 Enregistrer la Note Rapide</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2 class="section-title">⚡ Notes Volantes</h2>
+                <div id="quickNotesListContainer">
+                    <p style="font-size: 0.9rem; color: var(--gray); text-align: center;">Aucune note rapide.</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const skeletons = {
+            "Cheval": "M 50,150 Q 80,100 120,90 Q 200,85 280,120 L 350,130 Q 420,90 480,110 L 520,200 L 510,270 L 480,270 L 470,200 L 350,200 L 320,270 L 290,270 L 310,200 L 200,200 L 190,270 L 160,270 L 180,200 L 120,180 L 80,200 L 70,270 L 40,270 L 50,180 Z",
+            "Chien": "M 60,140 Q 90,90 130,90 Q 210,90 290,130 L 340,140 Q 410,100 460,120 L 490,210 L 480,260 L 450,260 L 440,210 L 330,210 L 310,260 L 280,260 L 300,210 L 190,210 L 180,260 L 150,260 L 170,210 L 120,190 L 90,210 L 80,260 L 50,260 L 60,190 Z",
+            "Chat": "M 60,130 Q 90,80 130,80 Q 210,80 280,120 L 330,130 Q 400,90 450,110 L 480,200 L 470,250 L 440,250 L 430,200 L 320,200 L 300,250 L 270,250 L 290,200 L 180,200 L 170,250 L 140,250 L 160,200 L 110,180 L 80,200 L 70,250 L 40,250 L 50,180 Z",
+            "Vache": "M 40,140 Q 80,100 130,90 Q 220,85 300,120 L 360,130 Q 440,80 500,100 L 540,210 L 520,270 L 480,270 L 470,210 L 360,210 L 330,270 L 290,270 L 310,210 L 200,210 L 190,270 L 150,270 L 170,210 L 110,180 L 80,210 L 70,270 L 35,270 L 40,180 Z"
+        };
+
+        let customSkeletonImage = null;
+        const canvas = document.getElementById('sketchCanvas');
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false;
+        let penColor = '#E63946';
+
+        function showView(viewId) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            
+            const homeBtn = document.getElementById('homeBtn');
+            if (viewId === 'homeView') {
+                homeBtn.style.display = 'none';
+                document.getElementById('headerTitle').innerText = "OstéoAnimal - Lynette";
+            } else {
+                homeBtn.style.display = 'block';
+                if(viewId === 'consultView') { document.getElementById('headerTitle').innerText = "Consultation"; }
+                if(viewId === 'patientsView') { document.getElementById('headerTitle').innerText = "Fiches Patients"; loadPatients(); }
+                if(viewId === 'historyView') { document.getElementById('headerTitle').innerText = "Historique"; loadHistory(); }
+                if(viewId === 'notesView') { document.getElementById('headerTitle').innerText = "Notes Rapides"; loadQuickNotes(); populateSelects(); }
+            }
+        }
+
+        function startNewConsult() {
+            document.getElementById('consultForm').reset();
+            document.getElementById('editConsultId').value = "";
+            document.getElementById('consultFormTitle').innerText = "📝 Nouvelle Consultation";
+            showView('consultView');
+            initCanvas();
+        }
+
+        function initCanvas(existingImageSrc = null) {
+            const wrapper = canvas.parentElement;
+            canvas.width = wrapper.clientWidth;
+            canvas.height = 280;
+            
+            if (existingImageSrc) {
+                const img = new Image();
+                img.onload = function() {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                };
+                img.src = existingImageSrc;
+            } else {
+                updateSkeleton();
+            }
+        }
+
+        function updateSkeleton() {
+            const species = document.getElementById('animalSpecies').value;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            if (species === 'Custom' && customSkeletonImage) {
+                ctx.drawImage(customSkeletonImage, 0, 0, canvas.width, canvas.height);
+            } else if (skeletons[species]) {
+                ctx.save();
+                ctx.scale(canvas.width / 600, canvas.height / 300);
+                ctx.strokeStyle = '#9CA3AF';
+                ctx.fillStyle = '#F9FAFB';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                let p = new Path2D(skeletons[species]);
+                ctx.fill(p);
+                ctx.stroke(p);
+                ctx.fillStyle = '#4B5563';
+                ctx.font = '16px sans-serif';
+                ctx.fillText(`Schéma Anatomique : ${species}`, 50, 40);
+                ctx.restore();
+            } else {
+                ctx.fillStyle = '#6B7280';
+                ctx.font = '14px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText("Aucun squelette chargé.", canvas.width / 2, canvas.height / 2);
+            }
+        }
+
+        function loadCustomSkeleton(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const img = new Image();
+                    img.onload = function() {
+                        customSkeletonImage = img;
+                        document.getElementById('animalSpecies').value = 'Custom';
+                        updateSkeleton();
+                    };
+                    img.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function setPenColor(color) { penColor = color; }
+        function clearCanvas() { updateSkeleton(); }
+
+        function getPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+            const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+            return { x: clientX - rect.left, y: clientY - rect.top };
+        }
+
+        canvas.addEventListener('mousedown', startDraw);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDraw);
+        canvas.addEventListener('mouseleave', stopDraw);
+        canvas.addEventListener('touchstart', (e) => { startDraw(e); e.preventDefault(); });
+        canvas.addEventListener('touchmove', (e) => { draw(e); e.preventDefault(); });
+        canvas.addEventListener('touchend', stopDraw);
+
+        function startDraw(e) {
+            isDrawing = true;
+            const pos = getPos(e);
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+        }
+        function draw(e) {
+            if (!isDrawing) return;
+            const pos = getPos(e);
+            ctx.strokeStyle = penColor;
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'round';
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+        }
+        function stopDraw() { isDrawing = false; }
+
+        let activeRecognition = null;
+        function toggleRecord(targetFieldId, statusId) {
+            const statusEl = document.getElementById(statusId);
+            const targetField = document.getElementById(targetFieldId);
+
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                alert("Utilisez le micro de votre clavier virtuel.");
+                return;
+            }
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (activeRecognition) {
+                activeRecognition.stop();
+                activeRecognition = null;
+                statusEl.style.display = 'none';
+                return;
+            }
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'fr-FR';
+            recognition.interimResults = true;
+            recognition.continuous = true;
+            activeRecognition = recognition;
+            statusEl.style.display = 'inline';
+
+            let finalTranscript = targetField.value ? targetField.value + " " : "";
+            recognition.onresult = function(event) {
+                let interim = '';
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    if (event.results[i].isFinal) finalTranscript += event.results[i][0].transcript + " ";
+                    else interim += event.results[i][0].transcript;
+                }
+                targetField.value = finalTranscript + interim;
+            };
+            recognition.onerror = recognition.onend = function() {
+                statusEl.style.display = 'none';
+                activeRecognition = null;
+            };
+            recognition.start();
+        }
+
+        function populateSelects() {
+            let patients = JSON.parse(localStorage.getItem('osteo_patients') || '[]');
+            let selectConsult = document.getElementById('consultPatientSelect');
+            let selectNote = document.getElementById('quickNotePatient');
+            
+            selectConsult.innerHTML = '<option value="">-- Choisir dans mes fiches patients --</option>';
+            selectNote.innerHTML = '<option value="">-- Note libre / Non assignée --</option>';
+
+            patients.forEach(p => {
+                selectConsult.innerHTML += `<option value="${p.id}">${p.animalName} (${p.species}) - Prop: ${p.owner}</option>`;
+                selectNote.innerHTML += `<option value="${p.id}">${p.animalName} (${p.owner})</option>`;
+            });
+        }
+
+        function loadPatientIntoConsult() {
+            const patientId = document.getElementById('consultPatientSelect').value;
+            if (!patientId) return;
+            let patients = JSON.parse(localStorage.getItem('osteo_patients') || '[]');
+            const pat = patients.find(p => p.id == patientId);
+            if (pat) {
+                document.getElementById('animalName').value = pat.animalName;
+                document.getElementById('animalSpecies').value = pat.species;
+                document.getElementById('ownerName').value = pat.owner;
+                document.getElementById('ownerPhone').value = pat.phone || '';
+                document.getElementById('ownerEmail').value = pat.email || '';
+                document.getElementById('ownerAddress').value = pat.address || '';
+                updateSkeleton();
+            }
+        }
+
+        document.getElementById('patientForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const patient = {
+                id: Date.now(),
+                animalName: document.getElementById('patAnimalName').value,
+                species: document.getElementById('patSpecies').value,
+                breedAge: document.getElementById('patBreedAge').value,
+                owner: document.getElementById('patOwner').value,
+                phone: document.getElementById('patPhone').value,
+                email: document.getElementById('patEmail').value,
+                address: document.getElementById('patAddress').value,
+                history: document.getElementById('patHistory').value,
+                isDifficult: document.getElementById('patIsDifficult').checked,
+                ownerMandatory: document.getElementById('patOwnerMandatory').checked
+            };
+            let patients = JSON.parse(localStorage.getItem('osteo_patients') || '[]');
+            patients.unshift(patient);
+            localStorage.setItem('osteo_patients', JSON.stringify(patients));
+            this.reset();
+            loadPatients();
+            alert('Patient enregistré avec succès !');
+        });
+
+        function loadPatients() {
+            let patients = JSON.parse(localStorage.getItem('osteo_patients') || '[]');
+            let consultations = JSON.parse(localStorage.getItem('osteo_consultations') || '[]');
+            const container = document.getElementById('patientsListContainer');
+            
+            if (patients.length === 0) {
+                container.innerHTML = '<p style="font-size: 0.9rem; color: var(--gray); text-align: center;">Aucun patient enregistré.</p>';
+                return;
+            }
+            container.innerHTML = '';
+            patients.forEach(p => {
+                let patConsults = consultations.filter(c => c.animalName.toLowerCase() === p.animalName.toLowerCase() && c.ownerName.toLowerCase() === p.owner.toLowerCase());
+                
+                let historyHtml = patConsults.length > 0 ? patConsults.map(c => `
+                    <div style="background:#FFF; padding:8px; border-radius:6px; margin-top:5px; display:flex; justify-content:space-between; align-items:center; border:1px solid #DDD;">
+                        <span style="font-size:0.8rem;">📅 ${c.date} - Motif: ${c.anamnesis ? c.anamnesis.substring(0,25) + '...' : 'N/C'}</span>
+                        <div style="display:flex; gap:4px;">
+                            <button class="secondary" style="padding:4px 8px; font-size:0.75rem; width:auto;" onclick="generateReport(${c.id})">📄 Rapport</button>
+                            <button class="secondary" style="padding:4px 8px; font-size:0.75rem; width:auto; background:#4A5568;" onclick="editConsultation(${c.id})">✏️</button>
+                        </div>
+                    </div>
+                `).join('') : '<p style="font-size:0.8rem; color:var(--gray); margin-top:5px;">Aucune consultation enregistrée.</p>';
+
+                let difficultClass = p.isDifficult ? 'is-difficult' : '';
+                let alertsHtml = '';
+                if(p.isDifficult) alertsHtml += `<span style="background:var(--danger); color:white; font-size:0.7rem; padding:2px 6px; border-radius:4px; margin-right:5px;">⚠️ Animal difficile / Risque</span>`;
+                if(p.ownerMandatory) alertsHtml += `<span style="background:var(--accent); color:white; font-size:0.7rem; padding:2px 6px; border-radius:4px;">👤 Proprio impératif</span>`;
+
+                container.innerHTML += `
+                    <div class="list-item ${difficultClass}" style="flex-direction:column; align-items:flex-start;">
+                        <div style="display:flex; justify-content:space-between; width:100%; align-items:flex-start;">
+                            <div class="list-info">
+                                <h4>${p.animalName} (${p.species}) - ${p.breedAge || ''}</h4>
+                                <p>Propriétaire : ${p.owner} • Tél : ${p.phone || 'N/C'} • Mail : ${p.email || 'N/C'}</p>
+                                ${p.address ? `<p style="font-size:0.75rem;">📍 ${p.address}</p>` : ''}
+                                ${p.history ? `<p style="font-size:0.75rem; margin-top:4px;">📝 <em>${p.history}</em></p>` : ''}
+                                <div style="margin-top:6px;">${alertsHtml}</div>
+                            </div>
+                            <div class="actions-group">
+                                <button class="secondary" onclick="startConsultForPatient(${p.id})">📝 Consulter</button>
+                                <button class="danger" onclick="deletePatient(${p.id})">🗑️</button>
+                            </div>
+                        </div>
+                        <div style="width:100%; margin-top:10px; border-top:1px dashed #BBB; padding-top:8px;">
+                            <strong style="font-size:0.85rem; color:var(--primary);">Historique des séances :</strong>
+                            ${historyHtml}
+                        </div>
+                    </div>
+                `;
+            });
+            populateSelects();
+        }
+
+        function deletePatient(id) {
+            if(confirm("Supprimer ce patient ?")) {
+                let patients = JSON.parse(localStorage.getItem('osteo_patients') || '[]');
+                patients = patients.filter(p => p.id !== id);
+                localStorage.setItem('osteo_patients', JSON.stringify(patients));
+                loadPatients();
+            }
+        }
+
+        function startConsultForPatient(id) {
+            startNewConsult();
+            document.getElementById('consultPatientSelect').value = id;
+            loadPatientIntoConsult();
+        }
+
+        document.getElementById('quickNoteForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const note = {
+                id: Date.now(),
+                date: new Date().toLocaleDateString('fr-FR'),
+                patientId: document.getElementById('quickNotePatient').value,
+                content: document.getElementById('quickNoteContent').value
+            };
+            let notes = JSON.parse(localStorage.getItem('osteo_quicknotes') || '[]');
+            notes.unshift(note);
+            localStorage.setItem('osteo_quicknotes', JSON.stringify(notes));
+            this.reset();
+            loadQuickNotes();
+            alert('Note rapide enregistrée !');
+        });
+
+        function loadQuickNotes() {
+            let notes = JSON.parse(localStorage.getItem('osteo_quicknotes') || '[]');
+            let patients = JSON.parse(localStorage.getItem('osteo_patients') || '[]');
+            const container = document.getElementById('quickNotesListContainer');
+            
+            if (notes.length === 0) {
+                container.innerHTML = '<p style="font-size: 0.9rem; color: var(--gray); text-align: center;">Aucune note rapide.</p>';
+                return;
+            }
+            container.innerHTML = '';
+            notes.forEach(n => {
+                let pat = patients.find(p => p.id == n.patientId);
+                let patName = pat ? `🐾 ${pat.animalName} (${pat.owner})` : '📌 Note libre';
+                container.innerHTML += `
+                    <div class="list-item">
+                        <div class="list-info">
+                            <h4>${patName} • <span style="font-size:0.75rem; color:var(--gray);">${n.date}</span></h4>
+                            <p style="margin-top:4px; white-space: pre-line; color:var(--text);">${n.content}</p>
+                        </div>
+                        <button class="danger" onclick="deleteQuickNote(${n.id})">🗑️</button>
+                    </div>
+                `;
+            });
+        }
+
+        function deleteQuickNote(id) {
+            let notes = JSON.parse(localStorage.getItem('osteo_quicknotes') || '[]');
+            notes = notes.filter(n => n.id !== id);
+            localStorage.setItem('osteo_quicknotes', JSON.stringify(notes));
+            loadQuickNotes();
+        }
+
+        // Soumission Consultation (Création ou Modification)
+        document.getElementById('consultForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const editId = document.getElementById('editConsultId').value;
+            let consultations = JSON.parse(localStorage.getItem('osteo_consultations') || '[]');
+            
+            let consultationDate = new Date().toLocaleDateString('fr-FR');
+            if (editId) {
+                let existing = consultations.find(c => c.id == editId);
+                if (existing) consultationDate = existing.date; // Conserver la date d'origine si modification
+            }
+
+            const consultation = {
+                id: editId ? Number(editId) : Date.now(),
+                date: consultationDate,
+                ownerName: document.getElementById('ownerName').value || 'Anonyme',
+                ownerPhone: document.getElementById('ownerPhone').value || '',
+                ownerEmail: document.getElementById('ownerEmail').value || '',
+                ownerAddress: document.getElementById('ownerAddress').value || '',
+                animalName: document.getElementById('animalName').value || 'Patient sans nom',
+                animalSpecies: document.getElementById('animalSpecies').value,
+                sketchCombined: canvas.toDataURL(),
+                anamnesis: document.getElementById('anamnesis').value,
+                dynamicBilan: document.getElementById('dynamicBilan').value,
+                osteotests: document.getElementById('osteotests').value,
+                treatment: document.getElementById('treatment').value,
+                advice: document.getElementById('advice').value
+            };
+
+            if (editId) {
+                consultations = consultations.map(c => c.id == editId ? consultation : c);
+            } else {
+                consultations.unshift(consultation);
+            }
+
+            localStorage.setItem('osteo_consultations', JSON.stringify(consultations));
+
+            this.reset();
+            document.getElementById('editConsultId').value = "";
+            showView('historyView');
+            alert(editId ? 'Consultation mise à jour avec succès !' : 'Consultation enregistrée avec succès !');
+        });
+
+        function loadHistory() {
+            let consultations = JSON.parse(localStorage.getItem('osteo_consultations') || '[]');
+            const search = document.getElementById('searchHistory').value.toLowerCase();
+            const container = document.getElementById('historyListContainer');
+
+            let filtered = consultations.filter(c => c.animalName.toLowerCase().includes(search) || c.ownerName.toLowerCase().includes(search));
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<p style="font-size: 0.9rem; color: var(--gray); text-align: center;">Aucune consultation trouvée.</p>';
+                return;
+            }
+
+            container.innerHTML = '';
+            filtered.forEach(c => {
+                container.innerHTML += `
+                    <div class="list-item">
+                        <div class="list-info">
+                            <h4>${c.animalName} (${c.animalSpecies})</h4>
+                            <p>${c.ownerName} • ${c.date}</p>
+                        </div>
+                        <div class="actions-group">
+                            <button class="secondary" onclick="generateReport(${c.id})">📄 Rapport</button>
+                            <button class="secondary" style="background:#4A5568;" onclick="editConsultation(${c.id})">✏️ Modifier</button>
+                            <button class="danger" onclick="deleteConsultation(${c.id})">🗑️</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function editConsultation(id) {
+            let consultations = JSON.parse(localStorage.getItem('osteo_consultations') || '[]');
+            const c = consultations.find(item => item.id === id);
+            if (!c) return;
+
+            showView('consultView');
+            document.getElementById('consultFormTitle').innerText = "✏️ Modifier la Consultation";
+            document.getElementById('editConsultId').value = c.id;
+            
+            document.getElementById('ownerName').value = c.ownerName;
+            document.getElementById('ownerPhone').value = c.ownerPhone;
+            document.getElementById('ownerEmail').value = c.ownerEmail;
+            document.getElementById('ownerAddress').value = c.ownerAddress;
+            document.getElementById('animalName').value = c.animalName;
+            document.getElementById('animalSpecies').value = c.animalSpecies;
+            document.getElementById('anamnesis').value = c.anamnesis;
+            document.getElementById('dynamicBilan').value = c.dynamicBilan;
+            document.getElementById('osteotests').value = c.osteotests;
+            document.getElementById('treatment').value = c.treatment;
+            document.getElementById('advice').value = c.advice;
+
+            // Charger le schéma annoté d'origine dans le canvas
+            initCanvas(c.sketchCombined);
+        }
+
+        function deleteConsultation(id) {
+            if(confirm("Supprimer ce compte rendu ?")) {
+                let consultations = JSON.parse(localStorage.getItem('osteo_consultations') || '[]');
+                consultations = consultations.filter(c => c.id !== id);
+                localStorage.setItem('osteo_consultations', JSON.stringify(consultations));
+                loadHistory();
+            }
+        }
+
+        function generateReport(id) {
+            let consultations = JSON.parse(localStorage.getItem('osteo_consultations') || '[]');
+            const c = consultations.find(item => item.id === id);
+            if (!c) return;
+
+            const win = window.open('', '_blank');
+            win.document.write(`
+                <html>
+                <head>
+                    <title>Compte Rendu - ${c.animalName}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 30px; color: #333; max-width: 800px; margin: auto; line-height: 1.5; }
+                        h1 { color: #2C5E4B; border-bottom: 2px solid #2C5E4B; padding-bottom: 10px; font-size: 1.4rem; }
+                        .header-info { background: #F4F6F4; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+                        .section { margin-bottom: 15px; }
+                        .section h3 { color: #2C5E4B; font-size: 1rem; margin-bottom: 5px; border-left: 3px solid #D4A373; padding-left: 8px; }
+                        .section p { background: #FAFAFA; padding: 10px; border-radius: 6px; white-space: pre-line; border: 1px solid #eee; }
+                        .sketch-view { text-align: center; margin: 15px 0; }
+                        .sketch-view img { max-width: 100%; border: 1px solid #ccc; border-radius: 6px; }
+                        .btn-group { display: flex; gap: 10px; margin-top: 20px; }
+                        .btn { padding: 12px 24px; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; text-decoration: none; text-align: center; display: inline-block; }
+                        .btn-print { background: #2C5E4B; }
+                        .btn-email { background: #D4A373; }
+                        @media print { .btn-group { display: none; } }
+                    </style>
+                </head>
+                <body>
+                    <h1>Compte Rendu de Consultation Ostéopathique</h1>
+                    <div class="header-info">
+                        <div>
+                            <p><strong>Date :</strong> ${c.date}</p>
+                            <p><strong>Propriétaire :</strong> ${c.ownerName}</p>
+                            <p><strong>Tél :</strong> ${c.ownerPhone || 'N/C'}</p>
+                            <p><strong>E-mail :</strong> ${c.ownerEmail || 'N/C'}</p>
+                            ${c.ownerAddress ? `<p><strong>Adresse :</strong> ${c.ownerAddress}</p>` : ''}
+                        </div>
+                        <div>
+                            <p><strong>Patient :</strong> ${c.animalName}</p>
+                            <p><strong>Espèce :</strong> ${c.animalSpecies}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <h3>Schéma Anatomique Annoté</h3>
+                        <div class="sketch-view"><img src="${c.sketchCombined}"></div>
+                    </div>
+
+                    <div class="section"><h3>1. Anamnèse / Motif</h3><p>${c.anamnesis || 'Non renseigné'}</p></div>
+                    <div class="section"><h3>2. Bilan Dynamique</h3><p>${c.dynamicBilan || 'Non renseigné'}</p></div>
+                    <div class="section"><h3>3. Tests Ostéopathiques</h3><p>${c.osteotests || 'Non renseigné'}</p></div>
+                    <div class="section"><h3>4. Traitement Effectué</h3><p>${c.treatment || 'Non renseigné'}</p></div>
+                    <div class="section"><h3>5. Conseils Post-Séance</h3><p>${c.advice || 'Non renseigné'}</p></div>
+                    
+                    <div class="btn-group">
+                        <button class="btn btn-print" onclick="window.print()">🖨️ Imprimer / Enregistrer en PDF</button>
+                        ${c.ownerEmail ? `<a class="btn btn-email" href="mailto:${c.ownerEmail}?subject=Compte rendu ostéopathie - ${c.animalName}&body=Bonjour,%0A%0AVoici le compte rendu de la consultation ostéopathique pour ${c.animalName} du ${c.date}.\%0A\%0AAnamnèse : ${encodeURIComponent(c.anamnesis)}%0ATraitement : ${encodeURIComponent(c.treatment)}\%0AConseils :${encodeURIComponent(c.advice)}">✉️ Envoyer par e-mail</a>` : ''}
+                    </div>
+                </body>
+                </html>
+            `);
+        }
+
+        loadPatients();
+    </script>
+</body>
+</html>
