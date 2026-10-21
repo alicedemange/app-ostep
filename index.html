@@ -122,6 +122,29 @@
             color: var(--primary);
         }
 
+        .stats-box {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            border-left: 4px solid var(--accent);
+        }
+
+        .stats-box h3 {
+            font-size: 0.95rem;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
         .card {
             background: var(--white);
             border-radius: 12px;
@@ -344,24 +367,6 @@
             margin-bottom: 15px;
             font-weight: 500;
         }
-
-        .location-section {
-            background: #F9FAFB;
-            border: 1px solid #E5E7EB;
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 12px;
-        }
-
-        .location-title {
-            font-size: 0.95rem;
-            font-weight: bold;
-            color: var(--primary);
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
     </style>
 </head>
 <body>
@@ -378,6 +383,23 @@
             <div class="welcome-card">
                 <h2>Bonjour Lynette 👋</h2>
                 <p>Prête pour vos consultations sur le terrain ? Gérez vos patients et comptes rendus en toute simplicité.</p>
+            </div>
+
+            <!-- DASHBOARD / RAPPORTS ACTIVITÉ -->
+            <div class="stats-box">
+                <h3>📊 Dashboard & Rapports d'Activité</h3>
+                <div class="stats-row">
+                    <span>Total consultations :</span>
+                    <strong id="statTotalConsult">0</strong>
+                </div>
+                <div class="stats-row">
+                    <span>Réalisées cette semaine :</span>
+                    <strong id="statWeekConsult">0</strong>
+                </div>
+                <div class="stats-row">
+                    <span>Lieu le plus visité :</span>
+                    <strong id="statTopLocation">-</strong>
+                </div>
             </div>
 
             <div style="text-align: center;">
@@ -422,7 +444,18 @@
                         </select>
                     </div>
 
-                    <h3 style="font-size: 0.95rem; color: var(--accent); margin-bottom: 10px;">1. Informations Animal & Propriétaire</h3>
+                    <h3 style="font-size: 0.95rem; color: var(--accent); margin-bottom: 10px;">1. Informations & Dates</h3>
+                    <div class="row">
+                        <div class="form-group">
+                            <label>Date de la consultation</label>
+                            <input type="date" id="consultDateInput" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Prochain RDV préconisé</label>
+                            <input type="date" id="nextConsultDate">
+                        </div>
+                    </div>
+
                     <div class="row">
                         <div class="form-group">
                             <label>Nom du Propriétaire</label>
@@ -515,6 +548,11 @@
                     <div class="form-group">
                         <label>Traitement / Corrections</label>
                         <textarea id="treatment" rows="2" placeholder="Techniques tissulaires, thrusts..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Notes & Confrères (Vétérinaire, Maréchal, Dentiste...)</label>
+                        <textarea id="vetNotes" rows="2" placeholder="Ex: Avis véto : radios ok, maréchal : parage équilibré..."></textarea>
                     </div>
 
                     <div class="form-group">
@@ -693,7 +731,7 @@
             <div class="card">
                 <h2 class="section-title">⚡ Notes Volantes</h2>
                 <div id="quickNotesListContainer">
-                    <p style="font-size: 0.9rem; color: var(--gray); text-align: center;">Chargement des notes...</p>
+                    <p style="font-size: 0.9rem; color: var(--gray); text-align: center;">Aucune note rapide.</p>
                 </div>
             </div>
         </div>
@@ -738,6 +776,7 @@
             consultationsData.sort((a, b) => b.timestamp - a.timestamp);
             loadHistory();
             loadPatients();
+            updateDashboardStats();
         });
 
         db.collection("quicknotes").onSnapshot((snapshot) => {
@@ -756,9 +795,40 @@
             });
             loadLocations();
             populateSelects();
+            updateDashboardStats();
         });
 
-        // Gestion de la brique Lieux (Enregistrement / Modification)
+        function updateDashboardStats() {
+            document.getElementById('statTotalConsult').innerText = consultationsData.length;
+
+            const now = new Date();
+            const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay() + 1));
+            startOfWeek.setHours(0,0,0,0);
+
+            let weekCount = consultationsData.filter(c => {
+                if(!c.consultDate) return false;
+                let cDate = new Date(c.consultDate);
+                return cDate >= startOfWeek;
+            }).length;
+            document.getElementById('statWeekConsult').innerText = weekCount;
+
+            let locationCounts = {};
+            consultationsData.forEach(c => {
+                let loc = c.ownerAddress || 'Clinique';
+                locationCounts[loc] = (locationCounts[loc] || 0) + 1;
+            });
+
+            let topLoc = '-';
+            let maxCount = 0;
+            for (let loc in locationCounts) {
+                if (locationCounts[loc] > maxCount) {
+                    maxCount = locationCounts[loc];
+                    topLoc = `${loc} (${maxCount} consultations)`;
+                }
+            }
+            document.getElementById('statTopLocation').innerText = topLoc;
+        }
+
         function saveLocation(e) {
             e.preventDefault();
             const editId = document.getElementById('editLocationId').value;
@@ -816,7 +886,6 @@
             const container = document.getElementById('locationsListContainer');
             if(!container) return;
 
-            // Inclure la Clinique par défaut dans l'affichage du dashboard
             let allLocs = [{ id: 'clinique-def', name: 'Clinique', manager: 'Cabinet principal', phone: '', details: 'Lieu par défaut' }, ...locationsData];
 
             container.innerHTML = '';
@@ -851,7 +920,7 @@
             let newLoc = prompt("Nom de la nouvelle écurie / lieu :");
             if(newLoc && newLoc.trim() !== '') {
                 newLoc = newLoc.trim();
-                db.collection("locations").add({ name: newLoc, manager: '', phone: '', details: '', timestamp: Date.now() }).then((docRef) => {
+                db.collection("locations").add({ name: newLoc, manager: '', phone: '', details: '', timestamp: Date.now() }).then(() => {
                     setTimeout(() => {
                         populateSelects();
                         document.getElementById('patAddress').value = newLoc;
@@ -881,9 +950,16 @@
             if (viewId === 'homeView') {
                 homeBtn.style.display = 'none';
                 document.getElementById('headerTitle').innerText = "OstéoAnimal - Lynette";
+                updateDashboardStats();
             } else {
                 homeBtn.style.display = 'block';
-                if(viewId === 'consultView') { document.getElementById('headerTitle').innerText = "Consultation"; populateSelects(); }
+                if(viewId === 'consultView') { 
+                    document.getElementById('headerTitle').innerText = "Consultation"; 
+                    populateSelects(); 
+                    if(!document.getElementById('editConsultId').value) {
+                        document.getElementById('consultDateInput').valueAsDate = new Date();
+                    }
+                }
                 if(viewId === 'locationsView') { document.getElementById('headerTitle').innerText = "Lieux de consultation"; loadLocations(); }
                 if(viewId === 'patientsView') { document.getElementById('headerTitle').innerText = "Fiches Patients"; loadPatients(); populateSelects(); }
                 if(viewId === 'historyView') { document.getElementById('headerTitle').innerText = "Historique"; loadHistory(); }
@@ -895,6 +971,7 @@
             document.getElementById('consultForm').reset();
             document.getElementById('editConsultId').value = "";
             document.getElementById('consultFormTitle').innerText = "📝 Nouvelle Consultation";
+            document.getElementById('consultDateInput').valueAsDate = new Date();
             showView('consultView');
             initCanvas();
         }
@@ -1185,7 +1262,7 @@
                     
                     let historyHtml = patConsults.length > 0 ? patConsults.map(c => `
                         <div style="background:#FFF; padding:8px; border-radius:6px; margin-top:5px; display:flex; justify-content:space-between; align-items:center; border:1px solid #DDD;">
-                            <span style="font-size:0.8rem;">📅 ${c.date} - Motif: ${c.anamnesis ? c.anamnesis.substring(0,25) + '...' : 'N/C'}</span>
+                            <span style="font-size:0.8rem;">📅 ${c.consultDate || c.date} - Prochain : ${c.nextConsultDate || 'Non planifié'}</span>
                             <div style="display:flex; gap:4px;">
                                 <button class="secondary" style="padding:4px 8px; font-size:0.75rem; width:auto;" onclick="generateReport('${c.id}')">📄 Rapport</button>
                                 <button class="secondary" style="padding:4px 8px; font-size:0.75rem; width:auto; background:#4A5568;" onclick="editConsultation('${c.id}')">✏️</button>
@@ -1292,19 +1369,14 @@
             e.preventDefault();
 
             const editId = document.getElementById('editConsultId').value;
-            let consultationDate = new Date().toLocaleDateString('fr-FR');
-            let timestampVal = Date.now();
-
-            if (editId) {
-                let existing = consultationsData.find(c => c.id == editId);
-                if (existing) {
-                    consultationDate = existing.date;
-                    timestampVal = existing.timestamp;
-                }
-            }
+            let consultDateVal = document.getElementById('consultDateInput').value || new Date().toISOString().split('T')[0];
+            let formattedDate = consultDateVal.split('-').reverse().join('/');
+            let timestampVal = new Date(consultDateVal).getTime();
 
             const consultation = {
-                date: consultationDate,
+                date: formattedDate,
+                consultDate: consultDateVal,
+                nextConsultDate: document.getElementById('nextConsultDate').value || '',
                 timestamp: timestampVal,
                 ownerName: document.getElementById('ownerName').value || 'Anonyme',
                 ownerPhone: document.getElementById('ownerPhone').value || '',
@@ -1317,6 +1389,7 @@
                 dynamicBilan: document.getElementById('dynamicBilan').value,
                 osteotests: document.getElementById('osteotests').value,
                 treatment: document.getElementById('treatment').value,
+                vetNotes: document.getElementById('vetNotes').value || '',
                 advice: document.getElementById('advice').value
             };
 
@@ -1359,16 +1432,24 @@
 
             container.innerHTML = '';
             filtered.forEach(c => {
+                let reminderBtn = c.nextConsultDate && c.ownerEmail ? `
+                    <a class="secondary" style="padding:6px 10px; font-size:0.8rem; text-decoration:none; display:inline-block; border-radius:6px; background:#D4A373; color:#fff;" href="mailto:${c.ownerEmail}?subject=Rappel%20rappel%20-%20Suivi%20ost%C3%A9opathique%20${encodeURIComponent(c.animalName)}&body=Bonjour%20${encodeURIComponent(c.ownerName)},%0A%0ALe%20suivi%20ost%C3%A9opathique%20de%20${encodeURIComponent(c.animalName)}%20pr%C3%A9conis%C3%A9%20pour%20le%20${c.nextConsultDate}%20approche.%0A%0APens%C3%A9es%20-%20Prenez%20contact%20pour%20fixer%20un%20rendez-vous.%0A%0ABien%20cordialement,%0ALynette%20Ost%C3%A9oAnimal">✉️ Rappel RDV</a>
+                ` : '';
+
                 container.innerHTML += `
-                    <div class="list-item">
-                        <div class="list-info">
-                            <h4>${c.animalName} (${c.animalSpecies}) - <span style="font-size:0.8rem; color:var(--accent);">${c.ownerAddress || 'Clinique'}</span></h4>
-                            <p>${c.ownerName} • ${c.date}</p>
-                        </div>
-                        <div class="actions-group">
-                            <button class="secondary" onclick="generateReport('${c.id}')">📄 Rapport</button>
-                            <button class="secondary" style="background:#4A5568;" onclick="editConsultation('${c.id}')">✏️ Modifier</button>
-                            <button class="danger" onclick="deleteConsultation('${c.id}')">🗑️</button>
+                    <div class="list-item" style="flex-direction:column; align-items:flex-start;">
+                        <div style="display:flex; justify-content:space-between; width:100%; align-items:flex-start;">
+                            <div class="list-info">
+                                <h4>${c.animalName} (${c.animalSpecies}) - <span style="font-size:0.8rem; color:var(--accent);">${c.ownerAddress || 'Clinique'}</span></h4>
+                                <p>${c.ownerName} • Séance du : ${c.consultDate || c.date}</p>
+                                <p style="font-size:0.75rem; color:var(--primary); font-weight:bold; margin-top:2px;">Prochain RDV préconisé : ${c.nextConsultDate || 'Non défini'}</p>
+                            </div>
+                            <div class="actions-group">
+                                ${reminderBtn}
+                                <button class="secondary" onclick="generateReport('${c.id}')">📄 Rapport</button>
+                                <button class="secondary" style="background:#4A5568;" onclick="editConsultation('${c.id}')">✏️</button>
+                                <button class="danger" onclick="deleteConsultation('${c.id}')">🗑️</button>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -1383,6 +1464,8 @@
             document.getElementById('consultFormTitle').innerText = "✏️ Modifier la Consultation";
             document.getElementById('editConsultId').value = c.id;
             
+            document.getElementById('consultDateInput').value = c.consultDate || new Date().toISOString().split('T')[0];
+            document.getElementById('nextConsultDate').value = c.nextConsultDate || '';
             document.getElementById('ownerName').value = c.ownerName;
             document.getElementById('ownerPhone').value = c.ownerPhone;
             document.getElementById('ownerEmail').value = c.ownerEmail;
@@ -1393,6 +1476,7 @@
             document.getElementById('dynamicBilan').value = c.dynamicBilan;
             document.getElementById('osteotests').value = c.osteotests;
             document.getElementById('treatment').value = c.treatment;
+            document.getElementById('vetNotes').value = c.vetNotes || '';
             document.getElementById('advice').value = c.advice;
 
             initCanvas(c.sketchCombined);
@@ -1433,7 +1517,8 @@
                     <h1>Compte Rendu de Consultation Ostéopathique</h1>
                     <div class="header-info">
                         <div>
-                            <p><strong>Date :</strong> ${c.date}</p>
+                            <p><strong>Date de séance :</strong> ${c.consultDate || c.date}</p>
+                            <p><strong>Prochain RDV préconisé :</strong> ${c.nextConsultDate || 'Non défini'}</p>
                             <p><strong>Propriétaire :</strong> ${c.ownerName}</p>
                             <p><strong>Lieu / Écurie :</strong> ${c.ownerAddress || 'Clinique'}</p>
                             <p><strong>Tél :</strong> ${c.ownerPhone || 'N/C'}</p>
@@ -1454,11 +1539,12 @@
                     <div class="section"><h3>2. Bilan Dynamique</h3><p>${c.dynamicBilan || 'Non renseigné'}</p></div>
                     <div class="section"><h3>3. Tests Ostéopathiques</h3><p>${c.osteotests || 'Non renseigné'}</p></div>
                     <div class="section"><h3>4. Traitement Effectué</h3><p>${c.treatment || 'Non renseigné'}</p></div>
-                    <div class="section"><h3>5. Conseils Post-Séance</h3><p>${c.advice || 'Non renseigné'}</p></div>
+                    ${c.vetNotes ? `<div class="section"><h3>5. Notes & Confrères (Véto, Maréchal...)</h3><p>${c.vetNotes}</p></div>` : ''}
+                    <div class="section"><h3>6. Conseils Post-Séance</h3><p>${c.advice || 'Non renseigné'}</p></div>
                     
                     <div class="btn-group">
                         <button class="btn btn-print" onclick="window.print()">🖨️ Imprimer / Enregistrer en PDF</button>
-                        ${c.ownerEmail ? `<a class="btn btn-email" href="mailto:${c.ownerEmail}?subject=Compte rendu ostéopathie - ${c.animalName}&body=Bonjour,%0A%0AVoici le compte rendu de la consultation ostéopathique pour ${c.animalName} du ${c.date}.%0A%0AAnamnèse : ${encodeURIComponent(c.anamnesis)}%0ATraitement : ${encodeURIComponent(c.treatment)}%0AConseils : ${encodeURIComponent(c.advice)}">✉️ Envoyer par e-mail</a>` : ''}
+                        ${c.ownerEmail ? `<a class="btn btn-email" href="mailto:${c.ownerEmail}?subject=Compte rendu ostéopathie - ${c.animalName}&body=Bonjour,%0A%0AVoici le compte rendu de la consultation ostéopathique pour ${c.animalName} du ${c.consultDate || c.date}.%0A%0AProchain RDV préconisé : ${c.nextConsultDate || 'N/C'}%0AAnamnèse : ${encodeURIComponent(c.anamnesis)}%0ATraitement : ${encodeURIComponent(c.treatment)}%0AConseils : ${encodeURIComponent(c.advice)}">✉️ Envoyer par e-mail</a>` : ''}
                     </div>
                 </body>
                 </html>
