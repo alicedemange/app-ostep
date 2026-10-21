@@ -1,0 +1,15 @@
+{
+  "name": "OstéoAnimal Lynette",
+  "short_name": "OstéoAnimal",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#5F998E",
+  "theme_color": "#5F998E",
+  "icons": [
+    {
+      "src": "Fichier 3.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}
