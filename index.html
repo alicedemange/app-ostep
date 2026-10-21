@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OstéoAnimal - Lynette</title>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <style>
         :root {
             --primary: #2C5E4B;
@@ -355,11 +358,11 @@
         <div id="homeView" class="view active">
             <div class="welcome-card">
                 <h2>Bonjour Lynette 👋</h2>
-                <p>Prête pour tes consultations sur le terrain ? Gére tes patients et comptes rendus en toute simplicité.</p>
+                <p>Prête pour vos consultations sur le terrain ? Gérez vos patients et comptes rendus en toute simplicité.</p>
             </div>
 
             <div style="text-align: center;">
-                <span class="offline-badge">🟢 Mode Hybride Actif</span>
+                <span class="offline-badge">☁️ Synchronisation Cloud Firebase Active</span>
             </div>
 
             <div class="dashboard-grid">
@@ -574,7 +577,7 @@
             <div class="card">
                 <h2 class="section-title">📋 Liste des Patients & Historique Intégré</h2>
                 <div id="patientsListContainer">
-                    <p style="font-size: 0.9rem; color: var(--gray); text-align: center;">Aucun patient enregistré.</p>
+                    <p style="font-size: 0.9rem; color: var(--gray); text-align: center;">Chargement des patients...</p>
                 </div>
             </div>
         </div>
@@ -584,10 +587,10 @@
             <div class="card">
                 <h2 class="section-title">📂 Historique des Consultations</h2>
                 <div class="form-group">
-                    <input type="text" id="searchHistory" placeholder="Rechercher par animal, propriétaire..." oninput="loadHistory()">
+                    <input type="text" id="searchHistory" placeholder="Rechercher par animal, propriétaire..." oninput="renderHistory()">
                 </div>
                 <div id="historyListContainer">
-                    <p style="font-size: 0.9rem; color: var(--gray); text-align: center;">Aucune consultation archivée.</p>
+                    <p style="font-size: 0.9rem; color: var(--gray); text-align: center;">Chargement de l'historique...</p>
                 </div>
             </div>
         </div>
@@ -618,7 +621,7 @@
             <div class="card">
                 <h2 class="section-title">⚡ Notes Volantes</h2>
                 <div id="quickNotesListContainer">
-                    <p style="font-size: 0.9rem; color: var(--gray); text-align: center;">Aucune note rapide.</p>
+                    <p style="font-size: 0.9rem; color: var(--gray); text-align: center;">Chargement des notes...</p>
                 </div>
             </div>
         </div>
@@ -626,6 +629,55 @@
     </div>
 
     <script>
+        // CONFIGURATION FIREBASE (app-ostep)
+        const firebaseConfig = {
+            apiKey: "AIzaSyBSSlxqh2CbBmbStChfL7NP8GA1SKcHjsE",
+            authDomain: "app-ostep.firebaseapp.com",
+            projectId: "app-ostep",
+            storageBucket: "app-ostep.appspot.com",
+            messagingSenderId: "1073960229612",
+            appId: "1:1073960229612:web:dac4fc8f61723fecffa3c9"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Stockage en mémoire locale pour l'affichage instantané
+        let patientsData = [];
+        let consultationsData = [];
+        let quickNotesData = [];
+
+        // Synchronisation temps réel avec Firestore
+        db.collection("patients").onSnapshot((snapshot) => {
+            patientsData = [];
+            snapshot.forEach((doc) => {
+                patientsData.push({ id: doc.id, ...doc.data() });
+            });
+            loadPatients();
+            populateSelects();
+        });
+
+        db.collection("consultations").onSnapshot((snapshot) => {
+            consultationsData = [];
+            snapshot.forEach((doc) => {
+                consultationsData.push({ id: doc.id, ...doc.data() });
+            });
+            // Trier par date décroissante si possible
+            consultationsData.sort((a, b) => b.timestamp - a.timestamp);
+            loadHistory();
+            loadPatients(); // Pour mettre à jour l'historique intégré dans chaque fiche patient
+        });
+
+        db.collection("quicknotes").onSnapshot((snapshot) => {
+            quickNotesData = [];
+            snapshot.forEach((doc) => {
+                quickNotesData.push({ id: doc.id, ...doc.data() });
+            });
+            quickNotesData.sort((a, b) => b.timestamp - a.timestamp);
+            loadQuickNotes();
+        });
+
+
         const skeletons = {
             "Cheval": "M 50,150 Q 80,100 120,90 Q 200,85 280,120 L 350,130 Q 420,90 480,110 L 520,200 L 510,270 L 480,270 L 470,200 L 350,200 L 320,270 L 290,270 L 310,200 L 200,200 L 190,270 L 160,270 L 180,200 L 120,180 L 80,200 L 70,270 L 40,270 L 50,180 Z",
             "Chien": "M 60,140 Q 90,90 130,90 Q 210,90 290,130 L 340,140 Q 410,100 460,120 L 490,210 L 480,260 L 450,260 L 440,210 L 330,210 L 310,260 L 280,260 L 300,210 L 190,210 L 180,260 L 150,260 L 170,210 L 120,190 L 90,210 L 80,260 L 50,260 L 60,190 Z",
@@ -650,9 +702,9 @@
             } else {
                 homeBtn.style.display = 'block';
                 if(viewId === 'consultView') { document.getElementById('headerTitle').innerText = "Consultation"; }
-                if(viewId === 'patientsView') { document.getElementById('headerTitle').innerText = "Fiches Patients"; loadPatients(); }
-                if(viewId === 'historyView') { document.getElementById('headerTitle').innerText = "Historique"; loadHistory(); }
-                if(viewId === 'notesView') { document.getElementById('headerTitle').innerText = "Notes Rapides"; loadQuickNotes(); populateSelects(); }
+                if(viewId === 'patientsView') { document.getElementById('headerTitle').innerText = "Fiches Patients"; }
+                if(viewId === 'historyView') { document.getElementById('headerTitle').innerText = "Historique"; }
+                if(viewId === 'notesView') { document.getElementById('headerTitle').innerText = "Notes Rapides"; populateSelects(); }
             }
         }
 
@@ -803,14 +855,15 @@
         }
 
         function populateSelects() {
-            let patients = JSON.parse(localStorage.getItem('osteo_patients') || '[]');
             let selectConsult = document.getElementById('consultPatientSelect');
             let selectNote = document.getElementById('quickNotePatient');
             
+            if(!selectConsult || !selectNote) return;
+
             selectConsult.innerHTML = '<option value="">-- Choisir dans mes fiches patients --</option>';
             selectNote.innerHTML = '<option value="">-- Note libre / Non assignée --</option>';
 
-            patients.forEach(p => {
+            patientsData.forEach(p => {
                 selectConsult.innerHTML += `<option value="${p.id}">${p.animalName} (${p.species}) - Prop: ${p.owner}</option>`;
                 selectNote.innerHTML += `<option value="${p.id}">${p.animalName} (${p.owner})</option>`;
             });
@@ -819,8 +872,7 @@
         function loadPatientIntoConsult() {
             const patientId = document.getElementById('consultPatientSelect').value;
             if (!patientId) return;
-            let patients = JSON.parse(localStorage.getItem('osteo_patients') || '[]');
-            const pat = patients.find(p => p.id == patientId);
+            const pat = patientsData.find(p => p.id == patientId);
             if (pat) {
                 document.getElementById('animalName').value = pat.animalName;
                 document.getElementById('animalSpecies').value = pat.species;
@@ -832,14 +884,12 @@
             }
         }
 
-        // Gestion formulaire Patient (Création ou Modification)
+        // Gestion formulaire Patient (Firebase Firestore)
         document.getElementById('patientForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const editId = document.getElementById('editPatientId').value;
-            let patients = JSON.parse(localStorage.getItem('osteo_patients') || '[]');
 
             const patient = {
-                id: editId ? Number(editId) : Date.now(),
                 animalName: document.getElementById('patAnimalName').value,
                 species: document.getElementById('patSpecies').value,
                 breedAge: document.getElementById('patBreedAge').value,
@@ -849,19 +899,23 @@
                 address: document.getElementById('patAddress').value,
                 history: document.getElementById('patHistory').value,
                 isDifficult: document.getElementById('patIsDifficult').checked,
-                ownerMandatory: document.getElementById('patOwnerMandatory').checked
+                ownerMandatory: document.getElementById('patOwnerMandatory').checked,
+                timestamp: Date.now()
             };
 
             if (editId) {
-                patients = patients.map(p => p.id == editId ? patient : p);
+                db.collection("patients").doc(editId).update(patient)
+                  .then(() => {
+                      resetPatientForm();
+                      alert('Fiche patient mise à jour dans le cloud !');
+                  });
             } else {
-                patients.unshift(patient);
+                db.collection("patients").add(patient)
+                  .then(() => {
+                      resetPatientForm();
+                      alert('Patient enregistré dans le cloud !');
+                  });
             }
-
-            localStorage.setItem('osteo_patients', JSON.stringify(patients));
-            resetPatientForm();
-            loadPatients();
-            alert(editId ? 'Fiche patient mise à jour !' : 'Patient enregistré avec succès !');
         });
 
         function resetPatientForm() {
@@ -873,8 +927,7 @@
         }
 
         function editPatient(id) {
-            let patients = JSON.parse(localStorage.getItem('osteo_patients') || '[]');
-            const p = patients.find(item => item.id === id);
+            const p = patientsData.find(item => item.id === id);
             if (!p) return;
 
             document.getElementById('editPatientId').value = p.id;
@@ -896,24 +949,23 @@
         }
 
         function loadPatients() {
-            let patients = JSON.parse(localStorage.getItem('osteo_patients') || '[]');
-            let consultations = JSON.parse(localStorage.getItem('osteo_consultations') || '[]');
             const container = document.getElementById('patientsListContainer');
+            if(!container) return;
             
-            if (patients.length === 0) {
+            if (patientsData.length === 0) {
                 container.innerHTML = '<p style="font-size: 0.9rem; color: var(--gray); text-align: center;">Aucun patient enregistré.</p>';
                 return;
             }
             container.innerHTML = '';
-            patients.forEach(p => {
-                let patConsults = consultations.filter(c => c.animalName.toLowerCase() === p.animalName.toLowerCase() && c.ownerName.toLowerCase() === p.owner.toLowerCase());
+            patientsData.forEach(p => {
+                let patConsults = consultationsData.filter(c => c.animalName.toLowerCase() === p.animalName.toLowerCase() && c.ownerName.toLowerCase() === p.owner.toLowerCase());
                 
                 let historyHtml = patConsults.length > 0 ? patConsults.map(c => `
                     <div style="background:#FFF; padding:8px; border-radius:6px; margin-top:5px; display:flex; justify-content:space-between; align-items:center; border:1px solid #DDD;">
                         <span style="font-size:0.8rem;">📅 ${c.date} - Motif: ${c.anamnesis ? c.anamnesis.substring(0,25) + '...' : 'N/C'}</span>
                         <div style="display:flex; gap:4px;">
-                            <button class="secondary" style="padding:4px 8px; font-size:0.75rem; width:auto;" onclick="generateReport(${c.id})">📄 Rapport</button>
-                            <button class="secondary" style="padding:4px 8px; font-size:0.75rem; width:auto; background:#4A5568;" onclick="editConsultation(${c.id})">✏️</button>
+                            <button class="secondary" style="padding:4px 8px; font-size:0.75rem; width:auto;" onclick="generateReport('${c.id}')">📄 Rapport</button>
+                            <button class="secondary" style="padding:4px 8px; font-size:0.75rem; width:auto; background:#4A5568;" onclick="editConsultation('${c.id}')">✏️</button>
                         </div>
                     </div>
                 `).join('') : '<p style="font-size:0.8rem; color:var(--gray); margin-top:5px;">Aucune consultation enregistrée.</p>';
@@ -934,9 +986,9 @@
                                 <div style="margin-top:6px;">${alertsHtml}</div>
                             </div>
                             <div class="actions-group">
-                                <button class="secondary" onclick="startConsultForPatient(${p.id})">📝 Consulter</button>
-                                <button class="secondary" style="background:#4A5568;" onclick="editPatient(${p.id})">✏️</button>
-                                <button class="danger" onclick="deletePatient(${p.id})">🗑️</button>
+                                <button class="secondary" onclick="startConsultForPatient('${p.id}')">📝 Consulter</button>
+                                <button class="secondary" style="background:#4A5568;" onclick="editPatient('${p.id}')">✏️</button>
+                                <button class="danger" onclick="deletePatient('${p.id}')">🗑️</button>
                             </div>
                         </div>
                         <div style="width:100%; margin-top:10px; border-top:1px dashed #BBB; padding-top:8px;">
@@ -946,15 +998,11 @@
                     </div>
                 `;
             });
-            populateSelects();
         }
 
         function deletePatient(id) {
-            if(confirm("Supprimer ce patient ?")) {
-                let patients = JSON.parse(localStorage.getItem('osteo_patients') || '[]');
-                patients = patients.filter(p => p.id !== id);
-                localStorage.setItem('osteo_patients', JSON.stringify(patients));
-                loadPatients();
+            if(confirm("Supprimer ce patient du cloud ?")) {
+                db.collection("patients").doc(id).delete();
             }
         }
 
@@ -967,31 +1015,28 @@
         document.getElementById('quickNoteForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const note = {
-                id: Date.now(),
                 date: new Date().toLocaleDateString('fr-FR'),
+                timestamp: Date.now(),
                 patientId: document.getElementById('quickNotePatient').value,
                 content: document.getElementById('quickNoteContent').value
             };
-            let notes = JSON.parse(localStorage.getItem('osteo_quicknotes') || '[]');
-            notes.unshift(note);
-            localStorage.setItem('osteo_quicknotes', JSON.stringify(notes));
-            this.reset();
-            loadQuickNotes();
-            alert('Note rapide enregistrée !');
+            db.collection("quicknotes").add(note).then(() => {
+                this.reset();
+                alert('Note rapide enregistrée dans le cloud !');
+            });
         });
 
         function loadQuickNotes() {
-            let notes = JSON.parse(localStorage.getItem('osteo_quicknotes') || '[]');
-            let patients = JSON.parse(localStorage.getItem('osteo_patients') || '[]');
             const container = document.getElementById('quickNotesListContainer');
-            
-            if (notes.length === 0) {
+            if(!container) return;
+
+            if (quickNotesData.length === 0) {
                 container.innerHTML = '<p style="font-size: 0.9rem; color: var(--gray); text-align: center;">Aucune note rapide.</p>';
                 return;
             }
             container.innerHTML = '';
-            notes.forEach(n => {
-                let pat = patients.find(p => p.id == n.patientId);
+            quickNotesData.forEach(n => {
+                let pat = patientsData.find(p => p.id == n.patientId);
                 let patName = pat ? `🐾 ${pat.animalName} (${pat.owner})` : '📌 Note libre';
                 container.innerHTML += `
                     <div class="list-item">
@@ -999,35 +1044,35 @@
                             <h4>${patName} • <span style="font-size:0.75rem; color:var(--gray);">${n.date}</span></h4>
                             <p style="margin-top:4px; white-space: pre-line; color:var(--text);">${n.content}</p>
                         </div>
-                        <button class="danger" onclick="deleteQuickNote(${n.id})">🗑️</button>
+                        <button class="danger" onclick="deleteQuickNote('${n.id}')">🗑️</button>
                     </div>
                 `;
             });
         }
 
         function deleteQuickNote(id) {
-            let notes = JSON.parse(localStorage.getItem('osteo_quicknotes') || '[]');
-            notes = notes.filter(n => n.id !== id);
-            localStorage.setItem('osteo_quicknotes', JSON.stringify(notes));
-            loadQuickNotes();
+            db.collection("quicknotes").doc(id).delete();
         }
 
-        // Soumission Consultation (Création ou Modification)
+        // Soumission Consultation (Firebase Firestore)
         document.getElementById('consultForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
             const editId = document.getElementById('editConsultId').value;
-            let consultations = JSON.parse(localStorage.getItem('osteo_consultations') || '[]');
-            
             let consultationDate = new Date().toLocaleDateString('fr-FR');
+            let timestampVal = Date.now();
+
             if (editId) {
-                let existing = consultations.find(c => c.id == editId);
-                if (existing) consultationDate = existing.date;
+                let existing = consultationsData.find(c => c.id == editId);
+                if (existing) {
+                    consultationDate = existing.date;
+                    timestampVal = existing.timestamp;
+                }
             }
 
             const consultation = {
-                id: editId ? Number(editId) : Date.now(),
                 date: consultationDate,
+                timestamp: timestampVal,
                 ownerName: document.getElementById('ownerName').value || 'Anonyme',
                 ownerPhone: document.getElementById('ownerPhone').value || '',
                 ownerEmail: document.getElementById('ownerEmail').value || '',
@@ -1043,25 +1088,32 @@
             };
 
             if (editId) {
-                consultations = consultations.map(c => c.id == editId ? consultation : c);
+                db.collection("consultations").doc(editId).set(consultation).then(() => {
+                    document.getElementById('consultForm').reset();
+                    document.getElementById('editConsultId').value = "";
+                    showView('historyView');
+                    alert('Consultation mise à jour dans le cloud !');
+                });
             } else {
-                consultations.unshift(consultation);
+                db.collection("consultations").add(consultation).then(() => {
+                    document.getElementById('consultForm').reset();
+                    document.getElementById('editConsultId').value = "";
+                    showView('historyView');
+                    alert('Consultation enregistrée dans le cloud !');
+                });
             }
-
-            localStorage.setItem('osteo_consultations', JSON.stringify(consultations));
-
-            this.reset();
-            document.getElementById('editConsultId').value = "";
-            showView('historyView');
-            alert(editId ? 'Consultation mise à jour avec succès !' : 'Consultation enregistrée avec succès !');
         });
 
         function loadHistory() {
-            let consultations = JSON.parse(localStorage.getItem('osteo_consultations') || '[]');
-            const search = document.getElementById('searchHistory').value.toLowerCase();
-            const container = document.getElementById('historyListContainer');
+            renderHistory();
+        }
 
-            let filtered = consultations.filter(c => c.animalName.toLowerCase().includes(search) || c.ownerName.toLowerCase().includes(search));
+        function renderHistory() {
+            const search = document.getElementById('searchHistory') ? document.getElementById('searchHistory').value.toLowerCase() : '';
+            const container = document.getElementById('historyListContainer');
+            if(!container) return;
+
+            let filtered = consultationsData.filter(c => c.animalName.toLowerCase().includes(search) || c.ownerName.toLowerCase().includes(search));
 
             if (filtered.length === 0) {
                 container.innerHTML = '<p style="font-size: 0.9rem; color: var(--gray); text-align: center;">Aucune consultation trouvée.</p>';
@@ -1077,9 +1129,9 @@
                             <p>${c.ownerName} • ${c.date}</p>
                         </div>
                         <div class="actions-group">
-                            <button class="secondary" onclick="generateReport(${c.id})">📄 Rapport</button>
-                            <button class="secondary" style="background:#4A5568;" onclick="editConsultation(${c.id})">✏️ Modifier</button>
-                            <button class="danger" onclick="deleteConsultation(${c.id})">🗑️</button>
+                            <button class="secondary" onclick="generateReport('${c.id}')">📄 Rapport</button>
+                            <button class="secondary" style="background:#4A5568;" onclick="editConsultation('${c.id}')">✏️ Modifier</button>
+                            <button class="danger" onclick="deleteConsultation('${c.id}')">🗑️</button>
                         </div>
                     </div>
                 `;
@@ -1087,8 +1139,7 @@
         }
 
         function editConsultation(id) {
-            let consultations = JSON.parse(localStorage.getItem('osteo_consultations') || '[]');
-            const c = consultations.find(item => item.id === id);
+            const c = consultationsData.find(item => item.id === id);
             if (!c) return;
 
             showView('consultView');
@@ -1111,17 +1162,13 @@
         }
 
         function deleteConsultation(id) {
-            if(confirm("Supprimer ce compte rendu ?")) {
-                let consultations = JSON.parse(localStorage.getItem('osteo_consultations') || '[]');
-                consultations = consultations.filter(c => c.id !== id);
-                localStorage.setItem('osteo_consultations', JSON.stringify(consultations));
-                loadHistory();
+            if(confirm("Supprimer ce compte rendu du cloud ?")) {
+                db.collection("consultations").doc(id).delete();
             }
         }
 
         function generateReport(id) {
-            let consultations = JSON.parse(localStorage.getItem('osteo_consultations') || '[]');
-            const c = consultations.find(item => item.id === id);
+            const c = consultationsData.find(item => item.id === id);
             if (!c) return;
 
             const win = window.open('', '_blank');
@@ -1180,8 +1227,6 @@
                 </html>
             `);
         }
-
-        loadPatients();
     </script>
 </body>
 </html>
