@@ -301,6 +301,7 @@
             align-items: center;
             border-radius: 6px;
             margin-bottom: 8px;
+            background: #FFF;
         }
 
         .list-item.is-difficult {
@@ -343,6 +344,24 @@
             margin-bottom: 15px;
             font-weight: 500;
         }
+
+        .location-section {
+            background: #F9FAFB;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        .location-title {
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
     </style>
 </head>
 <body>
@@ -372,7 +391,7 @@
                 </div>
                 <div class="dash-tile" onclick="showView('patientsView')">
                     <span>🐾</span>
-                    <h3>Fiches patients</h3>
+                    <h3>Fiches patients & Lieux</h3>
                 </div>
                 <div class="dash-tile" onclick="showView('historyView')">
                     <span>📂</span>
@@ -416,8 +435,8 @@
                             <input type="email" id="ownerEmail" placeholder="claire@exemple.com">
                         </div>
                         <div class="form-group">
-                            <label>Adresse (Optionnel)</label>
-                            <input type="text" id="ownerAddress" placeholder="Écurie des Prés, 31290...">
+                            <label>Lieu / Écurie</label>
+                            <input type="text" id="ownerAddress" placeholder="Ex: Écurie des Prés (Toulouse)">
                         </div>
                     </div>
 
@@ -545,20 +564,21 @@
                             <input type="email" id="patEmail" placeholder="marc@exemple.com">
                         </div>
                         <div class="form-group">
-                            <label>Adresse (Optionnel)</label>
-                            <input type="text" id="patAddress" placeholder="Lieu-dit, Ville...">
+                            <label>Lieu / Écurie de rattachement</label>
+                            <input type="text" id="patAddress" list="locationsList" placeholder="Ex: Écurie des Prés (ou nouveau lieu)">
+                            <datalist id="locationsList"></datalist>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label>Spécificités & Comportement (Antécédents, âge, tempérament)</label>
+                        <label>Spécificités & Comportement</label>
                         <textarea id="patHistory" rows="2" placeholder="Chirurgie passée, sensible au dos..."></textarea>
                     </div>
 
                     <div class="form-group">
                         <label class="checkbox-group">
                             <input type="checkbox" id="patIsDifficult">
-                            <span>⚠️ <strong>Animal difficile / Risque (mord, botte, tape, âgé...)</strong></span>
+                            <span>⚠️ <strong>Animal difficile / Risque (mord, botte, tape...)</strong></span>
                         </label>
                     </div>
 
@@ -575,7 +595,10 @@
             </div>
 
             <div class="card">
-                <h2 class="section-title">📋 Liste des Patients & Historique Intégré</h2>
+                <h2 class="section-title">📍 Patients Groupés par Lieux & Écuries</h2>
+                <div class="form-group">
+                    <input type="text" id="searchPatients" placeholder="🔍 Recherche semi-prédictive (animal, écurie, propriétaire...)" oninput="loadPatients()">
+                </div>
                 <div id="patientsListContainer">
                     <p style="font-size: 0.9rem; color: var(--gray); text-align: center;">Chargement des patients...</p>
                 </div>
@@ -587,7 +610,7 @@
             <div class="card">
                 <h2 class="section-title">📂 Historique des Consultations</h2>
                 <div class="form-group">
-                    <input type="text" id="searchHistory" placeholder="Rechercher par animal, propriétaire..." oninput="renderHistory()">
+                    <input type="text" id="searchHistory" placeholder="🔍 Rechercher par animal, propriétaire, lieu..." oninput="loadHistory()">
                 </div>
                 <div id="historyListContainer">
                     <p style="font-size: 0.9rem; color: var(--gray); text-align: center;">Chargement de l'historique...</p>
@@ -642,7 +665,6 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // Stockage en mémoire locale pour l'affichage instantané
         let patientsData = [];
         let consultationsData = [];
         let quickNotesData = [];
@@ -662,10 +684,9 @@
             snapshot.forEach((doc) => {
                 consultationsData.push({ id: doc.id, ...doc.data() });
             });
-            // Trier par date décroissante si possible
             consultationsData.sort((a, b) => b.timestamp - a.timestamp);
             loadHistory();
-            loadPatients(); // Pour mettre à jour l'historique intégré dans chaque fiche patient
+            loadPatients();
         });
 
         db.collection("quicknotes").onSnapshot((snapshot) => {
@@ -676,7 +697,6 @@
             quickNotesData.sort((a, b) => b.timestamp - a.timestamp);
             loadQuickNotes();
         });
-
 
         const skeletons = {
             "Cheval": "M 50,150 Q 80,100 120,90 Q 200,85 280,120 L 350,130 Q 420,90 480,110 L 520,200 L 510,270 L 480,270 L 470,200 L 350,200 L 320,270 L 290,270 L 310,200 L 200,200 L 190,270 L 160,270 L 180,200 L 120,180 L 80,200 L 70,270 L 40,270 L 50,180 Z",
@@ -702,8 +722,8 @@
             } else {
                 homeBtn.style.display = 'block';
                 if(viewId === 'consultView') { document.getElementById('headerTitle').innerText = "Consultation"; }
-                if(viewId === 'patientsView') { document.getElementById('headerTitle').innerText = "Fiches Patients"; }
-                if(viewId === 'historyView') { document.getElementById('headerTitle').innerText = "Historique"; }
+                if(viewId === 'patientsView') { document.getElementById('headerTitle').innerText = "Fiches Patients & Lieux"; loadPatients(); }
+                if(viewId === 'historyView') { document.getElementById('headerTitle').innerText = "Historique"; loadHistory(); }
                 if(viewId === 'notesView') { document.getElementById('headerTitle').innerText = "Notes Rapides"; populateSelects(); }
             }
         }
@@ -864,9 +884,20 @@
             selectNote.innerHTML = '<option value="">-- Note libre / Non assignée --</option>';
 
             patientsData.forEach(p => {
-                selectConsult.innerHTML += `<option value="${p.id}">${p.animalName} (${p.species}) - Prop: ${p.owner}</option>`;
+                selectConsult.innerHTML += `<option value="${p.id}">${p.animalName} (${p.species}) - ${p.owner}</option>`;
                 selectNote.innerHTML += `<option value="${p.id}">${p.animalName} (${p.owner})</option>`;
             });
+
+            // Mettre à jour la liste des suggestions de lieux (datalist)
+            const datalist = document.getElementById('locationsList');
+            if(datalist) {
+                datalist.innerHTML = '';
+                let locations = [...new Set(patientsData.map(p => p.address ? p.address.trim() : '').filter(Boolean))];
+                if(!locations.includes('Clinique')) locations.unshift('Clinique');
+                locations.forEach(loc => {
+                    datalist.innerHTML += `<option value="${loc}">`;
+                });
+            }
         }
 
         function loadPatientIntoConsult() {
@@ -879,12 +910,12 @@
                 document.getElementById('ownerName').value = pat.owner;
                 document.getElementById('ownerPhone').value = pat.phone || '';
                 document.getElementById('ownerEmail').value = pat.email || '';
-                document.getElementById('ownerAddress').value = pat.address || '';
+                document.getElementById('ownerAddress').value = pat.address || 'Clinique';
                 updateSkeleton();
             }
         }
 
-        // Gestion formulaire Patient (Firebase Firestore)
+        // Gestion formulaire Patient
         document.getElementById('patientForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const editId = document.getElementById('editPatientId').value;
@@ -896,7 +927,7 @@
                 owner: document.getElementById('patOwner').value,
                 phone: document.getElementById('patPhone').value,
                 email: document.getElementById('patEmail').value,
-                address: document.getElementById('patAddress').value,
+                address: document.getElementById('patAddress').value.trim() || 'Clinique',
                 history: document.getElementById('patHistory').value,
                 isDifficult: document.getElementById('patIsDifficult').checked,
                 ownerMandatory: document.getElementById('patOwnerMandatory').checked,
@@ -937,7 +968,7 @@
             document.getElementById('patOwner').value = p.owner;
             document.getElementById('patPhone').value = p.phone || '';
             document.getElementById('patEmail').value = p.email || '';
-            document.getElementById('patAddress').value = p.address || '';
+            document.getElementById('patAddress').value = p.address || 'Clinique';
             document.getElementById('patHistory').value = p.history || '';
             document.getElementById('patIsDifficult').checked = p.isDifficult || false;
             document.getElementById('patOwnerMandatory').checked = p.ownerMandatory || false;
@@ -950,54 +981,88 @@
 
         function loadPatients() {
             const container = document.getElementById('patientsListContainer');
+            const searchInput = document.getElementById('searchPatients');
             if(!container) return;
-            
-            if (patientsData.length === 0) {
-                container.innerHTML = '<p style="font-size: 0.9rem; color: var(--gray); text-align: center;">Aucun patient enregistré.</p>';
+
+            let query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+            // Filtrer selon la recherche semi-prédictive
+            let filtered = patientsData.filter(p => 
+                p.animalName.toLowerCase().includes(query) ||
+                p.owner.toLowerCase().includes(query) ||
+                p.species.toLowerCase().includes(query) ||
+                (p.address && p.address.toLowerCase().includes(query))
+            );
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<p style="font-size: 0.9rem; color: var(--gray); text-align: center;">Aucun patient trouvé.</p>';
+                populateSelects();
                 return;
             }
-            container.innerHTML = '';
-            patientsData.forEach(p => {
-                let patConsults = consultationsData.filter(c => c.animalName.toLowerCase() === p.animalName.toLowerCase() && c.ownerName.toLowerCase() === p.owner.toLowerCase());
-                
-                let historyHtml = patConsults.length > 0 ? patConsults.map(c => `
-                    <div style="background:#FFF; padding:8px; border-radius:6px; margin-top:5px; display:flex; justify-content:space-between; align-items:center; border:1px solid #DDD;">
-                        <span style="font-size:0.8rem;">📅 ${c.date} - Motif: ${c.anamnesis ? c.anamnesis.substring(0,25) + '...' : 'N/C'}</span>
-                        <div style="display:flex; gap:4px;">
-                            <button class="secondary" style="padding:4px 8px; font-size:0.75rem; width:auto;" onclick="generateReport('${c.id}')">📄 Rapport</button>
-                            <button class="secondary" style="padding:4px 8px; font-size:0.75rem; width:auto; background:#4A5568;" onclick="editConsultation('${c.id}')">✏️</button>
-                        </div>
-                    </div>
-                `).join('') : '<p style="font-size:0.8rem; color:var(--gray); margin-top:5px;">Aucune consultation enregistrée.</p>';
 
-                let difficultClass = p.isDifficult ? 'is-difficult' : '';
-                let alertsHtml = '';
-                if(p.isDifficult) alertsHtml += `<span style="background:var(--danger); color:white; font-size:0.7rem; padding:2px 6px; border-radius:4px; margin-right:5px;">⚠️ Animal difficile / Risque</span>`;
-                if(p.ownerMandatory) alertsHtml += `<span style="background:var(--accent); color:white; font-size:0.7rem; padding:2px 6px; border-radius:4px;">👤 Proprio impératif</span>`;
+            // Grouper les patients par lieu / écurie
+            let grouped = {};
+            filtered.forEach(p => {
+                let loc = p.address ? p.address : 'Clinique';
+                if (!grouped[loc]) grouped[loc] = [];
+                grouped[loc].push(p);
+            });
+
+            container.innerHTML = '';
+            for (let location in grouped) {
+                let htmlList = '';
+                grouped[location].forEach(p => {
+                    let patConsults = consultationsData.filter(c => c.animalName.toLowerCase() === p.animalName.toLowerCase() && c.ownerName.toLowerCase() === p.owner.toLowerCase());
+                    
+                    let historyHtml = patConsults.length > 0 ? patConsults.map(c => `
+                        <div style="background:#FFF; padding:8px; border-radius:6px; margin-top:5px; display:flex; justify-content:space-between; align-items:center; border:1px solid #DDD;">
+                            <span style="font-size:0.8rem;">📅 ${c.date} - Motif: ${c.anamnesis ? c.anamnesis.substring(0,25) + '...' : 'N/C'}</span>
+                            <div style="display:flex; gap:4px;">
+                                <button class="secondary" style="padding:4px 8px; font-size:0.75rem; width:auto;" onclick="generateReport('${c.id}')">📄 Rapport</button>
+                                <button class="secondary" style="padding:4px 8px; font-size:0.75rem; width:auto; background:#4A5568;" onclick="editConsultation('${c.id}')">✏️</button>
+                            </div>
+                        </div>
+                    `).join('') : '<p style="font-size:0.8rem; color:var(--gray); margin-top:5px;">Aucune consultation enregistrée.</p>';
+
+                    let difficultClass = p.isDifficult ? 'is-difficult' : '';
+                    let alertsHtml = '';
+                    if(p.isDifficult) alertsHtml += `<span style="background:var(--danger); color:white; font-size:0.7rem; padding:2px 6px; border-radius:4px; margin-right:5px;">⚠️ Animal difficile</span>`;
+                    if(p.ownerMandatory) alertsHtml += `<span style="background:var(--accent); color:white; font-size:0.7rem; padding:2px 6px; border-radius:4px;">👤 Proprio impératif</span>`;
+
+                    htmlList += `
+                        <div class="list-item ${difficultClass}" style="flex-direction:column; align-items:flex-start;">
+                            <div style="display:flex; justify-content:space-between; width:100%; align-items:flex-start;">
+                                <div class="list-info">
+                                    <h4>${p.animalName} (${p.species}) - ${p.breedAge || ''}</h4>
+                                    <p>Propriétaire : ${p.owner} • Tél : ${p.phone || 'N/C'} • Mail : ${p.email || 'N/C'}</p>
+                                    ${p.history ? `<p style="font-size:0.75rem; margin-top:4px;">📝 <em>${p.history}</em></p>` : ''}
+                                    <div style="margin-top:6px;">${alertsHtml}</div>
+                                </div>
+                                <div class="actions-group">
+                                    <button class="secondary" onclick="startConsultForPatient('${p.id}')">📝 Consulter</button>
+                                    <button class="secondary" style="background:#4A5568;" onclick="editPatient('${p.id}')">✏️</button>
+                                    <button class="danger" onclick="deletePatient('${p.id}')">🗑️</button>
+                                </div>
+                            </div>
+                            <div style="width:100%; margin-top:10px; border-top:1px dashed #BBB; padding-top:8px;">
+                                <strong style="font-size:0.85rem; color:var(--primary);">Historique des séances :</strong>
+                                ${historyHtml}
+                            </div>
+                        </div>
+                    `;
+                });
 
                 container.innerHTML += `
-                    <div class="list-item ${difficultClass}" style="flex-direction:column; align-items:flex-start;">
-                        <div style="display:flex; justify-content:space-between; width:100%; align-items:flex-start;">
-                            <div class="list-info">
-                                <h4>${p.animalName} (${p.species}) - ${p.breedAge || ''}</h4>
-                                <p>Propriétaire : ${p.owner} • Tél : ${p.phone || 'N/C'} • Mail : ${p.email || 'N/C'}</p>
-                                ${p.address ? `<p style="font-size:0.75rem;">📍 ${p.address}</p>` : ''}
-                                ${p.history ? `<p style="font-size:0.75rem; margin-top:4px;">📝 <em>${p.history}</em></p>` : ''}
-                                <div style="margin-top:6px;">${alertsHtml}</div>
-                            </div>
-                            <div class="actions-group">
-                                <button class="secondary" onclick="startConsultForPatient('${p.id}')">📝 Consulter</button>
-                                <button class="secondary" style="background:#4A5568;" onclick="editPatient('${p.id}')">✏️</button>
-                                <button class="danger" onclick="deletePatient('${p.id}')">🗑️</button>
-                            </div>
+                    <div class="location-section">
+                        <div class="location-title">
+                            <span>📍 ${location}</span>
+                            <span style="font-size: 0.8rem; font-weight: normal; background: var(--white); padding: 2px 8px; border-radius: 12px; border: 1px solid #DDD;">${grouped[location].length} patient(s)</span>
                         </div>
-                        <div style="width:100%; margin-top:10px; border-top:1px dashed #BBB; padding-top:8px;">
-                            <strong style="font-size:0.85rem; color:var(--primary);">Historique des séances :</strong>
-                            ${historyHtml}
-                        </div>
+                        ${htmlList}
                     </div>
                 `;
-            });
+            }
+            populateSelects();
         }
 
         function deletePatient(id) {
@@ -1054,7 +1119,7 @@
             db.collection("quicknotes").doc(id).delete();
         }
 
-        // Soumission Consultation (Firebase Firestore)
+        // Soumission Consultation
         document.getElementById('consultForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
@@ -1076,7 +1141,7 @@
                 ownerName: document.getElementById('ownerName').value || 'Anonyme',
                 ownerPhone: document.getElementById('ownerPhone').value || '',
                 ownerEmail: document.getElementById('ownerEmail').value || '',
-                ownerAddress: document.getElementById('ownerAddress').value || '',
+                ownerAddress: document.getElementById('ownerAddress').value || 'Clinique',
                 animalName: document.getElementById('animalName').value || 'Patient sans nom',
                 animalSpecies: document.getElementById('animalSpecies').value,
                 sketchCombined: canvas.toDataURL(),
@@ -1109,11 +1174,15 @@
         }
 
         function renderHistory() {
-            const search = document.getElementById('searchHistory') ? document.getElementById('searchHistory').value.toLowerCase() : '';
+            const search = document.getElementById('searchHistory') ? document.getElementById('searchHistory').value.toLowerCase().trim() : '';
             const container = document.getElementById('historyListContainer');
             if(!container) return;
 
-            let filtered = consultationsData.filter(c => c.animalName.toLowerCase().includes(search) || c.ownerName.toLowerCase().includes(search));
+            let filtered = consultationsData.filter(c => 
+                c.animalName.toLowerCase().includes(search) || 
+                c.ownerName.toLowerCase().includes(search) ||
+                (c.ownerAddress && c.ownerAddress.toLowerCase().includes(search))
+            );
 
             if (filtered.length === 0) {
                 container.innerHTML = '<p style="font-size: 0.9rem; color: var(--gray); text-align: center;">Aucune consultation trouvée.</p>';
@@ -1125,7 +1194,7 @@
                 container.innerHTML += `
                     <div class="list-item">
                         <div class="list-info">
-                            <h4>${c.animalName} (${c.animalSpecies})</h4>
+                            <h4>${c.animalName} (${c.animalSpecies}) - <span style="font-size:0.8rem; color:var(--accent);">${c.ownerAddress || 'Clinique'}</span></h4>
                             <p>${c.ownerName} • ${c.date}</p>
                         </div>
                         <div class="actions-group">
@@ -1149,7 +1218,7 @@
             document.getElementById('ownerName').value = c.ownerName;
             document.getElementById('ownerPhone').value = c.ownerPhone;
             document.getElementById('ownerEmail').value = c.ownerEmail;
-            document.getElementById('ownerAddress').value = c.ownerAddress;
+            document.getElementById('ownerAddress').value = c.ownerAddress || 'Clinique';
             document.getElementById('animalName').value = c.animalName;
             document.getElementById('animalSpecies').value = c.animalSpecies;
             document.getElementById('anamnesis').value = c.anamnesis;
@@ -1198,9 +1267,9 @@
                         <div>
                             <p><strong>Date :</strong> ${c.date}</p>
                             <p><strong>Propriétaire :</strong> ${c.ownerName}</p>
+                            <p><strong>Lieu / Écurie :</strong> ${c.ownerAddress || 'Clinique'}</p>
                             <p><strong>Tél :</strong> ${c.ownerPhone || 'N/C'}</p>
                             <p><strong>E-mail :</strong> ${c.ownerEmail || 'N/C'}</p>
-                            ${c.ownerAddress ? `<p><strong>Adresse :</strong> ${c.ownerAddress}</p>` : ''}
                         </div>
                         <div>
                             <p><strong>Patient :</strong> ${c.animalName}</p>
