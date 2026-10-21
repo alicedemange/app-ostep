@@ -930,7 +930,6 @@
             patientsData = [];
             snapshot.forEach((doc) => { patientsData.push({ id: doc.id, ...doc.data() }); });
             loadPatients();
-            loadLocations();
             populateSelects();
         });
 
@@ -984,12 +983,12 @@
             document.getElementById('statTopLocation').innerText = topLoc;
         }
 
-        // Tes vraies images de squelettes hébergées dans ton dossier GitHub
+        // Squelettes (Liens personnalisables Imgur ou autre)
         const speciesSkeletons = {
-            "Cheval": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=", // (Image cheval encodée)
-            "Chien": "chien.png",
-            "Chat": "chat.png",
-            "Vache": "vache.png"
+            "Cheval": "https://imgur.com/EuwmsaM",
+            "Chien": "https://imgur.com/cFR1KMu",
+            "Chat": "https://imgur.com/lNPZ7dD",
+            "Vache": "https://imgur.com/qt709gi"
         };
 
         let customSkeletonImage = null;
@@ -1108,16 +1107,20 @@
             if (species === 'Custom' && customSkeletonImage) {
                 ctx.drawImage(customSkeletonImage, 0, 0, canvas.width, canvas.height);
                 saveCanvasState();
-            } else if (baseSkeletonsSVG[species]) {
+            } else if (speciesSkeletons[species] && speciesSkeletons[species] !== "") {
                 const img = new Image();
-                const svgBlob = new Blob([baseSkeletonsSVG[species]], {type: 'image/svg+xml;charset=utf-8'});
-                const url = URL.createObjectURL(svgBlob);
+                img.crossOrigin = "anonymous";
                 img.onload = function() {
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    URL.revokeObjectURL(url);
                     saveCanvasState();
                 };
-                img.src = url;
+                img.src = speciesSkeletons[species];
+            } else {
+                ctx.fillStyle = '#6B7280';
+                ctx.font = '14px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText("Aucun squelette défini (Utilisez l'import ci-dessus)", canvas.width / 2, canvas.height / 2);
+                saveCanvasState();
             }
         }
 
@@ -1259,6 +1262,107 @@
                 document.getElementById('ownerEmail').value = pat.email || '';
                 document.getElementById('ownerAddress').value = pat.address || 'Clinique';
                 updateSkeleton();
+            }
+        }
+
+        // Gestion des Lieux
+        function saveLocation(e) {
+            e.preventDefault();
+            const editId = document.getElementById('editLocationId').value;
+            const name = document.getElementById('locName').value.trim();
+            const manager = document.getElementById('locManager').value.trim();
+            const phone = document.getElementById('locPhone').value.trim();
+            const details = document.getElementById('locDetails').value.trim();
+
+            if(!name) return;
+
+            const locData = { name, manager, phone, details, timestamp: Date.now() };
+
+            if(editId) {
+                db.collection("locations").doc(editId).update(locData).then(() => {
+                    resetLocationForm();
+                    alert("Lieu mis à jour !");
+                });
+            } else {
+                db.collection("locations").add(locData).then(() => {
+                    resetLocationForm();
+                    alert("Lieu ajouté !");
+                });
+            }
+        }
+
+        function resetLocationForm() {
+            document.getElementById('locationForm').reset();
+            document.getElementById('editLocationId').value = "";
+            document.getElementById('locationFormTitle').innerText = "📍 Gestion des Lieux & Écuries";
+            document.getElementById('locSubmitBtn').innerText = "➕ Enregistrer le Lieu";
+            document.getElementById('locCancelBtn').style.display = "none";
+        }
+
+        function editLocation(id) {
+            const l = locationsData.find(item => item.id === id);
+            if(!l) return;
+            document.getElementById('editLocationId').value = l.id;
+            document.getElementById('locName').value = l.name;
+            document.getElementById('locManager').value = l.manager || '';
+            document.getElementById('locPhone').value = l.phone || '';
+            document.getElementById('locDetails').value = l.details || '';
+            document.getElementById('locationFormTitle').innerText = "✏️ Modifier le Lieu";
+            document.getElementById('locSubmitBtn').innerText = "💾 Mettre à jour le Lieu";
+            document.getElementById('locCancelBtn').style.display = "block";
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function deleteLocation(id) {
+            if(confirm("Supprimer ce lieu ?")) {
+                db.collection("locations").doc(id).delete();
+            }
+        }
+
+        function loadLocations() {
+            const container = document.getElementById('locationsListContainer');
+            if(!container) return;
+
+            let allLocs = [{ id: 'clinique-def', name: 'Clinique', manager: 'Cabinet principal', phone: '', details: 'Lieu par défaut' }, ...locationsData];
+
+            container.innerHTML = '';
+            allLocs.forEach(l => {
+                let count = patientsData.filter(p => (p.address || 'Clinique') === l.name).length;
+                let isClinique = l.id === 'clinique-def';
+
+                container.innerHTML += `
+                    <div class="list-item" style="flex-direction:column; align-items:flex-start;">
+                        <div style="display:flex; justify-content:space-between; width:100%; align-items:flex-start;">
+                            <div class="list-info">
+                                <h4>📍 ${l.name}</h4>
+                                <p>Gérant : ${l.manager || 'N/C'} • Tél : ${l.phone || 'N/C'}</p>
+                                ${l.details ? `<p style="font-size:0.75rem; margin-top:2px;">📌 ${l.details}</p>` : ''}
+                                <div style="margin-top:6px;">
+                                    <span style="background:var(--primary-light); color:var(--primary); font-size:0.75rem; padding:3px 8px; border-radius:12px; font-weight:600;">🐴 ${count} animal / chevaux suivis</span>
+                                </div>
+                            </div>
+                            <div class="actions-group">
+                                ${!isClinique ? `
+                                    <button class="secondary" style="background:#4A5568;" onclick="editLocation('${l.id}')">✏️</button>
+                                    <button class="danger" onclick="deleteLocation('${l.id}')">🗑️</button>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function quickAddLocationFromPatient() {
+            let newLoc = prompt("Nom de la nouvelle écurie / lieu :");
+            if(newLoc && newLoc.trim() !== '') {
+                newLoc = newLoc.trim();
+                db.collection("locations").add({ name: newLoc, manager: '', phone: '', details: '', timestamp: Date.now() }).then(() => {
+                    setTimeout(() => {
+                        populateSelects();
+                        document.getElementById('patAddress').value = newLoc;
+                    }, 500);
+                });
             }
         }
 
@@ -1766,7 +1870,13 @@
             `);
         }
 
-        loadLocations();
+        // Lancement initial au chargement
+        db.collection("locations").get().then((snapshot) => {
+            locationsData = [];
+            snapshot.forEach((doc) => { locationsData.push({ id: doc.id, ...doc.data() }); });
+            loadLocations();
+            populateSelects();
+        });
     </script>
 </body>
 </html>
