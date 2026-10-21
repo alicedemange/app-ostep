@@ -384,7 +384,7 @@
                 <span class="offline-badge">☁️ Synchronisation Cloud Firebase Active</span>
             </div>
 
-            <div class="dashboard-grid" style="margin-bottom: 15px;">
+            <div class="dashboard-grid">
                 <div class="dash-tile" onclick="startNewConsult()">
                     <span>📝</span>
                     <h3>Faire une consultation</h3>
@@ -393,25 +393,17 @@
                     <span>🐾</span>
                     <h3>Fiches patients</h3>
                 </div>
+                <div class="dash-tile" onclick="showView('locationsView')">
+                    <span>📍</span>
+                    <h3>Lieux de consultation</h3>
+                </div>
                 <div class="dash-tile" onclick="showView('historyView')">
                     <span>📂</span>
                     <h3>Historique des consultations</h3>
                 </div>
-                <div class="dash-tile" onclick="showView('notesView')">
+                <div class="dash-tile" onclick="showView('notesView')" style="grid-column: span 2;">
                     <span>🎙️</span>
-                    <h3>Notes rapides</h3>
-                </div>
-            </div>
-
-            <!-- GESTION DES LIEUX DEPUIS L'ACCUEIL -->
-            <div class="card">
-                <h2 class="section-title">📍 Gestion des Lieux & Écuries</h2>
-                <form id="locationForm" onsubmit="addNewLocation(event)" style="display: flex; gap: 8px; margin-bottom: 12px;">
-                    <input type="text" id="newLocationName" placeholder="Ex: Haras de Lauragais..." required style="flex: 1;">
-                    <button type="submit" style="width: auto; padding: 10px 15px;">➕ Ajouter</button>
-                </form>
-                <div id="locationsContainer">
-                    <p style="font-size: 0.85rem; color: var(--gray); text-align: center;">Aucun lieu personnalisé.</p>
+                    <h3>Notes rapides (Terrain)</h3>
                 </div>
             </div>
         </div>
@@ -535,7 +527,34 @@
             </div>
         </div>
 
-        <!-- FICHES PATIENTS -->
+        <!-- Brique : LIEUX DE CONSULTATION -->
+        <div id="locationsView" class="view">
+            <div class="card">
+                <h2 id="locationFormTitle" class="section-title">📍 Gestion des Lieux & Écuries</h2>
+                <form id="locationForm" onsubmit="saveLocation(event)">
+                    <input type="hidden" id="editLocationId" value="">
+                    <div class="form-group">
+                        <label>Nom du lieu / Écurie</label>
+                        <input type="text" id="locName" required placeholder="Ex: Écurie des Prés, Haras de Lauragais...">
+                    </div>
+                    <div class="form-group">
+                        <label>Adresse / Infos pratiques (Optionnel)</label>
+                        <input type="text" id="locDetails" placeholder="Ex: 31290 Villefranche, code portail...">
+                    </div>
+                    <button type="submit" id="locSubmitBtn">➕ Enregistrer le Lieu</button>
+                    <button type="button" id="locCancelBtn" class="secondary" style="display:none; margin-top:8px;" onclick="resetLocationForm()">Annuler la modification</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2 class="section-title">📋 Liste des Lieux Enregistrés</h2>
+                <div id="locationsListContainer">
+                    <p style="font-size: 0.9rem; color: var(--gray); text-align: center;">Chargement des lieux...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Brique : FICHES PATIENTS -->
         <div id="patientsView" class="view">
             <div class="card">
                 <h2 id="patientFormTitle" class="section-title">🐾 Gestion des Fiches Patients</h2>
@@ -579,9 +598,12 @@
                         </div>
                         <div class="form-group">
                             <label>Lieu / Écurie de rattachement</label>
-                            <select id="patAddress">
-                                <option value="Clinique">Clinique (Par défaut)</option>
-                            </select>
+                            <div style="display: flex; gap: 6px;">
+                                <select id="patAddress" style="flex: 1;">
+                                    <option value="Clinique">Clinique (Par défaut)</option>
+                                </select>
+                                <button type="button" class="secondary" style="width: auto; padding: 0 12px; font-size: 0.8rem;" onclick="quickAddLocationFromPatient()" title="Créer un nouveau lieu rapidement">➕ Lieu</button>
+                            </div>
                         </div>
                     </div>
 
@@ -723,22 +745,48 @@
             populateSelects();
         });
 
-        function addNewLocation(e) {
+        // Gestion de la brique Lieux
+        function saveLocation(e) {
             e.preventDefault();
-            const input = document.getElementById('newLocationName');
-            const locName = input.value.trim();
-            if(!locName) return;
+            const editId = document.getElementById('editLocationId').value;
+            const name = document.getElementById('locName').value.trim();
+            const details = document.getElementById('locDetails').value.trim();
 
-            // Vérifier si existe déjà
-            if(locationsData.some(l => l.name.toLowerCase() === locName.toLowerCase())) {
-                alert("Ce lieu existe déjà !");
-                return;
+            if(!name) return;
+
+            const locData = { name, details, timestamp: Date.now() };
+
+            if(editId) {
+                db.collection("locations").doc(editId).update(locData).then(() => {
+                    resetLocationForm();
+                    alert("Lieu mis à jour avec succès !");
+                });
+            } else {
+                db.collection("locations").add(locData).then(() => {
+                    resetLocationForm();
+                    alert("Lieu ajouté avec succès !");
+                });
             }
+        }
 
-            db.collection("locations").add({ name: locName, timestamp: Date.now() }).then(() => {
-                input.value = '';
-                alert("Lieu ajouté avec succès !");
-            });
+        function resetLocationForm() {
+            document.getElementById('locationForm').reset();
+            document.getElementById('editLocationId').value = "";
+            document.getElementById('locationFormTitle').innerText = "📍 Gestion des Lieux & Écuries";
+            document.getElementById('locSubmitBtn').innerText = "➕ Enregistrer le Lieu";
+            document.getElementById('locCancelBtn').style.display = "none";
+        }
+
+        function editLocation(id) {
+            const l = locationsData.find(item => item.id === id);
+            if(!l) return;
+            document.getElementById('editLocationId').value = l.id;
+            document.getElementById('locName').value = l.name;
+            document.getElementById('locDetails').value = l.details || '';
+            document.getElementById('locationFormTitle').innerText = "✏️ Modifier le Lieu";
+            document.getElementById('locSubmitBtn').innerText = "💾 Mettre à jour le Lieu";
+            document.getElementById('locCancelBtn').style.display = "block";
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function deleteLocation(id) {
@@ -748,15 +796,11 @@
         }
 
         function loadLocations() {
-            const container = document.getElementById('locationsContainer');
+            const container = document.getElementById('locationsListContainer');
             if(!container) return;
 
-            let allLocs = ['Clinique', ...locationsData.map(l => l.name)];
-            // Retirer les doublons éventuels
-            allLocs = [...new Set(allLocs)];
-
             if (locationsData.length === 0) {
-                container.innerHTML = '<p style="font-size: 0.85rem; color: var(--gray); text-align: center; margin-bottom:8px;">Aucun lieu personnalisé (Seule la "Clinique" est active).</p>';
+                container.innerHTML = '<p style="font-size: 0.9rem; color: var(--gray); text-align: center;">Aucun lieu personnalisé enregistré (Clinique par défaut).</p>';
                 return;
             }
 
@@ -764,12 +808,30 @@
             locationsData.forEach(l => {
                 let count = patientsData.filter(p => (p.address || 'Clinique') === l.name).length;
                 container.innerHTML += `
-                    <div style="display: flex; justify-content: space-between; align-items: center; background: #FFF; padding: 8px 12px; border-radius: 6px; margin-bottom: 6px; border: 1px solid #E5E7EB;">
-                        <span style="font-size: 0.9rem; font-weight: 500; color: var(--primary);">📍 ${l.name} <span style="font-size: 0.75rem; color: var(--gray); font-weight: normal;">(${count} animal/aux)</span></span>
-                        <button type="button" class="danger" style="width: auto; padding: 4px 8px; font-size: 0.75rem;" onclick="deleteLocation('${l.id}')">🗑️</button>
+                    <div class="list-item">
+                        <div class="list-info">
+                            <h4>📍 ${l.name}</h4>
+                            <p>${l.details || 'Aucune info spécifique'} • <strong>${count} animal/aux rattaché(s)</strong></p>
+                        </div>
+                        <div class="actions-group">
+                            <button class="secondary" style="background:#4A5568;" onclick="editLocation('${l.id}')">✏️</button>
+                            <button class="danger" onclick="deleteLocation('${l.id}')">🗑️</button>
+                        </div>
                     </div>
                 `;
             });
+        }
+
+        function quickAddLocationFromPatient() {
+            let newLoc = prompt("Nom de la nouvelle écurie / lieu :");
+            if(newLoc && newLoc.trim() !== '') {
+                newLoc = newLoc.trim();
+                db.collection("locations").add({ name: newLoc, details: '', timestamp: Date.now() }).then(() => {
+                    setTimeout(() => {
+                        document.getElementById('patAddress').value = newLoc;
+                    }, 500);
+                });
+            }
         }
 
         const skeletons = {
@@ -793,11 +855,11 @@
             if (viewId === 'homeView') {
                 homeBtn.style.display = 'none';
                 document.getElementById('headerTitle').innerText = "OstéoAnimal - Lynette";
-                loadLocations();
             } else {
                 homeBtn.style.display = 'block';
                 if(viewId === 'consultView') { document.getElementById('headerTitle').innerText = "Consultation"; populateSelects(); }
-                if(viewId === 'patientsView') { document.getElementById('headerTitle').innerText = "Fiches Patients & Lieux"; loadPatients(); populateSelects(); }
+                if(viewId === 'locationsView') { document.getElementById('headerTitle').innerText = "Lieux de consultation"; loadLocations(); }
+                if(viewId === 'patientsView') { document.getElementById('headerTitle').innerText = "Fiches Patients"; loadPatients(); populateSelects(); }
                 if(viewId === 'historyView') { document.getElementById('headerTitle').innerText = "Historique"; loadHistory(); }
                 if(viewId === 'notesView') { document.getElementById('headerTitle').innerText = "Notes Rapides"; populateSelects(); }
             }
@@ -1370,7 +1432,7 @@
                     
                     <div class="btn-group">
                         <button class="btn btn-print" onclick="window.print()">🖨️ Imprimer / Enregistrer en PDF</button>
-                        ${c.ownerEmail ? `<a class="btn btn-email" href="mailto:${c.ownerEmail}?subject=Compte rendu ostéopathie - ${c.animalName}&body=Bonjour,%0A%0AVoici le compte rendu de la consultation ostéopathique pour ${c.animalName} du ${c.date}.\%0A\%0AAnamnèse : ${encodeURIComponent(c.anamnesis)}%0ATraitement : ${encodeURIComponent(c.treatment)}\%0AConseils :${encodeURIComponent(c.advice)}">✉️ Envoyer par e-mail</a>` : ''}
+                        ${c.ownerEmail ? `<a class="btn btn-email" href="mailto:${c.ownerEmail}?subject=Compte rendu ostéopathie - ${c.animalName}&body=Bonjour,%0A%0AVoici le compte rendu de la consultation ostéopathique pour ${c.animalName} du ${c.date}.%0A%0AAnamnèse : ${encodeURIComponent(c.anamnesis)}%0ATraitement : ${encodeURIComponent(c.treatment)}%0AConseils : ${encodeURIComponent(c.advice)}">✉️ Envoyer par e-mail</a>` : ''}
                     </div>
                 </body>
                 </html>
