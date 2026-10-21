@@ -48,6 +48,13 @@
             align-items: center;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
+        
+        .header-logo {
+    height: 40px; /* Ajuste la hauteur selon ton logo */
+    width: auto;
+    object-fit: contain;
+    border-radius: 4px; /* Optionnel : arrondit légèrement les bords si besoin */
+}
 
         header h1 {
             font-size: 1.1rem;
@@ -410,6 +417,11 @@
 <body>
 
     <header>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <img src="https://i.postimg.cc/6QWy5MnP/Logo-lynette-V1.jpg" alt="Logo" class="header-logo">
+            <h1 id="headerTitle">OstéoAnimal - Lynette</h1>
+        </div>
+        <button id="homeBtn" class="back-home-btn" style="display:none;" onclick="showView('homeView')">🏠 Accueil</button>
         <h1 id="headerTitle">OstéoAnimal - Lynette</h1>
         <button id="homeBtn" class="back-home-btn" style="display:none;" onclick="showView('homeView')">🏠 Accueil</button>
     </header>
@@ -1950,10 +1962,13 @@
                 </head>
                 <body>
                     <div class="pro-header">
-                        <div>
-                            <h2>${proProfile.firstName} ${proProfile.lastName}</h2>
-                            <p>${proProfile.status}</p>
-                            ${proProfile.siret ? `<p>SIRET : ${proProfile.siret}</p>` : ''}
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <img src="https://i.postimg.cc/6QWy5MnP/Logo-lynette-V1.jpg" style="height: 50px; width: auto;">
+                            <div>
+                                <h2>${proProfile.firstName} ${proProfile.lastName}</h2>
+                                <p>${proProfile.status}</p>
+                                ${proProfile.siret ? `<p>SIRET : ${proProfile.siret}</p>` : ''}
+                            </div>
                         </div>
                         <div style="text-align: right;">
                             <p>📞 ${proProfile.phone}</p>
