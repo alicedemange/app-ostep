@@ -704,7 +704,7 @@
             </div>
         </div>
 
-        <!-- FICHE LIEU DÉTAILLÉE (NOUVEAU) -->
+        <!-- FICHE LIEU DÉTAILLÉE -->
         <div id="locationDetailView" class="view">
             <div class="card">
                 <button class="secondary" style="width: auto; margin-bottom: 15px;" onclick="showView('locationsView')">⬅️ Retour aux lieux</button>
@@ -915,7 +915,6 @@
         // Fonction utilitaire pour formater les dates en JJ/MM/AAAA
         function formatDate(dateStr) {
             if (!dateStr) return '';
-            // Si la date est au format AAAA-MM-JJ (input type date)
             if (dateStr.includes('-')) {
                 const parts = dateStr.split('-');
                 if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
@@ -1401,7 +1400,7 @@
             const locPatients = patientsData.filter(p => (p.address || 'Clinique') === locName);
 
             if (locPatients.length === 0) {
-                container.innerHTML = '<p style="font-size: 0.85rem; color: var(--gray);">Aucun patient enregistré dans ce lieu pour l'instant.</p>';
+                container.innerHTML = '<p style="font-size: 0.85rem; color: var(--gray);">Aucun patient enregistré dans ce lieu pour l'istanne.</p>';
             } else {
                 container.innerHTML = '';
                 locPatients.forEach(p => {
