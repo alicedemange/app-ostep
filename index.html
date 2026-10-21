@@ -1400,7 +1400,7 @@
             const locPatients = patientsData.filter(p => (p.address || 'Clinique') === locName);
 
             if (locPatients.length === 0) {
-                container.innerHTML = '<p style="font-size: 0.85rem; color: var(--gray);">Aucun patient enregistré dans ce lieu pour l'istanne.</p>';
+                container.innerHTML = '<p style="font-size: 0.85rem; color: var(--gray);">Aucun patient enregistré dans ce lieu pour l'instant.</p>';
             } else {
                 container.innerHTML = '';
                 locPatients.forEach(p => {
