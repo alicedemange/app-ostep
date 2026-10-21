@@ -704,6 +704,19 @@
             </div>
         </div>
 
+        <!-- FICHE LIEU DÉTAILLÉE (NOUVEAU) -->
+        <div id="locationDetailView" class="view">
+            <div class="card">
+                <button class="secondary" style="width: auto; margin-bottom: 15px;" onclick="showView('locationsView')">⬅️ Retour aux lieux</button>
+                <h2 id="detailLocationName" class="section-title">📍 Détails du Lieu & Animaux Suivis</h2>
+                <div id="locationInfoSummary" style="margin-bottom: 20px; font-size: 0.9rem; background: var(--primary-light); padding: 12px; border-radius: 8px;"></div>
+                <h3 style="font-size: 1rem; color: var(--primary); margin: 25px 0 10px 0;">🐾 Liste des animaux dans ce lieu</h3>
+                <div id="locationPatientsContainer">
+                    <p style="font-size: 0.85rem; color: var(--gray);">Aucun animal pour l'instant.</p>
+                </div>
+            </div>
+        </div>
+
         <!-- LIEUX DE CONSULTATION -->
         <div id="locationsView" class="view">
             <div class="card">
@@ -736,7 +749,7 @@
             </div>
 
             <div class="card">
-                <h2 class="section-title">📋 Liste des Lieux & Dashboard Chevaux Suivis</h2>
+                <h2 class="section-title">📋 Liste des Lieux (Clique sur un lieu pour voir sa fiche)</h2>
                 <div id="locationsListContainer">
                     <p style="font-size: 0.9rem; color: var(--gray); text-align: center;">Chargement des lieux...</p>
                 </div>
@@ -896,7 +909,19 @@
         let quickNotesData = [];
         let locationsData = [];
         let currentActivePatientId = null;
+        let currentActiveLocationName = null;
         let currentConsultPhotos = [];
+
+        // Fonction utilitaire pour formater les dates en JJ/MM/AAAA
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            // Si la date est au format AAAA-MM-JJ (input type date)
+            if (dateStr.includes('-')) {
+                const parts = dateStr.split('-');
+                if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+            }
+            return dateStr;
+        }
 
         // Profil Pro (Lyna Nicolaescu par défaut)
         let proProfile = JSON.parse(localStorage.getItem('osteoProProfile')) || {
@@ -983,12 +1008,12 @@
             document.getElementById('statTopLocation').innerText = topLoc;
         }
 
-        // Squelettes (Liens personnalisables Imgur ou autre)
+        // Squelettes (Liens d'images hébergées)
         const speciesSkeletons = {
-            "Cheval": "https://i.postimg.cc/FR7TJg0L/1cheval.png",
-            "Chien": "https://i.postimg.cc/26V0BFnv/chien.png",
-            "Chat": "https://i.postimg.cc/4dmWhbpc/chat.png",
-            "Vache": "https://i.postimg.cc/G2HXsJvm/vache.png"
+            "Cheval": "",
+            "Chien": "",
+            "Chat": "",
+            "Vache": ""
         };
 
         let customSkeletonImage = null;
@@ -1075,8 +1100,7 @@
                 const img = new Image();
                 img.onload = function() {
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    saveCanvasState();
+                    drawScaledImage(img);
                 };
                 img.src = existingImageSrc;
             } else {
@@ -1098,7 +1122,7 @@
             }
         }
 
-      function updateSkeleton() {
+        function updateSkeleton() {
             const species = document.getElementById('animalSpecies').value;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = '#FFFFFF';
@@ -1343,14 +1367,15 @@
                     <div class="list-item" style="flex-direction:column; align-items:flex-start;">
                         <div style="display:flex; justify-content:space-between; width:100%; align-items:flex-start;">
                             <div class="list-info">
-                                <h4>📍 ${l.name}</h4>
+                                <h4 onclick="openLocationDetail('${l.name}')" style="cursor:pointer; color:var(--primary); font-size:1rem;">📍 ${l.name} 🔍</h4>
                                 <p>Gérant : ${l.manager || 'N/C'} • Tél : ${l.phone || 'N/C'}</p>
                                 ${l.details ? `<p style="font-size:0.75rem; margin-top:2px;">📌 ${l.details}</p>` : ''}
                                 <div style="margin-top:6px;">
-                                    <span style="background:var(--primary-light); color:var(--primary); font-size:0.75rem; padding:3px 8px; border-radius:12px; font-weight:600;">🐴 🐕 ${count} animal(aux) suivis</span>
+                                    <span style="background:var(--primary-light); color:var(--primary); font-size:0.75rem; padding:3px 8px; border-radius:12px; font-weight:600;">🐴 ${count} animal / chevaux suivis</span>
                                 </div>
                             </div>
                             <div class="actions-group">
+                                <button class="secondary" onclick="openLocationDetail('${l.name}')">👁️ Fiche</button>
                                 ${!isClinique ? `
                                     <button class="secondary" style="background:#4A5568;" onclick="editLocation('${l.id}')">✏️</button>
                                     <button class="danger" onclick="deleteLocation('${l.id}')">🗑️</button>
@@ -1360,6 +1385,38 @@
                     </div>
                 `;
             });
+        }
+
+        function openLocationDetail(locName) {
+            currentActiveLocationName = locName;
+            const l = locationsData.find(item => item.name === locName) || { name: locName, manager: 'Cabinet principal / Non renseigné', phone: 'N/C', details: 'Lieu par défaut' };
+            
+            document.getElementById('detailLocationName').innerText = `📍 Fiche Lieu : ${l.name}`;
+            document.getElementById('locationInfoSummary').innerHTML = `
+                <strong>Gérant / Contact :</strong> ${l.manager || 'N/C'} • <strong>Tél :</strong> ${l.phone || 'N/C'}<br>
+                ${l.details ? `<strong>Infos d'accès :</strong> ${l.details}` : ''}
+            `;
+
+            const container = document.getElementById('locationPatientsContainer');
+            const locPatients = patientsData.filter(p => (p.address || 'Clinique') === locName);
+
+            if (locPatients.length === 0) {
+                container.innerHTML = '<p style="font-size: 0.85rem; color: var(--gray);">Aucun patient enregistré dans ce lieu pour l'instant.</p>';
+            } else {
+                container.innerHTML = '';
+                locPatients.forEach(p => {
+                    container.innerHTML += `
+                        <div class="list-item">
+                            <div class="list-info">
+                                <h4 onclick="openPatientDetail('${p.id}')">📂 ${p.animalName} (${p.species}) - ${p.breedAge || ''}</h4>
+                                <p>Propriétaire : ${p.owner} • Tél : ${p.phone || 'N/C'}</p>
+                            </div>
+                            <button class="secondary" onclick="startConsultForPatient('${p.id}')">📝 Consulter</button>
+                        </div>
+                    `;
+                });
+            }
+            showView('locationDetailView');
         }
 
         function quickAddLocationFromPatient() {
@@ -1556,7 +1613,7 @@
                     
                     let historyHtml = patConsults.length > 0 ? patConsults.map(c => `
                         <div style="background:#FFF; padding:8px; border-radius:6px; margin-top:5px; display:flex; justify-content:space-between; align-items:center; border:1px solid #DDD;">
-                            <span style="font-size:0.8rem;">📅 ${c.consultDate || c.date} - Prochain : ${c.nextConsultDate || 'Non planifié'}</span>
+                            <span style="font-size:0.8rem;">📅 ${formatDate(c.consultDate || c.date)} - Prochain : ${formatDate(c.nextConsultDate) || 'Non planifié'}</span>
                             <div style="display:flex; gap:4px;">
                                 <button class="secondary" style="padding:4px 8px; font-size:0.75rem; width:auto;" onclick="generateReport('${c.id}')">📄 Rapport</button>
                                 <button class="secondary" style="padding:4px 8px; font-size:0.75rem; width:auto; background:#4A5568;" onclick="editConsultation('${c.id}')">✏️</button>
@@ -1594,9 +1651,8 @@
 
                 container.innerHTML += `
                     <div class="location-section">
-                        <div class="location-title">
+                        <div class="location-title" style="margin: 10px 0 5px 0; font-weight: bold; color: var(--primary);">
                             <span>📍 ${location}</span>
-                            <span style="font-size: 0.8rem; background: var(--white); padding: 2px 8px; border-radius: 12px; border: 1px solid #DDD;">${grouped[location].length} patient(s)</span>
                         </div>
                         ${htmlList}
                     </div>
@@ -1662,7 +1718,7 @@
 
             const editId = document.getElementById('editConsultId').value;
             let consultDateVal = document.getElementById('consultDateInput').value || new Date().toISOString().split('T')[0];
-            let formattedDate = consultDateVal.split('-').reverse().join('/');
+            let formattedDate = formatDate(consultDateVal);
             let timestampVal = new Date(consultDateVal).getTime();
 
             const consultation = {
@@ -1724,8 +1780,9 @@
 
             container.innerHTML = '';
             filtered.forEach(c => {
+                let formattedNextDate = formatDate(c.nextConsultDate);
                 let reminderBtn = c.nextConsultDate && c.ownerEmail ? `
-                    <a class="secondary" style="padding:6px 10px; font-size:0.8rem; text-decoration:none; display:inline-block; border-radius:6px; background:#EA5B0C; color:#fff;" href="mailto:${c.ownerEmail}?subject=Rappel%20-%20Suivi%20ost%C3%A9opathique%20${encodeURIComponent(c.animalName)}&body=Bonjour%20${encodeURIComponent(c.ownerName)},%0A%0ALe%20suivi%20ost%C3%A9opathique%20de%20${encodeURIComponent(c.animalName)}%20pr%C3%A9conis%C3%A9%20pour%20le%20${c.nextConsultDate}%20approche.%0A%0APensez%20a%20prendre%20contact%20pour%20fixer%20un%20rendez-vous.%0A%0ABien%20cordialement,%0A${encodeURIComponent(proProfile.firstName + ' ' + proProfile.lastName)}">✉️ Rappel RDV</a>
+                    <a class="secondary" style="padding:6px 10px; font-size:0.8rem; text-decoration:none; display:inline-block; border-radius:6px; background:#EA5B0C; color:#fff;" href="mailto:${c.ownerEmail}?subject=Rappel%20-%20Suivi%20ost%C3%A9opathique%20${encodeURIComponent(c.animalName)}&body=Bonjour%20${encodeURIComponent(c.ownerName)},%0A%0ALe%20suivi%20ost%C3%A9opathique%20de%20${encodeURIComponent(c.animalName)}%20pr%C3%A9conis%C3%A9%20pour%20le%20${formattedNextDate}%20approche.%0A%0APensez%20a%20prendre%20contact%20pour%20fixer%20un%20rendez-vous.%0A%0ABien%20cordialement,%0A${encodeURIComponent(proProfile.firstName + ' ' + proProfile.lastName)}">✉️ Rappel RDV</a>
                 ` : '';
 
                 container.innerHTML += `
@@ -1733,8 +1790,8 @@
                         <div style="display:flex; justify-content:space-between; width:100%; align-items:flex-start;">
                             <div class="list-info">
                                 <h4>${c.animalName} (${c.animalSpecies}) - <span style="font-size:0.8rem; color:var(--accent);">${c.ownerAddress || 'Clinique'}</span></h4>
-                                <p>${c.ownerName} • Séance du : ${c.consultDate || c.date}</p>
-                                <p style="font-size:0.75rem; color:var(--primary); font-weight:bold; margin-top:2px;">Prochain RDV préconisé : ${c.nextConsultDate || 'Non défini'}</p>
+                                <p>${c.ownerName} • Séance du : ${formatDate(c.consultDate || c.date)}</p>
+                                <p style="font-size:0.75rem; color:var(--primary); font-weight:bold; margin-top:2px;">Prochain RDV préconisé : ${formattedNextDate || 'Non défini'}</p>
                             </div>
                             <div class="actions-group">
                                 ${reminderBtn}
@@ -1799,6 +1856,9 @@
                 `;
             }
 
+            const formattedConsultDate = formatDate(c.consultDate || c.date);
+            const formattedNextDate = formatDate(c.nextConsultDate);
+
             const win = window.open('', '_blank');
             win.document.write(`
                 <html>
@@ -1841,8 +1901,8 @@
                     <h1>Compte Rendu de Consultation Ostéopathique</h1>
                     <div class="header-info">
                         <div>
-                            <p><strong>Date de séance :</strong> ${c.consultDate || c.date}</p>
-                            <p><strong>Prochain RDV préconisé :</strong> ${c.nextConsultDate || 'Non défini'}</p>
+                            <p><strong>Date de séance :</strong> ${formattedConsultDate}</p>
+                            <p><strong>Prochain RDV préconisé :</strong> ${formattedNextDate || 'Non défini'}</p>
                             <p><strong>Propriétaire :</strong> ${c.ownerName}</p>
                             <p><strong>Lieu / Écurie :</strong> ${c.ownerAddress || 'Clinique'}</p>
                             <p><strong>Tél :</strong> ${c.ownerPhone || 'N/C'}</p>
@@ -1872,7 +1932,7 @@
                     <div class="btn-group">
                         <button class="btn btn-back" onclick="window.close()">⬅️ Revenir à l'application</button>
                         <button class="btn btn-print" onclick="window.print()">🖨️ Imprimer / Enregistrer en PDF</button>
-                        ${c.ownerEmail ? `<a class="btn btn-email" href="mailto:${c.ownerEmail}?subject=Compte rendu ostéopathie - ${c.animalName}&body=Bonjour,%0A%0AVoici le compte rendu de la consultation ostéopathique pour ${c.animalName} du ${c.consultDate || c.date}.%0A%0AProchain RDV préconisé : ${c.nextConsultDate || 'N/C'}%0ABien cordialement,%0A${encodeURIComponent(proProfile.firstName + ' ' + proProfile.lastName)}">✉️ Envoyer par e-mail</a>` : ''}
+                        ${c.ownerEmail ? `<a class="btn btn-email" href="mailto:${c.ownerEmail}?subject=Compte rendu ostéopathie - ${c.animalName}&body=Bonjour,%0A%0AVoici le compte rendu de la consultation ostéopathique pour ${c.animalName} du ${formattedConsultDate}.%0A%0AProchain RDV préconisé : ${formattedNextDate || 'N/C'}%0ABien cordialement,%0A${encodeURIComponent(proProfile.firstName + ' ' + proProfile.lastName)}">✉️ Envoyer par e-mail</a>` : ''}
                     </div>
                 </body>
                 </html>
