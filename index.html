@@ -424,6 +424,25 @@
         <button id="homeBtn" class="back-home-btn" style="display:none;" onclick="showView('homeView')">🏠 Accueil</button>
     </header>
 
+    <!-- ÉCRAN DE CONNEXION -->
+    <div id="loginScreen" class="container" style="display:none;">
+        <div class="card" style="margin-top: 30px;">
+            <h2 class="section-title">🔐 Connexion Sécurisée</h2>
+            <form id="loginForm" onsubmit="loginUser(event)">
+                <div class="form-group">
+                    <label>Adresse e-mail</label>
+                    <input type="email" id="loginEmail" required placeholder="ton@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Mot de passe</label>
+                    <input type="password" id="loginPassword" required placeholder="••••••••">
+                </div>
+                <button type="submit">Se connecter</button>
+                <p id="loginError" style="color: var(--danger); font-size: 0.85rem; margin-top: 10px; display:none;"></p>
+            </form>
+        </div>
+    </div>
+
     <div class="container">
         
         <!-- ACCUEIL -->
