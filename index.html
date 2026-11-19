@@ -40,51 +40,6 @@
             padding-bottom: 50px;
         }
 
-        #loginScreen {
-            position: fixed;
-            inset: 0;
-            background: var(--bg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            z-index: 9999;
-        }
-
-        .login-card {
-            background: var(--white);
-            border-radius: 12px;
-            padding: 24px;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-        }
-
-        .login-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 8px;
-        }
-
-        .login-card h2 {
-            color: var(--primary);
-            font-size: 1.2rem;
-        }
-
-        .login-card p {
-            color: var(--gray);
-            font-size: 0.85rem;
-            margin-bottom: 16px;
-        }
-
-        .login-error {
-            color: var(--danger);
-            font-size: 0.85rem;
-            margin-top: 10px;
-            display: none;
-        }
-
         header {
             background-color: var(--primary);
             color: var(--white);
@@ -106,6 +61,8 @@
             width: auto;
             object-fit: contain;
             border-radius: 4px;
+            background: #fff;
+            padding: 2px;
         }
 
         header h1 {
@@ -128,17 +85,7 @@
             cursor: pointer;
             font-size: 0.85rem;
             width: auto;
-        }
-
-        .logout-btn {
-            background: rgba(0,0,0,0.2);
-            color: white;
-            border: none;
-            padding: 6px 10px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            width: auto;
+            display: none;
         }
 
         .container {
@@ -484,7 +431,18 @@
         }
     </style>
 </head>
-<body>     
+<body>
+    <header>
+        <div class="header-brand">
+            <img src="https://i.postimg.cc/6QWy5MnP/Logo-lynette-V1.jpg" alt="Logo" class="header-logo">
+            <h1 id="headerTitle">OstéoAnimal - Lynette</h1>
+        </div>
+        <div class="header-actions">
+            <button id="homeBtn" class="back-home-btn" onclick="showView('homeView')">🏠 Accueil</button>
+        </div>
+    </header>
+
+    <div class="container">
         <!-- ACCUEIL -->
         <div id="homeView" class="view active">
             <div class="welcome-card">
@@ -966,7 +924,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 
     <script>
@@ -1044,23 +1001,23 @@
                 snapshot.forEach((doc) => { patientsData.push({ id: doc.id, ...doc.data() }); });
                 loadPatients();
                 populateSelects();
-            });
+            }, (err) => console.error("Erreur Firestore patients:", err));
 
             db.collection("consultations").onSnapshot((snapshot) => {
                 consultationsData = [];
                 snapshot.forEach((doc) => { consultationsData.push({ id: doc.id, ...doc.data() }); });
-                consultationsData.sort((a, b) => b.timestamp - a.timestamp);
+                consultationsData.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
                 loadHistory();
                 loadPatients();
                 updateDashboardStats();
-            });
+            }, (err) => console.error("Erreur Firestore consultations:", err));
 
             db.collection("quicknotes").onSnapshot((snapshot) => {
                 quickNotesData = [];
                 snapshot.forEach((doc) => { quickNotesData.push({ id: doc.id, ...doc.data() }); });
-                quickNotesData.sort((a, b) => b.timestamp - a.timestamp);
+                quickNotesData.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
                 loadQuickNotes();
-            });
+            }, (err) => console.error("Erreur Firestore quicknotes:", err));
 
             db.collection("locations").onSnapshot((snapshot) => {
                 locationsData = [];
@@ -1068,16 +1025,15 @@
                 loadLocations();
                 populateSelects();
                 updateDashboardStats();
-            });
+            }, (err) => console.error("Erreur Firestore locations:", err));
         }
-
-       
 
         function updateDashboardStats() {
             document.getElementById('statTotalConsult').innerText = consultationsData.length;
             const now = new Date();
-            const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay() + 1));
-            startOfWeek.setHours(0,0,0,0);
+            const day = now.getDay() === 0 ? 6 : now.getDay() - 1;
+            const startOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() - day);
+            startOfWeek.setHours(0, 0, 0, 0);
 
             let weekCount = consultationsData.filter(c => c.consultDate && new Date(c.consultDate) >= startOfWeek).length;
             document.getElementById('statWeekConsult').innerText = weekCount;
@@ -1119,24 +1075,25 @@
             document.getElementById(viewId).classList.add('active');
             
             const homeBtn = document.getElementById('homeBtn');
+            const headerTitle = document.getElementById('headerTitle');
             if (viewId === 'homeView') {
-                homeBtn.style.display = 'none';
-                document.getElementById('headerTitle').innerText = "OstéoAnimal - Lynette";
+                if (homeBtn) homeBtn.style.display = 'none';
+                if (headerTitle) headerTitle.innerText = "OstéoAnimal - Lynette";
                 updateDashboardStats();
             } else {
-                homeBtn.style.display = 'inline-block';
-                if(viewId === 'consultView') { 
-                    document.getElementById('headerTitle').innerText = "Consultation"; 
+                if (homeBtn) homeBtn.style.display = 'inline-block';
+                if (viewId === 'consultView') { 
+                    if (headerTitle) headerTitle.innerText = "Consultation"; 
                     populateSelects(); 
-                    if(!document.getElementById('editConsultId').value) {
+                    if (!document.getElementById('editConsultId').value) {
                         document.getElementById('consultDateInput').valueAsDate = new Date();
                     }
                 }
-                if(viewId === 'locationsView') { document.getElementById('headerTitle').innerText = "Lieux de consultation"; loadLocations(); }
-                if(viewId === 'patientsView') { document.getElementById('headerTitle').innerText = "Fiches Patients"; loadPatients(); populateSelects(); }
-                if(viewId === 'historyView') { document.getElementById('headerTitle').innerText = "Historique"; loadHistory(); }
-                if(viewId === 'notesView') { document.getElementById('headerTitle').innerText = "Notes Vocales"; populateSelects(); }
-                if(viewId === 'proProfileView') { document.getElementById('headerTitle').innerText = "Profil Professionnel"; }
+                if (viewId === 'locationsView') { if (headerTitle) headerTitle.innerText = "Lieux de consultation"; loadLocations(); }
+                if (viewId === 'patientsView') { if (headerTitle) headerTitle.innerText = "Fiches Patients"; loadPatients(); populateSelects(); }
+                if (viewId === 'historyView') { if (headerTitle) headerTitle.innerText = "Historique"; loadHistory(); }
+                if (viewId === 'notesView') { if (headerTitle) headerTitle.innerText = "Notes Vocales"; populateSelects(); loadQuickNotes(); }
+                if (viewId === 'proProfileView') { if (headerTitle) headerTitle.innerText = "Profil Professionnel"; }
             }
         }
 
@@ -1156,7 +1113,7 @@
 
         function handleConsultPhotos(e) {
             const files = e.target.files;
-            for(let file of files) {
+            for (let file of files) {
                 const reader = new FileReader();
                 reader.onload = function(evt) {
                     currentConsultPhotos.push(evt.target.result);
@@ -1365,14 +1322,14 @@
             let selectConsultAddr = document.getElementById('ownerAddress');
             let selectPatAddr = document.getElementById('patAddress');
             
-            if(selectConsult) {
+            if (selectConsult) {
                 selectConsult.innerHTML = '<option value="">-- Choisir dans mes fiches patients --</option>';
                 patientsData.forEach(p => {
                     selectConsult.innerHTML += `<option value="${p.id}">${p.animalName} (${p.species}) - ${p.owner}</option>`;
                 });
             }
 
-            if(selectNote) {
+            if (selectNote) {
                 selectNote.innerHTML = '<option value="">-- Note libre / Non assignée --</option>';
                 patientsData.forEach(p => {
                     selectNote.innerHTML += `<option value="${p.id}">${p.animalName} (${p.owner})</option>`;
@@ -1383,7 +1340,7 @@
             allLocations = [...new Set(allLocations)];
 
             [selectConsultAddr, selectPatAddr].forEach(sel => {
-                if(sel) {
+                if (sel) {
                     let currentVal = sel.value;
                     sel.innerHTML = '';
                     allLocations.forEach(loc => {
@@ -1418,11 +1375,11 @@
             const phone = document.getElementById('locPhone').value.trim();
             const details = document.getElementById('locDetails').value.trim();
 
-            if(!name) return;
+            if (!name) return;
 
             const locData = { name, manager, phone, details, timestamp: Date.now() };
 
-            if(editId) {
+            if (editId) {
                 db.collection("locations").doc(editId).update(locData).then(() => {
                     resetLocationForm();
                     alert("Lieu mis à jour !");
@@ -1445,7 +1402,7 @@
 
         function editLocation(id) {
             const l = locationsData.find(item => item.id === id);
-            if(!l) return;
+            if (!l) return;
             document.getElementById('editLocationId').value = l.id;
             document.getElementById('locName').value = l.name;
             document.getElementById('locManager').value = l.manager || '';
@@ -1458,14 +1415,14 @@
         }
 
         function deleteLocation(id) {
-            if(confirm("Supprimer ce lieu ?")) {
+            if (confirm("Supprimer ce lieu ?")) {
                 db.collection("locations").doc(id).delete();
             }
         }
 
         function loadLocations() {
             const container = document.getElementById('locationsListContainer');
-            if(!container) return;
+            if (!container) return;
 
             let allLocs = [{ id: 'clinique-def', name: 'Clinique', manager: 'Cabinet principal', phone: '', details: 'Lieu par défaut' }, ...locationsData];
 
@@ -1532,7 +1489,7 @@
 
         function quickAddLocationFromPatient() {
             let newLoc = prompt("Nom de la nouvelle écurie / lieu :");
-            if(newLoc && newLoc.trim() !== '') {
+            if (newLoc && newLoc.trim() !== '') {
                 newLoc = newLoc.trim();
                 db.collection("locations").add({ name: newLoc, manager: '', phone: '', details: '', timestamp: Date.now() }).then(() => {
                     setTimeout(() => {
@@ -1608,7 +1565,7 @@
         function openPatientDetail(id) {
             currentActivePatientId = id;
             const p = patientsData.find(item => item.id === id);
-            if(!p) return;
+            if (!p) return;
 
             document.getElementById('detailPatientName').innerText = `🐾 Dossier : ${p.animalName} (${p.species})`;
             document.getElementById('patientInfoSummary').innerHTML = `
@@ -1626,7 +1583,7 @@
             const category = document.getElementById('docCategory').value;
             const title = document.getElementById('docTitle').value.trim() || 'Document sans titre';
 
-            if(fileInput.files && fileInput.files[0]) {
+            if (fileInput.files && fileInput.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function(evt) {
                     const newDoc = {
@@ -1638,7 +1595,7 @@
                     };
 
                     const pat = patientsData.find(p => p.id === currentActivePatientId);
-                    if(pat) {
+                    if (pat) {
                         let docs = pat.documents || [];
                         docs.push(newDoc);
                         db.collection("patients").doc(currentActivePatientId).update({ documents: docs }).then(() => {
@@ -1656,7 +1613,7 @@
             const container = document.getElementById('patientDocsContainer');
             let docs = patient.documents || [];
 
-            if(docs.length === 0) {
+            if (docs.length === 0) {
                 container.innerHTML = '<p style="font-size: 0.85rem; color: var(--gray);">Aucun document classé pour ce patient.</p>';
                 return;
             }
@@ -1679,9 +1636,9 @@
         }
 
         function deletePatientDoc(docId) {
-            if(confirm("Supprimer ce document ?")) {
+            if (confirm("Supprimer ce document ?")) {
                 const pat = patientsData.find(p => p.id === currentActivePatientId);
-                if(pat) {
+                if (pat) {
                     let docs = (pat.documents || []).filter(d => d.id !== docId);
                     db.collection("patients").doc(currentActivePatientId).update({ documents: docs }).then(() => {
                         openPatientDetail(currentActivePatientId);
@@ -1693,14 +1650,14 @@
         function loadPatients() {
             const container = document.getElementById('patientsListContainer');
             const searchInput = document.getElementById('searchPatients');
-            if(!container) return;
+            if (!container) return;
 
             let query = searchInput ? searchInput.value.toLowerCase().trim() : '';
 
             let filtered = patientsData.filter(p => 
-                p.animalName.toLowerCase().includes(query) ||
-                p.owner.toLowerCase().includes(query) ||
-                p.species.toLowerCase().includes(query) ||
+                (p.animalName || '').toLowerCase().includes(query) ||
+                (p.owner || '').toLowerCase().includes(query) ||
+                (p.species || '').toLowerCase().includes(query) ||
                 (p.address && p.address.toLowerCase().includes(query))
             );
 
@@ -1720,7 +1677,7 @@
             for (let location in grouped) {
                 let htmlList = '';
                 grouped[location].forEach(p => {
-                    let patConsults = consultationsData.filter(c => c.animalName.toLowerCase() === p.animalName.toLowerCase() && c.ownerName.toLowerCase() === p.owner.toLowerCase());
+                    let patConsults = consultationsData.filter(c => (c.animalName || '').toLowerCase() === (p.animalName || '').toLowerCase() && (c.ownerName || '').toLowerCase() === (p.owner || '').toLowerCase());
                     
                     let historyHtml = patConsults.length > 0 ? patConsults.map(c => `
                         <div style="background:#FFF; padding:8px; border-radius:6px; margin-top:5px; display:flex; justify-content:space-between; align-items:center; border:1px solid #DDD;">
@@ -1734,8 +1691,8 @@
 
                     let difficultClass = p.isDifficult ? 'is-difficult' : '';
                     let alertsHtml = '';
-                    if(p.isDifficult) alertsHtml += `<span style="background:var(--danger); color:white; font-size:0.7rem; padding:2px 6px; border-radius:4px; margin-right:5px;">⚠️ Animal difficile</span>`;
-                    if(p.ownerMandatory) alertsHtml += `<span style="background:var(--accent); color:white; font-size:0.7rem; padding:2px 6px; border-radius:4px;">👤 Proprio impératif</span>`;
+                    if (p.isDifficult) alertsHtml += `<span style="background:var(--danger); color:white; font-size:0.7rem; padding:2px 6px; border-radius:4px; margin-right:5px;">⚠️ Animal difficile</span>`;
+                    if (p.ownerMandatory) alertsHtml += `<span style="background:var(--accent); color:white; font-size:0.7rem; padding:2px 6px; border-radius:4px;">👤 Proprio impératif</span>`;
 
                     htmlList += `
                         <div class="list-item ${difficultClass}" style="flex-direction:column; align-items:flex-start;">
@@ -1772,7 +1729,7 @@
         }
 
         function deletePatient(id) {
-            if(confirm("Supprimer ce patient ?")) {
+            if (confirm("Supprimer ce patient ?")) {
                 db.collection("patients").doc(id).delete();
             }
         }
@@ -1803,7 +1760,7 @@
 
         function loadQuickNotes() {
             const container = document.getElementById('quickNotesListContainer');
-            if(!container) return;
+            if (!container) return;
 
             if (quickNotesData.length === 0) {
                 container.innerHTML = '<p style="font-size: 0.9rem; color: var(--gray); text-align: center;">Aucun mémo vocal.</p>';
@@ -1887,11 +1844,11 @@
         function renderHistory() {
             const search = document.getElementById('searchHistory') ? document.getElementById('searchHistory').value.toLowerCase().trim() : '';
             const container = document.getElementById('historyListContainer');
-            if(!container) return;
+            if (!container) return;
 
             let filtered = consultationsData.filter(c => 
-                c.animalName.toLowerCase().includes(search) || 
-                c.ownerName.toLowerCase().includes(search) ||
+                (c.animalName || '').toLowerCase().includes(search) || 
+                (c.ownerName || '').toLowerCase().includes(search) ||
                 (c.ownerAddress && c.ownerAddress.toLowerCase().includes(search))
             );
 
@@ -1955,14 +1912,14 @@
             renderConsultPhotosPreview();
 
             currentRecordedAudioUrl = {};
-            if(c.audioBilan) {
+            if (c.audioBilan) {
                 currentRecordedAudioUrl['dynamicBilanAudio'] = c.audioBilan;
                 document.getElementById('dynamicBilanAudioContainer').innerHTML = `<audio controls src="${c.audioBilan}" style="width:100%; margin-top:5px;"></audio>`;
             } else {
                 document.getElementById('dynamicBilanAudioContainer').innerHTML = '';
             }
 
-            if(c.audioTests) {
+            if (c.audioTests) {
                 currentRecordedAudioUrl['osteotestsAudio'] = c.audioTests;
                 document.getElementById('osteotestsAudioContainer').innerHTML = `<audio controls src="${c.audioTests}" style="width:100%; margin-top:5px;"></audio>`;
             } else {
@@ -1973,7 +1930,7 @@
         }
 
         function deleteConsultation(id) {
-            if(confirm("Supprimer ce compte rendu ?")) {
+            if (confirm("Supprimer ce compte rendu ?")) {
                 db.collection("consultations").doc(id).delete();
             }
         }
@@ -1983,7 +1940,7 @@
             if (!c) return;
 
             let photosHtml = '';
-            if(c.photos && c.photos.length > 0) {
+            if (c.photos && c.photos.length > 0) {
                 photosHtml = `
                     <div class="section">
                         <h3>Photos de la Séance</h3>
@@ -2094,6 +2051,9 @@
                 </html>
             `);
         }
+
+        // Démarrage automatique des listeners Firestore au chargement de la page
+        startFirestoreListeners();
     </script>
 </body>
 </html>
