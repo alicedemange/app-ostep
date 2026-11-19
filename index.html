@@ -7,6 +7,7 @@
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     
     <!-- Icône / Miniature PWA -->
     <link rel="apple-touch-icon" href="Fichier 3.svg">
@@ -39,26 +40,83 @@
             padding-bottom: 50px;
         }
 
+        #loginScreen {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 9999;
+        }
+
+        .login-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 24px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+        }
+
+        .login-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .login-card h2 {
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        .login-card p {
+            color: var(--gray);
+            font-size: 0.85rem;
+            margin-bottom: 16px;
+        }
+
+        .login-error {
+            color: var(--danger);
+            font-size: 0.85rem;
+            margin-top: 10px;
+            display: none;
+        }
+
         header {
             background-color: var(--primary);
             color: var(--white);
-            padding: 15px 20px;
+            padding: 12px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
         .header-logo {
-    height: 40px; /* Ajuste la hauteur selon ton logo */
-    width: auto;
-    object-fit: contain;
-    border-radius: 4px; /* Optionnel : arrondit légèrement les bords si besoin */
-}
+            height: 38px;
+            width: auto;
+            object-fit: contain;
+            border-radius: 4px;
+        }
 
         header h1 {
             font-size: 1.1rem;
             font-weight: 600;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
         }
 
         .back-home-btn {
@@ -69,6 +127,18 @@
             border-radius: 6px;
             cursor: pointer;
             font-size: 0.85rem;
+            width: auto;
+        }
+
+        .logout-btn {
+            background: rgba(0,0,0,0.2);
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            width: auto;
         }
 
         .container {
@@ -416,32 +486,39 @@
 </head>
 <body>
 
-    <header>
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <img src="https://i.postimg.cc/6QWy5MnP/Logo-lynette-V1.jpg" alt="Logo" class="header-logo">
-            <h1 id="headerTitle">OstéoAnimal - Lynette</h1>
-        </div>
-        <button id="homeBtn" class="back-home-btn" style="display:none;" onclick="showView('homeView')">🏠 Accueil</button>
-    </header>
-
     <!-- ÉCRAN DE CONNEXION -->
-    <div id="loginScreen" class="container" style="display:none;">
-        <div class="card" style="margin-top: 30px;">
-            <h2 class="section-title">🔐 Connexion Sécurisée</h2>
-            <form id="loginForm" onsubmit="loginUser(event)">
+    <div id="loginScreen">
+        <div class="login-card">
+            <div class="login-header">
+                <img src="https://i.postimg.cc/6QWy5MnP/Logo-lynette-V1.jpg" alt="Logo" class="header-logo">
+                <h2>Connexion OstéoAnimal</h2>
+            </div>
+            <p>Connectez-vous avec votre compte professionnel pour accéder aux données.</p>
+            <form id="loginForm" onsubmit="handleLogin(event)">
                 <div class="form-group">
-                    <label>Adresse e-mail</label>
-                    <input type="email" id="loginEmail" required placeholder="ton@email.com">
+                    <label>E-mail</label>
+                    <input type="email" id="loginEmail" required autocomplete="email">
                 </div>
                 <div class="form-group">
                     <label>Mot de passe</label>
-                    <input type="password" id="loginPassword" required placeholder="••••••••">
+                    <input type="password" id="loginPassword" required autocomplete="current-password">
                 </div>
                 <button type="submit">Se connecter</button>
-                <p id="loginError" style="color: var(--danger); font-size: 0.85rem; margin-top: 10px; display:none;"></p>
+                <div id="loginError" class="login-error"></div>
             </form>
         </div>
     </div>
+
+    <header>
+        <div class="header-brand">
+            <img src="https://i.postimg.cc/6QWy5MnP/Logo-lynette-V1.jpg" alt="Logo" class="header-logo">
+            <h1 id="headerTitle">OstéoAnimal - Lynette</h1>
+        </div>
+        <div class="header-actions">
+            <button id="homeBtn" class="back-home-btn" style="display:none;" onclick="showView('homeView')">🏠 Accueil</button>
+            <button id="logoutBtn" class="logout-btn" style="display:none;" onclick="handleLogout()">Déconnexion</button>
+        </div>
+    </header>
 
     <div class="container">
         
@@ -942,6 +1019,7 @@
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+        const auth = firebase.auth();
 
         let patientsData = [];
         let consultationsData = [];
@@ -950,6 +1028,7 @@
         let currentActivePatientId = null;
         let currentActiveLocationName = null;
         let currentConsultPhotos = [];
+        let firestoreListenersStarted = false;
 
         // Variables pour l'enregistrement audio (MediaRecorder)
         let mediaRecorder = null;
@@ -993,36 +1072,70 @@
             showView('homeView');
         }
 
-        // Synchronisation Firestore
-        db.collection("patients").onSnapshot((snapshot) => {
-            patientsData = [];
-            snapshot.forEach((doc) => { patientsData.push({ id: doc.id, ...doc.data() }); });
-            loadPatients();
-            populateSelects();
-        });
+        function startFirestoreListeners() {
+            if (firestoreListenersStarted) return;
+            firestoreListenersStarted = true;
 
-        db.collection("consultations").onSnapshot((snapshot) => {
-            consultationsData = [];
-            snapshot.forEach((doc) => { consultationsData.push({ id: doc.id, ...doc.data() }); });
-            consultationsData.sort((a, b) => b.timestamp - a.timestamp);
-            loadHistory();
-            loadPatients();
-            updateDashboardStats();
-        });
+            db.collection("patients").onSnapshot((snapshot) => {
+                patientsData = [];
+                snapshot.forEach((doc) => { patientsData.push({ id: doc.id, ...doc.data() }); });
+                loadPatients();
+                populateSelects();
+            });
 
-        db.collection("quicknotes").onSnapshot((snapshot) => {
-            quickNotesData = [];
-            snapshot.forEach((doc) => { quickNotesData.push({ id: doc.id, ...doc.data() }); });
-            quickNotesData.sort((a, b) => b.timestamp - a.timestamp);
-            loadQuickNotes();
-        });
+            db.collection("consultations").onSnapshot((snapshot) => {
+                consultationsData = [];
+                snapshot.forEach((doc) => { consultationsData.push({ id: doc.id, ...doc.data() }); });
+                consultationsData.sort((a, b) => b.timestamp - a.timestamp);
+                loadHistory();
+                loadPatients();
+                updateDashboardStats();
+            });
 
-        db.collection("locations").onSnapshot((snapshot) => {
-            locationsData = [];
-            snapshot.forEach((doc) => { locationsData.push({ id: doc.id, ...doc.data() }); });
-            loadLocations();
-            populateSelects();
-            updateDashboardStats();
+            db.collection("quicknotes").onSnapshot((snapshot) => {
+                quickNotesData = [];
+                snapshot.forEach((doc) => { quickNotesData.push({ id: doc.id, ...doc.data() }); });
+                quickNotesData.sort((a, b) => b.timestamp - a.timestamp);
+                loadQuickNotes();
+            });
+
+            db.collection("locations").onSnapshot((snapshot) => {
+                locationsData = [];
+                snapshot.forEach((doc) => { locationsData.push({ id: doc.id, ...doc.data() }); });
+                loadLocations();
+                populateSelects();
+                updateDashboardStats();
+            });
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const errorEl = document.getElementById('loginError');
+            errorEl.style.display = 'none';
+
+            auth.signInWithEmailAndPassword(email, password).catch((err) => {
+                errorEl.textContent = "Identifiants invalides ou connexion impossible : " + err.message;
+                errorEl.style.display = 'block';
+            });
+        }
+
+        function handleLogout() {
+            auth.signOut();
+        }
+
+        auth.onAuthStateChanged((user) => {
+            const loginScreen = document.getElementById('loginScreen');
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (user) {
+                loginScreen.style.display = 'none';
+                logoutBtn.style.display = 'inline-block';
+                startFirestoreListeners();
+            } else {
+                loginScreen.style.display = 'flex';
+                logoutBtn.style.display = 'none';
+            }
         });
 
         function updateDashboardStats() {
@@ -1051,7 +1164,7 @@
             document.getElementById('statTopLocation').innerText = topLoc;
         }
 
-        // Squelettes avec tes liens Postimages
+        // Squelettes avec liens Postimages
         const speciesSkeletons = {
             "Cheval": "https://i.postimg.cc/FR7TJg0L/1cheval.png",
             "Chien": "https://i.postimg.cc/26V0BFnv/chien.png",
@@ -1076,7 +1189,7 @@
                 document.getElementById('headerTitle').innerText = "OstéoAnimal - Lynette";
                 updateDashboardStats();
             } else {
-                homeBtn.style.display = 'block';
+                homeBtn.style.display = 'inline-block';
                 if(viewId === 'consultView') { 
                     document.getElementById('headerTitle').innerText = "Consultation"; 
                     populateSelects(); 
@@ -1434,7 +1547,7 @@
                                 <p>Gérant : ${l.manager || 'N/C'} • Tél : ${l.phone || 'N/C'}</p>
                                 ${l.details ? `<p style="font-size:0.75rem; margin-top:2px;">📌 ${l.details}</p>` : ''}
                                 <div style="margin-top:6px;">
-                                    <span style="background:var(--primary-light); color:var(--primary); font-size:0.75rem; padding:3px 8px; border-radius:12px; font-weight:600;">🐴 ${count} animal(aux) suivis</span>
+                                    <span style="background:var(--primary-light); color:var(--primary); font-size:0.75rem; padding:3px 8px; border-radius:12px; font-weight:600;">🐴 ${count} animal / chevaux suivis</span>
                                 </div>
                             </div>
                             <div class="actions-group">
@@ -1464,7 +1577,7 @@
             const locPatients = patientsData.filter(p => (p.address || 'Clinique') === locName);
 
             if (locPatients.length === 0) {
-                container.innerHTML = '<p style="font-size: 0.85rem; color: var(--gray);">Aucun patient enregistré dans ce lieu.</p>';
+                container.innerHTML = '<p style="font-size: 0.85rem; color: var(--gray);">Aucun patient enregistré dans ce lieu pour l\'instant.</p>';
             } else {
                 container.innerHTML = '';
                 locPatients.forEach(p => {
@@ -1960,6 +2073,8 @@
                     <style>
                         body { font-family: Arial, sans-serif; padding: 30px; color: #333; max-width: 800px; margin: auto; line-height: 1.5; }
                         .pro-header { background: #5F998E; color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+                        .pro-header-left { display: flex; align-items: center; gap: 15px; }
+                        .pro-header-logo { height: 52px; width: auto; object-fit: contain; border-radius: 4px; background: #fff; padding: 2px; }
                         .pro-header h2 { margin: 0; font-size: 1.3rem; }
                         .pro-header p { margin: 2px 0 0 0; font-size: 0.85rem; opacity: 0.9; }
                         h1 { color: #5F998E; border-bottom: 2px solid #5F998E; padding-bottom: 10px; font-size: 1.3rem; margin-top: 10px; }
@@ -1979,8 +2094,8 @@
                 </head>
                 <body>
                     <div class="pro-header">
-                        <div style="display: flex; align-items: center; gap: 15px;">
-                            <img src="https://i.postimg.cc/6QWy5MnP/Logo-lynette-V1.jpg" style="height: 50px; width: auto;">
+                        <div class="pro-header-left">
+                            <img src="https://i.postimg.cc/6QWy5MnP/Logo-lynette-V1.jpg" alt="Logo" class="pro-header-logo">
                             <div>
                                 <h2>${proProfile.firstName} ${proProfile.lastName}</h2>
                                 <p>${proProfile.status}</p>
@@ -2044,14 +2159,6 @@
                 </html>
             `);
         }
-
-        // Lancement initial au chargement
-        db.collection("locations").get().then((snapshot) => {
-            locationsData = [];
-            snapshot.forEach((doc) => { locationsData.push({ id: doc.id, ...doc.data() }); });
-            loadLocations();
-            populateSelects();
-        });
     </script>
 </body>
 </html>
