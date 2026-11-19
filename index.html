@@ -484,44 +484,7 @@
         }
     </style>
 </head>
-<body>
-
-    <!-- ÉCRAN DE CONNEXION -->
-    <div id="loginScreen">
-        <div class="login-card">
-            <div class="login-header">
-                <img src="https://i.postimg.cc/6QWy5MnP/Logo-lynette-V1.jpg" alt="Logo" class="header-logo">
-                <h2>Connexion OstéoAnimal</h2>
-            </div>
-            <p>Connectez-vous avec votre compte professionnel pour accéder aux données.</p>
-            <form id="loginForm" onsubmit="handleLogin(event)">
-                <div class="form-group">
-                    <label>E-mail</label>
-                    <input type="email" id="loginEmail" required autocomplete="email">
-                </div>
-                <div class="form-group">
-                    <label>Mot de passe</label>
-                    <input type="password" id="loginPassword" required autocomplete="current-password">
-                </div>
-                <button type="submit">Se connecter</button>
-                <div id="loginError" class="login-error"></div>
-            </form>
-        </div>
-    </div>
-
-    <header>
-        <div class="header-brand">
-            <img src="https://i.postimg.cc/6QWy5MnP/Logo-lynette-V1.jpg" alt="Logo" class="header-logo">
-            <h1 id="headerTitle">OstéoAnimal - Lynette</h1>
-        </div>
-        <div class="header-actions">
-            <button id="homeBtn" class="back-home-btn" style="display:none;" onclick="showView('homeView')">🏠 Accueil</button>
-            <button id="logoutBtn" class="logout-btn" style="display:none;" onclick="handleLogout()">Déconnexion</button>
-        </div>
-    </header>
-
-    <div class="container">
-        
+<body>     
         <!-- ACCUEIL -->
         <div id="homeView" class="view active">
             <div class="welcome-card">
@@ -1108,35 +1071,7 @@
             });
         }
 
-        function handleLogin(e) {
-            e.preventDefault();
-            const email = document.getElementById('loginEmail').value.trim();
-            const password = document.getElementById('loginPassword').value;
-            const errorEl = document.getElementById('loginError');
-            errorEl.style.display = 'none';
-
-            auth.signInWithEmailAndPassword(email, password).catch((err) => {
-                errorEl.textContent = "Identifiants invalides ou connexion impossible : " + err.message;
-                errorEl.style.display = 'block';
-            });
-        }
-
-        function handleLogout() {
-            auth.signOut();
-        }
-
-        auth.onAuthStateChanged((user) => {
-            const loginScreen = document.getElementById('loginScreen');
-            const logoutBtn = document.getElementById('logoutBtn');
-            if (user) {
-                loginScreen.style.display = 'none';
-                logoutBtn.style.display = 'inline-block';
-                startFirestoreListeners();
-            } else {
-                loginScreen.style.display = 'flex';
-                logoutBtn.style.display = 'none';
-            }
-        });
+       
 
         function updateDashboardStats() {
             document.getElementById('statTotalConsult').innerText = consultationsData.length;
