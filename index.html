@@ -13,599 +13,410 @@
     <link rel="apple-touch-icon" href="Fichier 3.svg">
     <link rel="manifest" href="manifest.json">
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&display=swap" rel="stylesheet">
+    <meta name="theme-color" content="#1E3632">
+
     <style>
         :root {
-            --primary: #5F998E;
-            --primary-light: #EBF3F1;
-            --accent: #EA5B0C;
-            --accent-light: #FDF3EC;
-            --bg: #F4F6F4;
-            --text: #2B2D42;
+            --pine: #1E3632;        /* texte, en-tête accueil */
+            --sage: #5F998E;        /* couleur de marque */
+            --sage-deep: #3F7268;
+            --mist: #E4EEEA;        /* surfaces teintées */
+            --paper: #F3F6F4;       /* fond */
             --white: #FFFFFF;
-            --gray: #8D99AE;
-            --danger: #E63946;
-            --danger-light: #FDE8E8;
-        }
+            --line: #D6E1DD;
+            --muted: #6B7F7A;
+            --ember: #EA5B0C;       /* action principale + alertes */
+            --ember-soft: #FDEBDF;
+            --danger: #C2412D;
+            --danger-soft: #FBE5E1;
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
+            /* compatibilité avec l'ancien code */
+            --primary: var(--sage); --primary-light: var(--mist); --accent: var(--ember); --accent-light: var(--ember-soft);
+            --text: var(--pine); --gray: var(--muted); --danger-light: var(--danger-soft); --bg: var(--paper);
 
+            --r-sheet: 20px; --r-item: 12px;
+            --font: "Bricolage Grotesque", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+            --tabbar-h: 68px;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { -webkit-text-size-adjust: 100%; }
         body {
-            background-color: var(--bg);
-            color: var(--text);
-            padding-bottom: 50px;
+            font-family: var(--font); background: var(--paper); color: var(--pine);
+            font-size: 16px; line-height: 1.45; font-variation-settings: "opsz" 14;
+            padding-bottom: calc(var(--tabbar-h) + 24px + env(safe-area-inset-bottom));
+            -webkit-tap-highlight-color: transparent;
         }
+        a { color: var(--sage-deep); }
+        .ico { width: 20px; height: 20px; flex-shrink: 0; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; vertical-align: -4px; }
+        :focus-visible { outline: 3px solid color-mix(in srgb, var(--sage) 55%, transparent); outline-offset: 2px; }
+        @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 
+        /* ---------- En-tête ---------- */
         header {
-            background-color: var(--primary);
-            color: var(--white);
-            padding: 12px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: sticky; top: 0; z-index: 100;
+            background: color-mix(in srgb, var(--paper) 88%, transparent); backdrop-filter: blur(10px);
+            padding: 10px 18px; display: flex; align-items: center; gap: 12px;
+            border-bottom: 1px solid transparent;
         }
+        body.scrolled header { border-bottom-color: var(--line); }
+        .header-brand { display: flex; align-items: center; gap: 10px; }
+        .header-logo { height: 34px; width: 34px; object-fit: cover; border-radius: 10px; background: #fff; border: 1px solid var(--line); }
+        header h1 { font-size: 1.05rem; font-weight: 600; letter-spacing: -0.01em; }
+        body.on-home header { display: none; }
+        .header-actions, .back-home-btn { display: none !important; }
 
-        .header-brand {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        .container { max-width: 680px; margin: 14px auto 0; padding: 0 16px; }
+        .view { display: none; }
+        .view.active { display: block; animation: viewIn .18s ease-out; }
+        @keyframes viewIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 
-        .header-logo {
-            height: 38px;
-            width: auto;
-            object-fit: contain;
-            border-radius: 4px;
-            background: #fff;
-            padding: 2px;
+        /* ---------- Accueil : le seul moment "fort" ---------- */
+        .hero {
+            position: relative; overflow: hidden; isolation: isolate;
+            background: var(--pine); color: #fff;
+            margin: 0 -16px 22px; padding: calc(26px + env(safe-area-inset-top)) 22px 22px;
+            border-radius: 0 0 28px 28px;
         }
+        .hero::after {
+            content: ""; position: absolute; z-index: -1; right: -70px; top: 10px; width: 380px; height: 250px;
+            background: url("https://i.postimg.cc/FR7TJg0L/1cheval.png") right center / contain no-repeat;
+            filter: invert(1) grayscale(1); mix-blend-mode: screen; opacity: .2;
+        }
+        .hero-top { display: flex; align-items: center; gap: 10px; margin-bottom: 26px; }
+        .hero-top img { height: 38px; width: 38px; border-radius: 11px; object-fit: cover; background: #fff; }
+        .hero-top span { font-size: 0.9rem; opacity: .75; }
+        .hero h2 { font-size: 2.1rem; line-height: 1.05; font-weight: 600; letter-spacing: -0.025em; font-variation-settings: "opsz" 96; }
+        .hero .hero-date { margin-top: 6px; font-size: 0.95rem; opacity: .72; }
+        .hero-actions { margin-top: 22px; display: grid; gap: 10px; }
+        .hero .btn-new {
+            background: var(--ember); color: #fff; font-size: 1.05rem; padding: 16px 18px; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            box-shadow: 0 8px 20px -8px rgba(234, 91, 12, .7);
+        }
+        .hero .picker input {
+            background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.18); color: #fff;
+            padding-left: 42px;
+        }
+        .hero .picker input::placeholder { color: rgba(255,255,255,.6); }
+        .hero .picker input:focus { background: rgba(255,255,255,.16); border-color: rgba(255,255,255,.4); }
+        .hero .picker .ico.lead { position: absolute; left: 14px; top: 14px; opacity: .7; }
+        .hero .picker-results { color: var(--pine); }
 
-        header h1 {
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
+        .home-section { margin-bottom: 22px; }
+        .home-section > h3 { font-size: 1.05rem; font-weight: 600; margin: 0 4px 10px; display: flex; justify-content: space-between; align-items: baseline; }
+        .home-section > h3 small { font-weight: 400; color: var(--muted); font-size: 0.85rem; }
+        .stat-strip { display: grid; grid-template-columns: repeat(3, 1fr); background: var(--white); border-radius: var(--r-sheet); border: 1px solid var(--line); }
+        .stat-strip > div { padding: 14px 12px; }
+        .stat-strip > div + div { border-left: 1px solid var(--line); }
+        .stat-strip strong { display: block; font-size: 1.6rem; font-weight: 600; line-height: 1.1; letter-spacing: -0.02em; font-variation-settings: "opsz" 60; }
+        .stat-strip span { font-size: 0.78rem; color: var(--muted); }
+        .stat-strip .loc strong { font-size: 0.95rem; line-height: 1.25; padding-top: 4px; overflow: hidden; text-overflow: ellipsis; }
+        .sync-note { text-align: center; font-size: 0.78rem; color: var(--muted); margin: 8px 0 0; }
 
-        .header-actions {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
+        /* ---------- Feuilles (cartes) ---------- */
+        .card { background: var(--white); border: 1px solid var(--line); border-radius: var(--r-sheet); padding: 20px 18px; margin-bottom: 16px; }
+        h2.section-title { font-size: 1.35rem; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 16px; line-height: 1.2; font-variation-settings: "opsz" 48; }
+        .sub-title { font-size: 1.05rem; font-weight: 600; margin: 26px 0 10px; display: flex; align-items: center; gap: 8px; }
+        .form-step { font-size: 1.05rem; font-weight: 600; margin: 26px 0 12px; display: flex; align-items: center; gap: 8px; color: var(--pine); }
+        .form-step .ico { color: var(--sage); }
+        .muted { color: var(--muted); font-size: 0.9rem; }
 
-        .back-home-btn {
-            background: rgba(255,255,255,0.2);
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            width: auto;
-            display: none;
-        }
-
-        .container {
-            max-width: 650px;
-            margin: 20px auto;
-            padding: 0 15px;
-        }
-
-        .view {
-            display: none;
-        }
-        .view.active {
-            display: block;
-        }
-
-        .welcome-card {
-            background: linear-gradient(135deg, var(--primary), #426b63);
-            color: white;
-            border-radius: 14px;
-            padding: 25px 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-
-        .welcome-card h2 {
-            font-size: 1.5rem;
-            margin-bottom: 5px;
-        }
-
-        .welcome-card p {
-            font-size: 0.9rem;
-            opacity: 0.9;
-        }
-
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        .dash-tile {
-            background: var(--white);
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.03);
-            cursor: pointer;
-            transition: transform 0.1s;
-            border: 1px solid #E5E7EB;
-        }
-
-        .dash-tile:active {
-            transform: scale(0.97);
-        }
-
-        .dash-tile span {
-            font-size: 2rem;
-            display: block;
-            margin-bottom: 8px;
-        }
-
-        .dash-tile h3 {
-            font-size: 0.95rem;
-            color: var(--primary);
-        }
-
-        .stats-box {
-            background: var(--white);
-            border-radius: 12px;
-            padding: 15px 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-            border-left: 4px solid var(--accent);
-        }
-
-        .stats-box h3 {
-            font-size: 0.95rem;
-            color: var(--primary);
-            margin-bottom: 8px;
-        }
-
-        .stats-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.85rem;
-            color: var(--text);
-            margin-bottom: 4px;
-        }
-
-        .card {
-            background: var(--white);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-        }
-
-        h2.section-title {
-            font-size: 1.1rem;
-            color: var(--primary);
-            margin-bottom: 15px;
-            border-bottom: 2px solid var(--primary-light);
-            padding-bottom: 8px;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: block;
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-bottom: 5px;
-            color: var(--text);
-        }
-
+        /* ---------- Formulaires ---------- */
+        .form-group { margin-bottom: 14px; }
+        label { display: block; font-size: 0.88rem; font-weight: 500; margin-bottom: 6px; color: var(--pine); }
         input, select, textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #D1D5DB;
-            border-radius: 8px;
-            font-size: 1rem;
-            background: #F9FAFB;
+            width: 100%; padding: 12px 14px; font: inherit; font-size: 16px; color: var(--pine);
+            border: 1px solid var(--line); border-radius: var(--r-item); background: var(--paper);
+            transition: border-color .15s, background .15s;
         }
+        textarea { resize: vertical; min-height: 84px; line-height: 1.5; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--sage); background: var(--white); box-shadow: 0 0 0 3px color-mix(in srgb, var(--sage) 18%, transparent); }
+        input[type=file] { padding: 10px; font-size: 0.9rem; background: var(--white); border-style: dashed; }
+        .row { display: flex; gap: 12px; }
+        .row .form-group { flex: 1; min-width: 0; }
+        @media (max-width: 420px) { .row { flex-direction: column; gap: 0; } }
+        .checkbox-group { display: flex; align-items: center; gap: 12px; background: var(--paper); padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--r-item); cursor: pointer; font-weight: 400; }
+        .checkbox-group input { width: 22px; height: 22px; accent-color: var(--danger); flex-shrink: 0; }
 
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: var(--white);
-        }
-
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: #F9FAFB;
-            padding: 12px;
-            border: 1px solid #D1D5DB;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        .checkbox-group input {
-            width: 20px;
-            height: 20px;
-            accent-color: var(--danger);
-        }
-
-        .row {
-            display: flex;
-            gap: 10px;
-        }
-
-        .row .form-group {
-            flex: 1;
-        }
-
+        /* ---------- Boutons ---------- */
         button {
-            background-color: var(--primary);
-            color: var(--white);
-            border: none;
-            padding: 14px 20px;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            transition: background 0.2s;
+            font: inherit; font-weight: 600; font-size: 0.98rem; cursor: pointer; width: 100%;
+            background: var(--sage-deep); color: #fff; border: none; border-radius: var(--r-item); padding: 14px 18px;
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            transition: transform .08s, background .15s;
         }
+        button:active { transform: scale(0.98); }
+        button:disabled { opacity: .6; }
+        button.secondary, .btn-ghost, .btn-dark { background: var(--mist); color: var(--pine); }
+        button.secondary:hover, .btn-ghost:hover, .btn-dark:hover { background: #D7E6E1; }
+        button.accent { background: var(--ember); color: #fff; }
+        button.danger { background: transparent; color: var(--danger); border: 1px solid #EBC5BE; }
+        button.danger:hover { background: var(--danger-soft); }
+        .icon-btn { width: 42px; height: 42px; padding: 0; flex-shrink: 0; }
+        .btn-inline { width: auto; padding: 9px 14px; font-size: 0.9rem; }
+        .actions-group { display: flex; gap: 6px; flex-shrink: 0; }
+        .actions-group button, .actions-group a { width: 40px; height: 40px; padding: 0; }
 
-        button:active {
-            transform: scale(0.98);
+        /* ---------- Schéma ---------- */
+        .sketch-container { border: 1px solid var(--line); border-radius: var(--r-item); background: var(--paper); padding: 8px; }
+        .canvas-wrapper { position: relative; width: 100%; height: 280px; background: #fff; border-radius: 8px; overflow: hidden; }
+        canvas { position: absolute; inset: 0; width: 100%; height: 100%; cursor: crosshair; touch-action: none; }
+        .sketch-tools { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; gap: 8px; }
+        .sketch-tools > div:last-child { display: flex; gap: 6px; }
+        .tool-btn { width: auto; padding: 8px 12px; font-size: 0.85rem; }
+        .color-picker { display: flex; gap: 10px; align-items: center; padding-left: 4px; }
+        .color-dot { width: 28px; height: 28px; border-radius: 50%; cursor: pointer; border: 3px solid #fff; box-shadow: 0 0 0 1px var(--line); }
+        .color-dot.on { box-shadow: 0 0 0 2px var(--pine); }
+
+        /* ---------- Audio ---------- */
+        .audio-controls { display: flex; gap: 8px; align-items: center; margin-top: 8px; flex-wrap: wrap; }
+        .audio-controls button { width: auto; padding: 8px 12px; font-size: 0.85rem; }
+        .recording-status { font-size: 0.85rem; color: var(--danger); font-weight: 600; display: none; animation: blink 1.2s infinite; }
+        @keyframes blink { 50% { opacity: .35; } }
+        audio { height: 40px; }
+
+        /* ---------- Listes ---------- */
+        .list-item { padding: 12px 0; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+        .list-item:last-child { border-bottom: none; }
+        .list-info { min-width: 0; }
+        .list-info h4 { font-size: 1rem; font-weight: 600; cursor: pointer; }
+        .list-info p { font-size: 0.85rem; color: var(--muted); }
+        .photo-thumb-wrapper { position: relative; display: inline-block; }
+        .doc-thumbnail { width: 72px; height: 72px; object-fit: cover; border-radius: 10px; border: 1px solid var(--line); }
+        .delete-photo-btn { position: absolute; top: -6px; right: -6px; width: 24px; height: 24px; padding: 0; border-radius: 50%; background: var(--pine); color: #fff; font-size: 12px; }
+        .offline-badge { display: none; }
+
+        /* ---------- Barre d'onglets ---------- */
+        .tabbar {
+            position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(10px + env(safe-area-inset-bottom)); z-index: 200;
+            width: min(440px, calc(100% - 20px)); height: var(--tabbar-h);
+            background: var(--white); border: 1px solid var(--line); border-radius: 22px;
+            box-shadow: 0 10px 30px -12px rgba(30, 54, 50, .35);
+            display: grid; grid-template-columns: repeat(5, 1fr); align-items: center; padding: 0 6px;
         }
+        .tabbar button { background: none; color: var(--muted); padding: 6px 0; flex-direction: column; gap: 3px; font-size: 0.7rem; font-weight: 500; border-radius: 14px; height: 54px; }
+        .tabbar button .ico { width: 23px; height: 23px; }
+        .tabbar button.on { color: var(--pine); background: var(--mist); }
+        .tabbar .tab-new { background: var(--ember); color: #fff; width: 54px; height: 54px; border-radius: 18px; margin: 0 auto; box-shadow: 0 8px 16px -6px rgba(234, 91, 12, .6); }
+        .tabbar .tab-new .ico { width: 26px; height: 26px; stroke-width: 2.2; }
+        body.in-consult .tabbar { display: none; }
+        body.in-consult { padding-bottom: 24px; }
 
-        button.secondary {
-            background-color: var(--accent);
-        }
+        /* ---------- Menu "Plus" ---------- */
+        .menu-list { background: var(--white); border: 1px solid var(--line); border-radius: var(--r-sheet); overflow: hidden; }
+        .menu-list button { background: none; color: var(--pine); border-radius: 0; justify-content: flex-start; padding: 16px 18px; font-weight: 500; gap: 14px; }
+        .menu-list button + button { border-top: 1px solid var(--line); }
+        .menu-list button .ico:first-child { color: var(--sage); }
+        .menu-list button .chev { margin-left: auto; color: var(--muted); }
+        .menu-list button small { display: block; font-weight: 400; color: var(--muted); font-size: 0.82rem; text-align: left; }
 
-        button.danger {
-            background-color: var(--danger);
-        }
-
-        .sketch-container {
-            border: 2px dashed #D1D5DB;
-            border-radius: 8px;
-            background: #FAFAFA;
-            padding: 10px;
-            text-align: center;
-        }
-
-        .canvas-wrapper {
-            position: relative;
-            width: 100%;
-            height: 280px;
-            background-color: #FFF;
-            border: 1px solid #E5E7EB;
-            border-radius: 6px;
-            overflow: hidden;
-        }
-
-        canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            cursor: crosshair;
-            touch-action: none;
-        }
-
-        .sketch-tools {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 10px;
-            gap: 6px;
-        }
-
-        .tool-btn {
-            padding: 8px 10px;
-            font-size: 0.8rem;
-            width: auto;
-        }
-
-        .color-picker {
-            display: flex;
-            gap: 6px;
-            align-items: center;
-        }
-
-        .color-dot {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            cursor: pointer;
-            border: 2px solid #fff;
-            box-shadow: 0 0 2px rgba(0,0,0,0.3);
-        }
-
-        .audio-controls {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            margin-top: 5px;
-            flex-wrap: wrap;
-        }
-
-        .audio-controls button {
-            width: auto;
-            padding: 8px 12px;
-            font-size: 0.85rem;
-        }
-
-        .recording-status {
-            font-size: 0.85rem;
-            color: var(--danger);
-            font-weight: bold;
-            display: none;
-        }
-
-        .list-item {
-            padding: 12px;
-            border-bottom: 1px solid #EEE;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-radius: 6px;
-            margin-bottom: 8px;
-            background: #FFF;
-        }
-
-        .list-item.is-difficult {
-            background-color: var(--danger-light);
-            border: 1px solid #F5C6CB;
-        }
-
-        .list-info h4 {
-            font-size: 0.95rem;
-            color: var(--primary);
-            cursor: pointer;
-        }
-
-        .list-info h4:hover {
-            text-decoration: underline;
-        }
-
-        .list-info p {
-            font-size: 0.8rem;
-            color: var(--gray);
-        }
-
-        .actions-group {
-            display: flex;
-            gap: 6px;
-        }
-
-        .actions-group button {
-            padding: 6px 10px;
-            font-size: 0.8rem;
-            width: auto;
-        }
-
-        .offline-badge {
-            display: inline-block;
-            background: var(--primary-light);
-            color: var(--primary);
-            font-size: 0.75rem;
-            padding: 4px 8px;
-            border-radius: 20px;
-            margin-bottom: 15px;
-            font-weight: 500;
-        }
-
-        .photo-thumb-wrapper {
-            position: relative;
-            display: inline-block;
-        }
-
-        .doc-thumbnail {
-            width: 75px;
-            height: 75px;
-            object-fit: cover;
-            border-radius: 6px;
-            border: 1px solid #DDD;
-        }
-
-        .delete-photo-btn {
-            position: absolute;
-            top: -6px;
-            right: -6px;
-            background: var(--danger);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            font-size: 11px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* ====== AJOUTS v2 : fluidité ====== */
-        .btn-inline { width: auto; padding: 8px 14px; font-size: 0.85rem; }
-        .btn-ghost { background: #EDF2F7; color: var(--text); }
-        .btn-dark { background: #4A5568; }
-        .toolbar { display: flex; gap: 8px; align-items: center; margin-bottom: 15px; }
-        .toolbar input { flex: 1; }
-        .toolbar button { width: auto; white-space: nowrap; }
-
-        /* Toasts (remplacent les alert()) */
-        #toastZone { position: fixed; left: 50%; bottom: 90px; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 8px; align-items: center; pointer-events: none; }
-        .toast { background: #2B2D42; color: #fff; padding: 12px 18px; border-radius: 10px; font-size: 0.9rem; box-shadow: 0 6px 18px rgba(0,0,0,.2); animation: toastIn .2s ease-out; max-width: 90vw; text-align: center; }
-        .toast.ok { background: var(--primary); }
+        /* ---------- Toasts ---------- */
+        #toastZone { position: fixed; left: 50%; bottom: calc(var(--tabbar-h) + 26px + env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 8px; align-items: center; pointer-events: none; }
+        .toast { background: var(--pine); color: #fff; padding: 11px 16px; border-radius: 12px; font-size: 0.92rem; box-shadow: 0 10px 24px -10px rgba(0,0,0,.4); animation: toastIn .2s ease-out; max-width: 90vw; text-align: center; }
         .toast.err { background: var(--danger); }
-        @keyframes toastIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+        @keyframes toastIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 
-        /* Badges */
-        .badge { display: inline-block; font-size: 0.7rem; padding: 3px 8px; border-radius: 12px; font-weight: 600; margin: 2px 4px 2px 0; }
-        .badge.danger { background: var(--danger); color: #fff; }
-        .badge.accent { background: var(--accent); color: #fff; }
-        .badge.soft { background: var(--primary-light); color: var(--primary); }
-        .badge.late { background: var(--danger-light); color: var(--danger); }
+        /* ---------- Pastilles ---------- */
+        .badge { display: inline-flex; align-items: center; gap: 4px; font-size: 0.75rem; padding: 3px 9px; border-radius: 999px; font-weight: 600; margin: 2px 4px 2px 0; white-space: nowrap; }
+        .badge.danger { background: var(--danger-soft); color: var(--danger); }
+        .badge.accent { background: var(--ember-soft); color: #B4440A; }
+        .badge.soft { background: var(--mist); color: var(--sage-deep); }
+        .badge.late { background: var(--danger); color: #fff; }
 
-        /* Cartes patients compactes */
-        .pat-card { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 12px; border: 1px solid #E5E7EB; border-radius: 10px; margin-bottom: 8px; background: #fff; cursor: pointer; }
-        .pat-card:active { background: var(--primary-light); }
-        .pat-card.is-difficult { border-left: 4px solid var(--danger); }
-        .pat-card h4 { font-size: 0.98rem; color: var(--primary); margin-bottom: 2px; }
-        .pat-card p { font-size: 0.8rem; color: var(--gray); }
-        .pat-card .go { font-size: 1.2rem; color: var(--gray); }
-        .pat-card button { width: auto; padding: 8px 12px; font-size: 0.8rem; flex-shrink: 0; }
-        .loc-title { margin: 14px 0 6px; font-weight: 700; color: var(--primary); font-size: 0.9rem; }
+        /* ---------- Cartes patients ---------- */
+        .pat-card { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: var(--r-item); margin: 0 -6px 2px; cursor: pointer; transition: background .12s; }
+        .pat-card:hover, .pat-card:active { background: var(--paper); }
+        .avatar { width: 44px; height: 44px; border-radius: 14px; background: var(--mist); color: var(--sage-deep); display: grid; place-items: center; font-weight: 700; font-size: 1.1rem; flex-shrink: 0; position: relative; }
+        .pat-card.is-difficult .avatar::after { content: ""; position: absolute; right: -2px; top: -2px; width: 12px; height: 12px; border-radius: 50%; background: var(--danger); border: 2px solid #fff; }
+        .pat-card h4 { font-size: 1rem; font-weight: 600; line-height: 1.25; }
+        .pat-card h4 span { font-weight: 400; color: var(--muted); font-size: 0.85rem; }
+        .pat-card p { font-size: 0.85rem; color: var(--muted); }
+        .pat-card .go { color: var(--muted); }
+        .pat-card button { width: auto; padding: 9px 12px; font-size: 0.85rem; flex-shrink: 0; }
+        .loc-title { margin: 18px 0 4px; font-weight: 600; color: var(--muted); font-size: 0.85rem; display: flex; align-items: center; gap: 6px; }
+        .loc-title:first-child { margin-top: 4px; }
 
-        /* Sélecteur de patient (recherche) */
+        /* ---------- Recherche patient ---------- */
         .picker { position: relative; }
-        .picker-results { position: absolute; left: 0; right: 0; top: 100%; background: #fff; border: 1px solid #D1D5DB; border-radius: 8px; box-shadow: 0 8px 20px rgba(0,0,0,.12); z-index: 50; max-height: 320px; overflow-y: auto; display: none; }
+        .picker-results { position: absolute; left: 0; right: 0; top: calc(100% + 6px); background: #fff; border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 16px 36px -14px rgba(30,54,50,.35); z-index: 300; max-height: 340px; overflow-y: auto; display: none; padding: 4px; }
         .picker-results.open { display: block; }
-        .picker-item { padding: 10px 12px; border-bottom: 1px solid #F0F0F0; cursor: pointer; }
-        .picker-item:hover, .picker-item.hl { background: var(--primary-light); }
-        .picker-item strong { color: var(--primary); }
-        .picker-item small { display: block; color: var(--gray); font-size: 0.75rem; }
-        .picker-empty { padding: 12px; color: var(--gray); font-size: 0.85rem; }
+        .picker-item { padding: 10px 12px; border-radius: 10px; cursor: pointer; }
+        .picker-item:hover, .picker-item.hl { background: var(--mist); }
+        .picker-item strong { font-weight: 600; }
+        .picker-item small { display: block; color: var(--muted); font-size: 0.82rem; }
+        .picker-empty { padding: 12px; color: var(--muted); font-size: 0.9rem; }
+        .search-wrap { position: relative; }
+        .search-wrap .ico { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+        .search-wrap input { padding-left: 42px; }
 
-        /* Bandeau patient dans le CR */
-        .patient-banner { border: 2px solid var(--primary); background: var(--primary-light); border-radius: 10px; padding: 12px; margin-bottom: 15px; }
-        .patient-banner .pb-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
-        .patient-banner h3 { font-size: 1.05rem; color: var(--primary); }
-        .patient-banner .pb-sub { font-size: 0.8rem; color: var(--text); margin-top: 2px; }
-        .patient-banner .pb-spec { font-size: 0.85rem; margin-top: 8px; background: #fff; padding: 8px; border-radius: 6px; }
-        .patient-banner .pb-last { font-size: 0.82rem; margin-top: 8px; background: #fff; padding: 8px; border-radius: 6px; border-left: 3px solid var(--accent); }
-        .patient-banner .pb-actions { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
-        .patient-banner .pb-actions button { width: auto; padding: 8px 12px; font-size: 0.82rem; }
-        .hint { font-size: 0.78rem; color: var(--accent); margin-top: 4px; }
-        .match-hint { background: var(--accent-light); border: 1px solid var(--accent); border-radius: 8px; padding: 8px 10px; font-size: 0.85rem; margin: -6px 0 12px; display: none; }
-        .match-hint button { width: auto; padding: 6px 10px; font-size: 0.8rem; margin-left: 6px; }
+        /* ---------- Bandeau patient dans le CR ---------- */
+        .patient-banner { background: var(--paper); border: 1px solid var(--line); border-radius: 16px; padding: 14px; margin-bottom: 18px; }
+        .patient-banner .pb-head { display: flex; gap: 12px; align-items: center; }
+        .patient-banner h3 { font-size: 1.15rem; font-weight: 600; line-height: 1.2; }
+        .patient-banner h3 span { font-weight: 400; font-size: 0.88rem; color: var(--muted); }
+        .patient-banner .pb-sub { font-size: 0.88rem; color: var(--muted); margin-top: 2px; }
+        .patient-banner .pb-spec { font-size: 0.9rem; margin-top: 12px; }
+        .patient-banner .pb-last { font-size: 0.9rem; margin-top: 10px; background: #fff; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); }
+        .patient-banner .pb-last b { font-weight: 600; }
+        .patient-banner .pb-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+        .patient-banner .pb-actions button { width: auto; padding: 9px 13px; font-size: 0.88rem; }
+        .hint { font-size: 0.82rem; color: var(--muted); margin-top: 6px; }
+        .match-hint { background: var(--ember-soft); border-radius: 10px; padding: 10px 12px; font-size: 0.9rem; margin: -4px 0 14px; display: none; }
+        .match-hint button { width: auto; padding: 6px 10px; font-size: 0.82rem; margin-left: 6px; background: var(--ember); color: #fff; }
 
-        details.block { border: 1px solid #E5E7EB; border-radius: 10px; padding: 10px 12px; margin-bottom: 15px; background: #FCFCFC; }
-        details.block > summary { cursor: pointer; font-weight: 600; font-size: 0.9rem; color: var(--accent); list-style: none; }
+        details.block { border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; margin-bottom: 16px; background: var(--white); }
+        details.block > summary { cursor: pointer; font-weight: 500; font-size: 0.93rem; color: var(--sage-deep); list-style: none; display: flex; gap: 8px; align-items: center; }
         details.block > summary::-webkit-details-marker { display: none; }
-        details.block > summary::before { content: '▸ '; }
-        details.block[open] > summary::before { content: '▾ '; }
-        details.block[open] > summary { margin-bottom: 12px; }
+        details.block > summary::after { content: ""; margin-left: auto; width: 8px; height: 8px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg); transition: transform .15s; flex-shrink: 0; }
+        details.block[open] > summary::after { transform: rotate(-135deg); }
+        details.block[open] > summary { margin-bottom: 14px; }
 
-        /* Barre d'enregistrement collante */
-        .sticky-save { position: sticky; bottom: 0; background: linear-gradient(transparent, var(--white) 30%); padding: 14px 0 6px; margin-top: 10px; z-index: 10; }
+        .sticky-save { position: sticky; bottom: 0; padding: 18px 0 calc(10px + env(safe-area-inset-bottom)); margin: 10px 0 -8px; z-index: 10; background: linear-gradient(transparent, var(--white) 35%); }
+        .sticky-save button { padding: 16px; font-size: 1.02rem; background: var(--pine); }
 
-        /* Dossier patient */
-        .dossier-info { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 14px; font-size: 0.85rem; background: var(--primary-light); padding: 12px; border-radius: 8px; margin-bottom: 12px; }
+        /* ---------- Dossier patient ---------- */
+        .dossier-head { display: flex; gap: 14px; align-items: center; margin-bottom: 6px; }
+        .dossier-head .avatar { width: 56px; height: 56px; border-radius: 18px; font-size: 1.4rem; }
+        .dossier-head h2 { font-size: 1.6rem; font-weight: 600; letter-spacing: -0.02em; line-height: 1.1; font-variation-settings: "opsz" 72; }
+        .dossier-head p { color: var(--muted); font-size: 0.92rem; }
+        .dossier-info { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; font-size: 0.93rem; padding: 14px 0; margin: 10px 0 14px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
         .dossier-info .full { grid-column: 1 / -1; }
-        .dossier-info a { color: var(--primary); font-weight: 600; }
-        .dossier-actions { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
-        .dossier-actions button { width: auto; flex: 1; min-width: 120px; padding: 12px; font-size: 0.9rem; }
-        .sub-title { font-size: 1rem; color: var(--primary); margin: 20px 0 10px; }
-        details.consult-item { border: 1px solid #E5E7EB; border-radius: 8px; margin-bottom: 8px; background: #fff; }
-        details.consult-item > summary { padding: 10px 12px; cursor: pointer; font-size: 0.88rem; list-style: none; display: flex; justify-content: space-between; gap: 8px; }
+        .dossier-info .k { display: block; font-size: 0.8rem; color: var(--muted); }
+        .dossier-info a { font-weight: 500; }
+        .dossier-actions { display: flex; gap: 8px; margin-bottom: 8px; }
+        .dossier-actions button { width: auto; flex: 1; white-space: nowrap; padding: 13px 12px; }
+        .dossier-actions .icon-btn { flex: 0 0 48px; height: auto; }
+        details.consult-item { border-left: 2px solid var(--line); margin-left: 6px; padding-left: 16px; position: relative; }
+        details.consult-item::before { content: ""; position: absolute; left: -7px; top: 15px; width: 12px; height: 12px; border-radius: 50%; background: #fff; border: 2px solid var(--sage); }
+        details.consult-item:first-of-type::before { background: var(--sage); }
+        details.consult-item > summary { padding: 10px 0; cursor: pointer; list-style: none; display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
         details.consult-item > summary::-webkit-details-marker { display: none; }
-        details.consult-item[open] > summary { border-bottom: 1px solid #EEE; background: #FAFAFA; }
-        .consult-body { padding: 10px 12px; font-size: 0.85rem; }
-        .consult-body .f { margin-bottom: 8px; }
-        .consult-body .f b { color: var(--primary); display: block; font-size: 0.78rem; text-transform: uppercase; letter-spacing: .02em; }
-        .consult-body img.sk { max-width: 100%; border: 1px solid #DDD; border-radius: 6px; margin: 6px 0; }
-        .consult-body .acts { display: flex; gap: 6px; margin-top: 8px; }
-        .consult-body .acts button { width: auto; padding: 7px 12px; font-size: 0.8rem; }
-        .doc-pdf { width: 75px; height: 75px; display: flex; align-items: center; justify-content: center; font-size: 2rem; background: #F4F4F4; border: 1px solid #DDD; border-radius: 6px; cursor: pointer; }
+        details.consult-item > summary strong { font-weight: 600; }
+        details.consult-item > summary .reason { color: var(--muted); }
+        .consult-body { padding: 2px 0 16px; font-size: 0.93rem; }
+        .consult-body .f { margin-bottom: 10px; }
+        .consult-body .f b { display: block; font-size: 0.8rem; color: var(--sage-deep); font-weight: 600; }
+        .consult-body img.sk { max-width: 100%; border: 1px solid var(--line); border-radius: 10px; margin: 6px 0; }
+        .consult-body .acts { display: flex; gap: 8px; margin-top: 10px; }
+        .consult-body .acts button { width: auto; padding: 8px 13px; font-size: 0.85rem; }
+        .doc-pdf { width: 72px; height: 72px; display: grid; place-items: center; background: var(--paper); border: 1px solid var(--line); border-radius: 10px; cursor: pointer; color: var(--sage-deep); font-weight: 700; font-size: .8rem; }
 
-        /* Pop-up fiche patient (consultable pendant la saisie du CR) */
-        .modal { position: fixed; inset: 0; background: rgba(20,25,30,.45); z-index: 1000; display: none; }
+        /* ---------- Panneau fiche patient ---------- */
+        .modal { position: fixed; inset: 0; background: rgba(30, 54, 50, .35); z-index: 1000; display: none; }
         .modal.open { display: block; }
-        .modal-panel { position: absolute; right: 0; top: 0; bottom: 0; width: min(560px, 100%); background: var(--bg); overflow-y: auto; padding: 16px; box-shadow: -8px 0 24px rgba(0,0,0,.15); animation: slideIn .2s ease-out; }
-        @keyframes slideIn { from { transform: translateX(40px); opacity: 0; } to { transform: none; opacity: 1; } }
-        .modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; position: sticky; top: -16px; background: var(--bg); padding: 6px 0; }
-        .modal-head h2 { font-size: 1.1rem; color: var(--primary); }
+        .modal-panel { position: absolute; right: 0; top: 0; bottom: 0; width: min(560px, 100%); background: var(--white); overflow-y: auto; padding: 0 20px 30px; animation: slideIn .22s ease-out; }
+        @keyframes slideIn { from { transform: translateX(30px); opacity: 0; } to { transform: none; opacity: 1; } }
+        .modal-head { display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: var(--white); padding: 14px 0; z-index: 2; border-bottom: 1px solid var(--line); margin-bottom: 14px; }
+        .modal-head h2 { font-size: 0.95rem; font-weight: 500; color: var(--muted); }
         .modal-head button { width: auto; padding: 8px 14px; }
 
-        /* Relances accueil */
-        .relance { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid #F0F0F0; font-size: 0.85rem; cursor: pointer; }
-        .relance:last-child { border-bottom: none; }
-        .relance a { text-decoration: none; font-size: 1.1rem; }
-        .muted { color: var(--gray); font-size: 0.85rem; }
+        /* ---------- Relances ---------- */
+        .relance { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 12px 14px; font-size: 0.93rem; cursor: pointer; }
+        .relance + .relance { border-top: 1px solid var(--line); }
+        .relance a { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 10px; background: var(--mist); color: var(--sage-deep); }
+        .relances-box { background: var(--white); border: 1px solid var(--line); border-radius: var(--r-sheet); }
+        .relances-box > .muted { padding: 14px; }
+
+        @media (min-width: 900px) {
+            .container { max-width: 760px; }
+            .hero { margin: 0 0 22px; border-radius: 28px; }
+        }
+        .toolbar { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; }
+        .icon-link { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; background: var(--mist); color: var(--sage-deep); }
     </style>
+
 </head>
-<body>
+<body class="on-home">
+    <!-- Icônes -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+        <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20h14V9.5"/><path d="M10 20v-5h4v5"/></symbol>
+        <symbol id="i-paw" viewBox="0 0 24 24"><circle cx="5.5" cy="10" r="2"/><circle cx="9.5" cy="5.5" r="2"/><circle cx="14.5" cy="5.5" r="2"/><circle cx="18.5" cy="10" r="2"/><path d="M12 11c-2.8 0-5.5 3.6-5.5 6.2 0 1.8 1.3 2.8 3 2.8 1 0 1.6-.5 2.5-.5s1.5.5 2.5.5c1.7 0 3-1 3-2.8C17.5 14.6 14.8 11 12 11Z"/></symbol>
+        <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+        <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+        <symbol id="i-more" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+        <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4Z"/><path d="m13.5 6.5 4 4"/></symbol>
+        <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></symbol>
+        <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H6v18h12V7l-4-4Z"/><path d="M14 3v4h4M9 13h6M9 17h6"/></symbol>
+        <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></symbol>
+        <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+        <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></symbol>
+        <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></symbol>
+        <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></symbol>
+        <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6"/></symbol>
+        <symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+        <symbol id="i-back" viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></symbol>
+        <symbol id="i-pen" viewBox="0 0 24 24"><path d="M12 19l7-7 3 3-7 7-3-3Z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5Z"/><path d="m2 2 7.6 7.6"/><circle cx="11" cy="11" r="2"/></symbol>
+        <symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4V8Z"/><circle cx="12" cy="13" r="3.5"/></symbol>
+        <symbol id="i-steth" viewBox="0 0 24 24"><path d="M6 3v6a5 5 0 0 0 10 0V3"/><path d="M11 14v2a5 5 0 0 0 10 0v-2"/><circle cx="21" cy="12" r="2"/></symbol>
+        <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+        <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></symbol>
+        <symbol id="i-stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></symbol>
+        <symbol id="i-save" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></symbol>
+    </svg>
+
     <header>
         <div class="header-brand">
-            <img src="https://i.postimg.cc/6QWy5MnP/Logo-lynette-V1.jpg" alt="Logo" class="header-logo">
-            <h1 id="headerTitle">OstéoAnimal - Lynette</h1>
+            <img src="https://i.postimg.cc/6QWy5MnP/Logo-lynette-V1.jpg" alt="" class="header-logo">
+            <h1 id="headerTitle">OstéoAnimal</h1>
         </div>
-        <div class="header-actions">
-            <button id="homeBtn" class="back-home-btn" onclick="showView('homeView')">🏠 Accueil</button>
-        </div>
+        <div class="header-actions"><button id="homeBtn" class="back-home-btn" onclick="showView('homeView')">Accueil</button></div>
     </header>
 
-    <div id="toastZone"></div>
+    <div id="toastZone" role="status" aria-live="polite"></div>
 
     <div class="container">
         <!-- ACCUEIL -->
         <div id="homeView" class="view active">
-            <div class="welcome-card">
-                <h2>Bonjour Lynette 👋</h2>
-                <p>Prête pour vos consultations sur le terrain ? Gérez vos patients et comptes rendus en toute simplicité.</p>
+            <section class="hero">
+                <div class="hero-top">
+                    <img src="https://i.postimg.cc/6QWy5MnP/Logo-lynette-V1.jpg" alt="">
+                    <span>OstéoAnimal</span>
+                </div>
+                <h2 id="heroGreeting">Bonjour Lynette</h2>
+                <p class="hero-date" id="heroDate"></p>
+                <div class="hero-actions">
+                    <button class="btn-new" onclick="startNewConsult()"><svg class="ico"><use href="#i-plus"/></svg>Nouvelle séance</button>
+                    <div class="picker">
+                        <svg class="ico lead"><use href="#i-search"/></svg>
+                        <input type="text" id="homeSearch" placeholder="Ouvrir une fiche patient…" autocomplete="off">
+                        <div id="homeSearchResults" class="picker-results"></div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="home-section">
+                <h3>À relancer <small>30 prochains jours</small></h3>
+                <div class="relances-box" id="relancesContainer"><p class="muted">Chargement…</p></div>
             </div>
 
-            <div class="card" style="padding:14px;">
-                <div class="picker">
-                    <input type="text" id="homeSearch" placeholder="🔍 Ouvrir une fiche : nom de l'animal, propriétaire, écurie…" autocomplete="off">
-                    <div id="homeSearchResults" class="picker-results"></div>
+            <div class="home-section">
+                <h3>Activité</h3>
+                <div class="stat-strip">
+                    <div><strong id="statWeekConsult">0</strong><span>cette semaine</span></div>
+                    <div><strong id="statTotalConsult">0</strong><span>séances au total</span></div>
+                    <div class="loc"><strong id="statTopLocation">-</strong><span>lieu le plus visité</span></div>
                 </div>
+                <p class="sync-note" id="syncBadge">Connexion…</p>
             </div>
+        </div>
 
-            <div class="dashboard-grid" style="margin-bottom:20px;">
-                <div class="dash-tile" onclick="startNewConsult()">
-                    <span>📝</span>
-                    <h3>Faire une consultation</h3>
-                </div>
-                <div class="dash-tile" onclick="showView('patientsView')">
-                    <span>🐾</span>
-                    <h3>Fiches patients</h3>
-                </div>
-                <div class="dash-tile" onclick="showView('locationsView')">
-                    <span>📍</span>
-                    <h3>Lieux de consultation</h3>
-                </div>
-                <div class="dash-tile" onclick="showView('historyView')">
-                    <span>📂</span>
-                    <h3>Historique des consultations</h3>
-                </div>
-                <div class="dash-tile" onclick="showView('notesView')">
-                    <span>🎙️</span>
-                    <h3>Notes vocales (Terrain)</h3>
-                </div>
-                <div class="dash-tile" onclick="showView('proProfileView')">
-                    <span>👤</span>
-                    <h3>Mon Espace Pro (CR)</h3>
-                </div>
-            </div>
-
-            <div class="stats-box">
-                <h3>📅 Suivis à relancer (30 prochains jours)</h3>
-                <div id="relancesContainer"><p class="muted">Chargement…</p></div>
-            </div>
-
-            <div class="stats-box">
-                <h3>📊 Dashboard & Rapports d'Activité</h3>
-                <div class="stats-row"><span>Total consultations :</span><strong id="statTotalConsult">0</strong></div>
-                <div class="stats-row"><span>Réalisées cette semaine :</span><strong id="statWeekConsult">0</strong></div>
-                <div class="stats-row"><span>Lieu le plus visité :</span><strong id="statTopLocation">-</strong></div>
-            </div>
-
-            <div style="text-align: center;">
-                <span class="offline-badge" id="syncBadge">☁️ Connexion au cloud…</span>
+        <!-- PLUS -->
+        <div id="moreView" class="view">
+            <h2 class="section-title" style="margin:8px 4px 14px;">Plus</h2>
+            <div class="menu-list">
+                <button onclick="showView('locationsView')"><svg class="ico"><use href="#i-pin"/></svg><span>Lieux & écuries<small>Contacts, accès, animaux suivis</small></span><svg class="ico chev"><use href="#i-chev"/></svg></button>
+                <button onclick="showView('notesView')"><svg class="ico"><use href="#i-mic"/></svg><span>Notes vocales<small>Mémos enregistrés sur le terrain</small></span><svg class="ico chev"><use href="#i-chev"/></svg></button>
+                <button onclick="showView('proProfileView')"><svg class="ico"><use href="#i-user"/></svg><span>Mon profil pro<small>En-tête des comptes rendus</small></span><svg class="ico chev"><use href="#i-chev"/></svg></button>
             </div>
         </div>
 
         <!-- ESPACE PRO / EN-TÊTE COMPTE RENDU -->
         <div id="proProfileView" class="view">
             <div class="card">
-                <h2 class="section-title">👤 Profil Professionnel & En-tête des Rapports</h2>
+                <h2 class="section-title">Profil pro</h2><p class="muted" style="margin:-8px 0 16px;">Ces informations apparaissent en haut de chaque compte rendu.</p>
                 <form id="proProfileForm" onsubmit="saveProProfile(event)">
                     <div class="row">
                         <div class="form-group"><label>Prénom</label><input type="text" id="proFirstName"></div>
@@ -623,7 +434,7 @@
                         <div class="form-group"><label>N° SIRET (Optionnel)</label><input type="text" id="proSiret" placeholder="En cours de création..."></div>
                         <div class="form-group"><label>Adresse Pro / Cabinet (Optionnel)</label><input type="text" id="proAddress" placeholder="31000 Toulouse..."></div>
                     </div>
-                    <button type="submit">💾 Enregistrer mes coordonnées pro</button>
+                    <button type="submit">Enregistrer mes coordonnées pro</button>
                 </form>
             </div>
         </div>
@@ -631,16 +442,16 @@
         <!-- FAIRE UNE CONSULTATION -->
         <div id="consultView" class="view">
             <div class="card">
-                <h2 id="consultFormTitle" class="section-title">📝 Nouvelle Consultation</h2>
+                <h2 id="consultFormTitle" class="section-title">Nouvelle séance</h2>
                 <form id="consultForm" autocomplete="off">
                     <input type="hidden" id="editConsultId" value="">
                     <input type="hidden" id="consultPatientId" value="">
 
                     <!-- 1. Choix du patient -->
                     <div id="patientPickerBlock" class="form-group">
-                        <label>Patient</label>
+                        <label>Pour quel patient ?</label>
                         <div class="picker">
-                            <input type="text" id="consultPatientSearch" placeholder="🔍 Tapez le nom de l'animal, du proprio ou de l'écurie…">
+                            <div class="search-wrap"><svg class="ico"><use href="#i-search"/></svg><input type="text" id="consultPatientSearch" placeholder="Nom de l'animal, du propriétaire ou de l'écurie"></div>
                             <div id="consultPickerResults" class="picker-results"></div>
                         </div>
                         <p class="hint">Nouveau patient ? Remplissez simplement les infos ci-dessous : sa fiche sera créée automatiquement.</p>
@@ -684,13 +495,13 @@
                                 <label>Lieu / Écurie</label>
                                 <div style="display:flex; gap:6px;">
                                     <select id="ownerAddress" style="flex:1;"><option value="Clinique">Clinique (Par défaut)</option></select>
-                                    <button type="button" class="secondary" style="width:auto; padding:0 12px; font-size:0.8rem;" onclick="quickAddLocation('ownerAddress')">➕</button>
+                                    <button type="button" class="secondary" style="width:auto; padding:0 12px; font-size:0.8rem;" onclick="quickAddLocation('ownerAddress')"></button>
                                 </div>
                             </div>
                         </div>
                         <label class="checkbox-group" id="createPatientRow" style="margin-bottom:4px;">
                             <input type="checkbox" id="createPatientCheckbox" checked style="accent-color: var(--primary);">
-                            <span>🐾 Créer la fiche patient automatiquement à l'enregistrement</span>
+                            <span>Créer la fiche patient automatiquement à l'enregistrement</span>
                         </label>
                         <div class="form-group" style="margin:10px 0 0;">
                             <label style="font-weight:400; font-size:0.8rem; color:var(--gray);">Importer votre propre squelette (Optionnel)</label>
@@ -699,33 +510,33 @@
                     </details>
 
                     <!-- Schéma -->
-                    <h3 style="font-size: 0.95rem; color: var(--accent); margin: 10px 0 10px 0;">Schéma Anatomique & Annotations (Stylet)</h3>
+                    <h3 class="form-step"><svg class="ico"><use href="#i-pen"/></svg>Schéma & annotations</h3>
                     <div class="form-group">
                         <div class="sketch-container">
                             <div class="canvas-wrapper"><canvas id="sketchCanvas"></canvas></div>
                             <div class="sketch-tools">
                                 <div class="color-picker">
-                                    <div class="color-dot" style="background: #EA5B0C;" onclick="setPenColor('#EA5B0C', this)" title="Blocage / Douleur"></div>
+                                    <div class="color-dot on" style="background: #EA5B0C;" onclick="setPenColor('#EA5B0C', this)" title="Blocage / Douleur"></div>
                                     <div class="color-dot" style="background: #5F998E;" onclick="setPenColor('#5F998E', this)" title="Normal"></div>
                                     <div class="color-dot" style="background: #1D3557;" onclick="setPenColor('#1D3557', this)" title="Autre"></div>
                                 </div>
                                 <div>
-                                    <button type="button" class="tool-btn secondary" onclick="undoCanvas()">↩️ Annuler</button>
-                                    <button type="button" class="tool-btn danger" onclick="clearCanvas()">🗑️ Effacer</button>
+                                    <button type="button" class="tool-btn secondary" onclick="undoCanvas()"><svg class="ico"><use href="#i-undo"/></svg>Annuler</button>
+                                    <button type="button" class="tool-btn danger" onclick="clearCanvas()">Effacer</button>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Photos -->
-                    <h3 style="font-size: 0.95rem; color: var(--accent); margin: 20px 0 10px 0;">📸 Photos de la Séance</h3>
+                    <h3 class="form-step"><svg class="ico"><use href="#i-camera"/></svg>Photos de la séance</h3>
                     <div class="form-group">
                         <input type="file" id="consultPhotosInput" accept="image/*" multiple onchange="handleConsultPhotos(event)">
                         <div id="consultPhotosPreview" style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;"></div>
                     </div>
 
                     <!-- Bilan -->
-                    <h3 style="font-size: 0.95rem; color: var(--accent); margin: 20px 0 10px 0;">Bilan & Protocole Ostéo</h3>
+                    <h3 class="form-step"><svg class="ico"><use href="#i-steth"/></svg>Bilan & protocole</h3>
                     <div class="form-group">
                         <label>Motif de consultation</label>
                         <input type="text" id="consultReason" placeholder="Baisse de forme, boiterie, contrôle routine...">
@@ -739,9 +550,9 @@
                         <label>Bilan statique et/ou dynamique</label>
                         <textarea id="dynamicBilan" rows="2" placeholder="Examen statique, allures, aplombs..."></textarea>
                         <div class="audio-controls">
-                            <button type="button" class="secondary" onclick="startAudioRecord('dynamicBilanAudio', 'statusBilan')">🎙️ Enregistrer un mémo</button>
-                            <button type="button" class="danger" onclick="stopAudioRecord('statusBilan')">⏹️ Stop</button>
-                            <span id="statusBilan" class="recording-status">🔴 Enregistrement...</span>
+                            <button type="button" class="secondary" onclick="startAudioRecord('dynamicBilanAudio', 'statusBilan')"><svg class="ico"><use href="#i-mic"/></svg>Mémo vocal</button>
+                            <button type="button" class="danger" onclick="stopAudioRecord('statusBilan')"><svg class="ico"><use href="#i-stop"/></svg>Stop</button>
+                            <span id="statusBilan" class="recording-status">Enregistrement...</span>
                         </div>
                         <div id="dynamicBilanAudioContainer" style="margin-top: 5px;"></div>
                     </div>
@@ -749,9 +560,9 @@
                         <label>Tests ostéopathiques & Restrictions</label>
                         <textarea id="osteotests" rows="3" placeholder="Restrictions articulaires, vertébrales, viscérales..."></textarea>
                         <div class="audio-controls">
-                            <button type="button" class="secondary" onclick="startAudioRecord('osteotestsAudio', 'statusTests')">🎙️ Enregistrer un mémo</button>
-                            <button type="button" class="danger" onclick="stopAudioRecord('statusTests')">⏹️ Stop</button>
-                            <span id="statusTests" class="recording-status">🔴 Enregistrement...</span>
+                            <button type="button" class="secondary" onclick="startAudioRecord('osteotestsAudio', 'statusTests')"><svg class="ico"><use href="#i-mic"/></svg>Mémo vocal</button>
+                            <button type="button" class="danger" onclick="stopAudioRecord('statusTests')"><svg class="ico"><use href="#i-stop"/></svg>Stop</button>
+                            <span id="statusTests" class="recording-status">Enregistrement...</span>
                         </div>
                         <div id="osteotestsAudioContainer" style="margin-top: 5px;"></div>
                     </div>
@@ -769,7 +580,7 @@
                     </div>
 
                     <div class="sticky-save">
-                        <button type="submit" id="consultSubmitBtn">💾 Enregistrer le compte rendu</button>
+                        <button type="submit" id="consultSubmitBtn">Enregistrer le compte rendu</button>
                     </div>
                 </form>
             </div>
@@ -778,11 +589,11 @@
         <!-- FICHE PATIENT (HUB) -->
         <div id="patientDetailView" class="view">
             <div class="card">
-                <button class="btn-ghost btn-inline" style="margin-bottom: 12px;" onclick="showView('patientsView')">⬅️ Tous les patients</button>
+                <button class="btn-ghost btn-inline" style="margin-bottom: 16px;" onclick="showView('patientsView')"><svg class="ico"><use href="#i-back"/></svg>Patients</button>
                 <div id="patientDossier"></div>
 
                 <details class="block" style="margin-top:18px;">
-                    <summary>➕ Ajouter un document (radio, CR véto…)</summary>
+                    <summary>Ajouter un document (radio, CR véto…)</summary>
                     <form id="patientDocForm" onsubmit="uploadPatientDocument(event)">
                         <div class="row">
                             <div class="form-group">
@@ -803,7 +614,7 @@
                             <label>Titre du document</label>
                             <input type="text" id="docTitle" placeholder="Ex: Radio boulet antérieur droit">
                         </div>
-                        <button type="submit" style="background: var(--accent);">➕ Ajouter au dossier</button>
+                        <button type="submit" style="background: var(--accent);">Ajouter au dossier</button>
                     </form>
                 </details>
             </div>
@@ -812,7 +623,7 @@
         <!-- FORMULAIRE PATIENT (création / modification) -->
         <div id="patientFormView" class="view">
             <div class="card">
-                <h2 id="patientFormTitle" class="section-title">🐾 Nouveau patient</h2>
+                <h2 id="patientFormTitle" class="section-title">Nouveau patient</h2>
                 <form id="patientForm">
                     <input type="hidden" id="editPatientId" value="">
                     <div class="form-group">
@@ -845,7 +656,7 @@
                             <label>Lieu / Écurie de rattachement</label>
                             <div style="display: flex; gap: 6px;">
                                 <select id="patAddress" style="flex: 1;"><option value="Clinique">Clinique (Par défaut)</option></select>
-                                <button type="button" class="secondary" style="width: auto; padding: 0 12px; font-size: 0.8rem;" onclick="quickAddLocation('patAddress')">➕</button>
+                                <button type="button" class="secondary" style="width: auto; padding: 0 12px; font-size: 0.8rem;" onclick="quickAddLocation('patAddress')"></button>
                             </div>
                         </div>
                     </div>
@@ -856,16 +667,16 @@
                     <div class="form-group">
                         <label class="checkbox-group">
                             <input type="checkbox" id="patIsDifficult">
-                            <span>⚠️ <strong>Animal difficile / Risque (mord, botte, tape...)</strong></span>
+                            <span><strong>Animal difficile / Risque (mord, botte, tape...)</strong></span>
                         </label>
                     </div>
                     <div class="form-group">
                         <label class="checkbox-group">
                             <input type="checkbox" id="patOwnerMandatory">
-                            <span>👤 <strong>Présence du propriétaire impérative pendant la séance</strong></span>
+                            <span><strong>Présence du propriétaire impérative pendant la séance</strong></span>
                         </label>
                     </div>
-                    <button type="submit" id="patientSubmitBtn">💾 Enregistrer le patient</button>
+                    <button type="submit" id="patientSubmitBtn">Enregistrer le patient</button>
                     <button type="button" class="btn-ghost" style="margin-top:8px;" onclick="history.back()">Annuler</button>
                 </form>
             </div>
@@ -874,10 +685,10 @@
         <!-- FICHE LIEU DÉTAILLÉE -->
         <div id="locationDetailView" class="view">
             <div class="card">
-                <button class="btn-ghost btn-inline" style="margin-bottom: 12px;" onclick="showView('locationsView')">⬅️ Retour aux lieux</button>
-                <h2 id="detailLocationName" class="section-title">📍 Détails du Lieu</h2>
+                <button class="btn-ghost btn-inline" style="margin-bottom: 16px;" onclick="showView('locationsView')"><svg class="ico"><use href="#i-back"/></svg>Lieux</button>
+                <h2 id="detailLocationName" class="section-title">Détails du Lieu</h2>
                 <div id="locationInfoSummary" style="margin-bottom: 20px; font-size: 0.9rem; background: var(--primary-light); padding: 12px; border-radius: 8px;"></div>
-                <h3 class="sub-title">🐾 Animaux suivis dans ce lieu</h3>
+                <h3 class="sub-title">Animaux suivis dans ce lieu</h3>
                 <div id="locationPatientsContainer"></div>
             </div>
         </div>
@@ -885,11 +696,11 @@
         <!-- LIEUX DE CONSULTATION -->
         <div id="locationsView" class="view">
             <div class="card">
-                <h2 class="section-title">📋 Lieux & Écuries</h2>
+                <h2 class="section-title">Lieux & écuries</h2>
                 <div id="locationsListContainer"><p class="muted" style="text-align:center;">Chargement des lieux...</p></div>
             </div>
             <div class="card">
-                <h2 id="locationFormTitle" class="section-title">➕ Ajouter un lieu</h2>
+                <h2 id="locationFormTitle" class="section-title">Ajouter un lieu</h2>
                 <form id="locationForm" onsubmit="saveLocation(event)">
                     <input type="hidden" id="editLocationId" value="">
                     <div class="form-group">
@@ -904,7 +715,7 @@
                         <label>Adresse & Infos d'accès</label>
                         <textarea id="locDetails" rows="2" placeholder="Lieu-dit, 31290 Villefranche..."></textarea>
                     </div>
-                    <button type="submit" id="locSubmitBtn">➕ Enregistrer le Lieu</button>
+                    <button type="submit" id="locSubmitBtn">Enregistrer le Lieu</button>
                     <button type="button" id="locCancelBtn" class="btn-ghost" style="display:none; margin-top:8px;" onclick="resetLocationForm()">Annuler la modification</button>
                 </form>
             </div>
@@ -914,8 +725,8 @@
         <div id="patientsView" class="view">
             <div class="card">
                 <div class="toolbar">
-                    <input type="text" id="searchPatients" placeholder="🔍 Animal, propriétaire, écurie…" oninput="loadPatients()" autocomplete="off">
-                    <button onclick="openPatientForm()">➕ Nouveau</button>
+                    <div class="search-wrap" style="flex:1;"><svg class="ico"><use href="#i-search"/></svg><input type="text" id="searchPatients" placeholder="Animal, propriétaire, écurie" oninput="loadPatients()" autocomplete="off"></div>
+                    <button class="btn-inline" onclick="openPatientForm()"><svg class="ico"><use href="#i-plus"/></svg>Ajouter</button>
                 </div>
                 <div id="patientsListContainer"><p class="muted" style="text-align:center;">Chargement des patients...</p></div>
             </div>
@@ -924,9 +735,9 @@
         <!-- HISTORIQUE -->
         <div id="historyView" class="view">
             <div class="card">
-                <h2 class="section-title">📂 Historique des Consultations</h2>
+                <h2 class="section-title">Toutes les séances</h2>
                 <div class="form-group">
-                    <input type="text" id="searchHistory" placeholder="🔍 Rechercher..." oninput="loadHistory()">
+                    <div class="search-wrap"><svg class="ico"><use href="#i-search"/></svg><input type="text" id="searchHistory" placeholder="Animal, propriétaire, motif" oninput="loadHistory()"></div>
                 </div>
                 <div id="historyListContainer"><p class="muted" style="text-align:center;">Chargement de l'historique...</p></div>
             </div>
@@ -935,7 +746,7 @@
         <!-- NOTES RAPIDES -->
         <div id="notesView" class="view">
             <div class="card">
-                <h2 class="section-title">🎙️ Notes Vocales (Terrain)</h2>
+                <h2 class="section-title">Nouvelle note vocale</h2>
                 <form id="quickNoteForm">
                     <div class="form-group">
                         <label>Associer à un Patient (Optionnel)</label>
@@ -948,28 +759,36 @@
                     <div class="form-group">
                         <label>Enregistrement vocal</label>
                         <div class="audio-controls">
-                            <button type="button" class="secondary" onclick="startAudioRecord('quickNoteAudio', 'statusQuick')">🎙️ Enregistrer</button>
-                            <button type="button" class="danger" onclick="stopAudioRecord('statusQuick')">⏹️ Stop</button>
-                            <span id="statusQuick" class="recording-status">🔴 Enregistrement...</span>
+                            <button type="button" class="secondary" onclick="startAudioRecord('quickNoteAudio', 'statusQuick')"><svg class="ico"><use href="#i-mic"/></svg>Enregistrer</button>
+                            <button type="button" class="danger" onclick="stopAudioRecord('statusQuick')"><svg class="ico"><use href="#i-stop"/></svg>Stop</button>
+                            <span id="statusQuick" class="recording-status">Enregistrement...</span>
                         </div>
                         <div id="quickNoteAudioContainer" style="margin-top: 10px;"></div>
                     </div>
-                    <button type="submit">💾 Enregistrer la Note Vocale</button>
+                    <button type="submit">Enregistrer la Note Vocale</button>
                 </form>
             </div>
             <div class="card">
-                <h2 class="section-title">⚡ Mémos Vocaux Enregistrés</h2>
+                <h2 class="section-title">Mémos enregistrés</h2>
                 <div id="quickNotesListContainer"><p class="muted" style="text-align:center;">Aucun mémo vocal.</p></div>
             </div>
         </div>
     </div>
 
+    <nav class="tabbar" aria-label="Navigation">
+        <button data-tab="homeView" onclick="showView('homeView')"><svg class="ico"><use href="#i-home"/></svg>Accueil</button>
+        <button data-tab="patientsView" onclick="showView('patientsView')"><svg class="ico"><use href="#i-paw"/></svg>Patients</button>
+        <button class="tab-new" onclick="startNewConsult()" aria-label="Nouvelle séance"><svg class="ico"><use href="#i-plus"/></svg></button>
+        <button data-tab="historyView" onclick="showView('historyView')"><svg class="ico"><use href="#i-clock"/></svg>Séances</button>
+        <button data-tab="moreView" onclick="showView('moreView')"><svg class="ico"><use href="#i-more"/></svg>Plus</button>
+    </nav>
+
     <!-- POP-UP FICHE PATIENT (pendant la saisie d'un CR) -->
     <div id="dossierModal" class="modal" onclick="if(event.target===this) closeDossierModal()">
         <div class="modal-panel">
             <div class="modal-head">
-                <h2>📂 Fiche patient</h2>
-                <button class="btn-dark" onclick="closeDossierModal()">✕ Fermer</button>
+                <h2>Fiche patient · lecture seule</h2>
+                <button class="btn-dark" onclick="closeDossierModal()"><svg class="ico"><use href="#i-x"/></svg>Fermer</button>
             </div>
             <div id="dossierModalContent"></div>
         </div>
@@ -1045,7 +864,7 @@
         }
         function fail(err, what) {
             console.error(what, err);
-            toast(`❌ ${what} : ${err && err.message ? err.message : err}`, 'err', 6000);
+            toast(`${what} : ${err && err.message ? err.message : err}`, 'err', 6000);
         }
 
         // Compression des photos (une photo de téléphone fait 3-5 Mo, Firestore accepte 1 Mo par fiche)
@@ -1114,7 +933,7 @@
                 address: document.getElementById('proAddress').value
             };
             localStorage.setItem('osteoProProfile', JSON.stringify(proProfile));
-            toast('✅ Profil professionnel sauvegardé');
+            toast('Profil professionnel sauvegardé');
             showView('homeView');
         }
 
@@ -1158,7 +977,7 @@
             db.collection("patients").onSnapshot((snapshot) => {
                 patientsData = [];
                 snapshot.forEach((doc) => { patientsData.push({ id: doc.id, ...doc.data() }); });
-                badge.textContent = snapshot.metadata.fromCache ? '📴 Hors-ligne : les données se synchroniseront au retour du réseau' : '☁️ Synchronisation Cloud Firebase Active';
+                badge.textContent = snapshot.metadata.fromCache ? 'Hors ligne : tout sera synchronisé au retour du réseau' : 'Données synchronisées';
                 refreshAll();
             }, (err) => fail(err, "Chargement des patients"));
 
@@ -1217,7 +1036,7 @@
             });
             let topLoc = '-', maxCount = 0;
             for (let loc in locationCounts) {
-                if (locationCounts[loc] > maxCount) { maxCount = locationCounts[loc]; topLoc = `${loc} (${maxCount} consult.)`; }
+                if (locationCounts[loc] > maxCount) { maxCount = locationCounts[loc]; topLoc = loc; }
             }
             document.getElementById('statTopLocation').innerText = topLoc;
         }
@@ -1234,13 +1053,13 @@
                 items.push({ p, last, d });
             });
             items.sort((a, b) => a.d - b.d);
-            if (!items.length) { box.innerHTML = '<p class="muted">Rien à relancer pour le moment.</p>'; return; }
+            if (!items.length) { box.innerHTML = '<p class="muted">Aucun suivi à relancer pour le moment.</p>'; return; }
             box.innerHTML = items.map(({ p, last, d }) => {
                 const when = d < 0 ? `<span class="badge late">en retard de ${-d} j</span>` : d === 0 ? `<span class="badge accent">aujourd'hui</span>` : `<span class="badge soft">dans ${d} j</span>`;
-                const mail = p.email ? `<a href="${reminderMailto(p, last)}" onclick="event.stopPropagation()" title="Envoyer un rappel">✉️</a>` : '';
+                const mail = p.email ? `<a href="${reminderMailto(p, last)}" onclick="event.stopPropagation()" title="Envoyer un rappel"><svg class="ico"><use href="#i-mail"/></svg></a>` : '';
                 return `<div class="relance" onclick="openPatientDetail(${arg(p.id)})">
-                    <span><strong>${esc(p.animalName)}</strong> · ${esc(p.owner)} <span class="muted">(${esc(formatDate(last.nextConsultDate))})</span></span>
-                    <span>${when} ${mail}</span></div>`;
+                    <span style="min-width:0;"><strong>${esc(p.animalName)}</strong> <span class="muted">${esc(p.owner)}</span><br><span class="muted">${esc(formatDate(last.nextConsultDate))}</span></span>
+                    <span style="display:flex; gap:8px; align-items:center; flex-shrink:0;">${when}${mail}</span></div>`;
             }).join('');
         }
         function reminderMailto(p, c) {
@@ -1251,14 +1070,17 @@
 
         /* ================= NAVIGATION (avec bouton retour du téléphone) ================= */
         const viewTitles = {
-            homeView: 'OstéoAnimal - Lynette', consultView: 'Consultation', locationsView: 'Lieux de consultation',
-            patientsView: 'Fiches Patients', patientDetailView: 'Fiche Patient', patientFormView: 'Fiche Patient',
-            historyView: 'Historique', notesView: 'Notes Vocales', proProfileView: 'Profil Professionnel', locationDetailView: 'Lieu'
+            homeView: 'OstéoAnimal', consultView: 'Compte rendu', locationsView: 'Lieux',
+            patientsView: 'Patients', patientDetailView: 'Fiche patient', patientFormView: 'Fiche patient',
+            historyView: 'Séances', notesView: 'Notes vocales', proProfileView: 'Profil pro', locationDetailView: 'Lieu', moreView: 'Plus'
         };
         function showView(viewId, opts = {}) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.getElementById(viewId).classList.add('active');
-            document.getElementById('homeBtn').style.display = viewId === 'homeView' ? 'none' : 'inline-block';
+            document.body.classList.toggle('on-home', viewId === 'homeView');
+            document.body.classList.toggle('in-consult', viewId === 'consultView' || viewId === 'patientFormView');
+            const tabOf = { homeView: 'homeView', patientsView: 'patientsView', patientDetailView: 'patientsView', patientFormView: 'patientsView', historyView: 'historyView', moreView: 'moreView', locationsView: 'moreView', locationDetailView: 'moreView', notesView: 'moreView', proProfileView: 'moreView' };
+            document.querySelectorAll('.tabbar [data-tab]').forEach(b => b.classList.toggle('on', b.dataset.tab === tabOf[viewId]));
             document.getElementById('headerTitle').innerText = viewTitles[viewId] || 'OstéoAnimal';
 
             if (viewId === 'homeView') { updateDashboardStats(); renderRelances(); }
@@ -1298,8 +1120,8 @@
                     results.innerHTML = current.map((p, i) => {
                         const last = getPatientConsults(p)[0];
                         return `<div class="picker-item" data-i="${i}">
-                            <strong>${esc(p.animalName)}</strong> (${esc(p.species)}) ${p.isDifficult ? '⚠️' : ''}
-                            <small>${esc(p.owner)} · 📍 ${esc(p.address || 'Clinique')}${last ? ' · dernière séance ' + esc(formatDate(last.consultDate)) : ''}</small>
+                            <strong>${esc(p.animalName)}</strong> (${esc(p.species)}) ${p.isDifficult ? '<span class="badge danger">Difficile</span>' : ''}
+                            <small>${esc(p.owner)} · ${esc(p.address || 'Clinique')}${last ? ' · dernière séance ' + esc(formatDate(last.consultDate)) : ''}</small>
                         </div>`;
                     }).join('');
                 }
@@ -1343,7 +1165,7 @@
             document.getElementById('consultForm').reset();
             document.getElementById('editConsultId').value = "";
             document.getElementById('consultPatientId').value = "";
-            document.getElementById('consultFormTitle').innerText = "📝 Nouvelle Consultation";
+            document.getElementById('consultFormTitle').innerText = "Nouvelle séance";
             document.getElementById('consultDateInput').value = todayISO();
             document.getElementById('anamnesisHint').style.display = 'none';
             document.getElementById('matchHint').style.display = 'none';
@@ -1384,11 +1206,11 @@
                 const hint = document.getElementById('anamnesisHint');
                 if (last && last.anamnesis && !an.value.trim()) {
                     an.value = last.anamnesis;
-                    hint.textContent = `↪️ Reprise de l'anamnèse de la séance du ${formatDate(last.consultDate)} — complétez ou modifiez si besoin.`;
+                    hint.textContent = `Reprise de l'anamnèse de la séance du ${formatDate(last.consultDate)} — complétez ou modifiez si besoin.`;
                     hint.style.display = 'block';
                 } else if (!last && p.history && !an.value.trim()) {
                     an.value = p.history;
-                    hint.textContent = `↪️ Pré-rempli avec les spécificités de la fiche patient.`;
+                    hint.textContent = `Pré-rempli avec les spécificités de la fiche patient.`;
                     hint.style.display = 'block';
                 }
                 // On ne repart d'un schéma vierge que si rien n'a été dessiné ou si l'espèce change
@@ -1434,30 +1256,31 @@
             box.innerHTML = `
                 <div class="patient-banner">
                     <div class="pb-head">
-                        <div>
-                            <h3>🐾 ${esc(p.animalName)} <span style="font-weight:400; font-size:0.85rem;">(${esc(p.species)}${p.breedAge ? ' · ' + esc(p.breedAge) : ''})</span></h3>
-                            <div class="pb-sub">${esc(p.owner)}${p.phone ? ' · <a href="tel:' + esc(p.phone) + '">' + esc(p.phone) + '</a>' : ''} · 📍 ${esc(p.address || 'Clinique')}</div>
+                        <div class="avatar">${initials(p.animalName)}</div>
+                        <div style="flex:1; min-width:0;">
+                            <h3>${esc(p.animalName)} <span>${esc(p.species)}${p.breedAge ? ', ' + esc(p.breedAge) : ''}</span></h3>
+                            <div class="pb-sub">${esc(p.owner)}${p.phone ? ' · <a href="tel:' + esc(p.phone) + '">' + esc(p.phone) + '</a>' : ''} · ${esc(p.address || 'Clinique')}</div>
                         </div>
-                        <span class="badge soft">${consults.length} séance${consults.length > 1 ? 's' : ''}</span>
+                        
                     </div>
                     ${alertsHtml(p)}
-                    ${p.history ? `<div class="pb-spec">📝 <strong>Spécificités :</strong> ${nl2br(p.history)}</div>` : ''}
+                    ${p.history ? `<div class="pb-spec">${nl2br(p.history)}</div>` : ''}
                     ${last ? `<div class="pb-last">
                         <strong>Dernière séance : ${esc(formatDate(last.consultDate || last.date))}</strong>${last.consultReason ? ' — ' + esc(last.consultReason) : ''}<br>
                         ${last.treatment ? `<span><b>Traitement :</b> ${esc(last.treatment).slice(0, 220)}${last.treatment.length > 220 ? '…' : ''}</span><br>` : ''}
                         ${last.advice ? `<span><b>Conseils donnés :</b> ${esc(last.advice).slice(0, 180)}${last.advice.length > 180 ? '…' : ''}</span>` : ''}
                     </div>` : `<div class="pb-last">Première séance pour ce patient.</div>`}
                     <div class="pb-actions">
-                        <button type="button" onclick="openDossierModal(${arg(p.id)})">📂 Voir la fiche complète</button>
-                        ${!editId ? `<button type="button" class="btn-ghost" onclick="clearConsultPatient()">✖ Changer de patient</button>` : ''}
+                        <button type="button" class="secondary" onclick="openDossierModal(${arg(p.id)})"><svg class="ico"><use href="#i-file"/></svg>Voir la fiche complète</button>
+                        ${!editId ? `<button type="button" class="btn-ghost" onclick="clearConsultPatient()">Changer de patient</button>` : ''}
                     </div>
                 </div>`;
         }
 
         function alertsHtml(p) {
             let h = '';
-            if (p.isDifficult) h += `<span class="badge danger">⚠️ Animal difficile</span>`;
-            if (p.ownerMandatory) h += `<span class="badge accent">👤 Proprio impératif</span>`;
+            if (p.isDifficult) h += `<span class="badge danger">Animal difficile</span>`;
+            if (p.ownerMandatory) h += `<span class="badge accent">Proprio impératif</span>`;
             return h ? `<div style="margin-top:6px;">${h}</div>` : '';
         }
 
@@ -1471,7 +1294,7 @@
             const matches = patientsData.filter(p => norm(p.animalName) === name && (!owner || norm(p.owner).includes(owner)));
             if (!matches.length) { box.style.display = 'none'; return; }
             box.innerHTML = matches.slice(0, 3).map(p =>
-                `💡 <strong>${esc(p.animalName)}</strong> (${esc(p.owner)}) existe déjà <button type="button" onclick="selectPatientForConsult(${arg(p.id)})">Utiliser sa fiche</button>`
+                `<strong>${esc(p.animalName)}</strong> (${esc(p.owner)}) existe déjà <button type="button" onclick="selectPatientForConsult(${arg(p.id)})">Utiliser sa fiche</button>`
             ).join('<br>');
             box.style.display = 'block';
         }
@@ -1491,7 +1314,7 @@
             document.getElementById('consultPhotosPreview').innerHTML = currentConsultPhotos.map((p, index) => `
                 <div class="photo-thumb-wrapper">
                     <img src="${p}" class="doc-thumbnail">
-                    <button type="button" class="delete-photo-btn" onclick="deleteConsultPhoto(${index})">✕</button>
+                    <button type="button" class="delete-photo-btn" onclick="deleteConsultPhoto(${index})"><svg class="ico"><use href="#i-x"/></svg></button>
                 </div>`).join('');
         }
         function deleteConsultPhoto(index) { currentConsultPhotos.splice(index, 1); renderConsultPhotosPreview(); }
@@ -1568,8 +1391,7 @@
         }
         function setPenColor(color, el) {
             penColor = color;
-            document.querySelectorAll('.color-dot').forEach(d => d.style.outline = '');
-            if (el) el.style.outline = '2px solid #2B2D42';
+            document.querySelectorAll('.color-dot').forEach(d => d.classList.toggle('on', d === el));
         }
         function clearCanvas() { initCanvas(); }
         function getPos(e) {
@@ -1616,7 +1438,7 @@
                             currentRecordedAudioUrl[activeAudioContainerId] = reader.result;
                             const container = document.getElementById(activeAudioContainerId + 'Container');
                             if (container) container.innerHTML = `<audio controls src="${reader.result}" style="width:100%; margin-top:5px;"></audio>`;
-                            if (audioBlob.size > 600000) toast('⚠️ Mémo long : au-delà d\'1 min environ, la fiche risque d\'être trop lourde pour être enregistrée.', 'err', 6000);
+                            if (audioBlob.size > 600000) toast('Mémo long : au-delà d\'1 min environ, la fiche risque d\'être trop lourde pour être enregistrée.', 'err', 6000);
                         };
                         stream.getTracks().forEach(track => track.stop());
                     };
@@ -1694,7 +1516,7 @@
 
             const size = approxBytes(consultation);
             if (size > FIRESTORE_MAX_BYTES * 0.97) {
-                toast(`❌ Compte rendu trop lourd (${(size / 1e6).toFixed(1)} Mo, max 1 Mo). Retirez une photo ou raccourcissez un mémo vocal.`, 'err', 8000);
+                toast(`Compte rendu trop lourd (${(size / 1e6).toFixed(1)} Mo, max 1 Mo). Retirez une photo ou raccourcissez un mémo vocal.`, 'err', 8000);
                 return;
             }
 
@@ -1725,14 +1547,14 @@
                     if (Object.keys(upd).length) await db.collection('patients').doc(p.id).update(upd);
                 }
 
-                toast(editId ? '✅ Consultation mise à jour' : '✅ Compte rendu enregistré');
+                toast(editId ? 'Consultation mise à jour' : 'Compte rendu enregistré');
                 const goTo = patientId;
                 resetConsultForm();
                 if (goTo) openPatientDetail(goTo, { replace: true }); else showView('historyView');
             } catch (err) {
                 fail(err, "Enregistrement impossible");
             } finally {
-                btn.disabled = false; btn.textContent = '💾 Enregistrer le compte rendu';
+                btn.disabled = false; btn.textContent = 'Enregistrer le compte rendu';
             }
         });
 
@@ -1742,7 +1564,7 @@
             closeDossierModal(true);
             resetConsultForm();
             showView('consultView');
-            document.getElementById('consultFormTitle').innerText = "✏️ Modifier la Consultation";
+            document.getElementById('consultFormTitle').innerText = "Modifier la séance";
             document.getElementById('editConsultId').value = c.id;
 
             const p = findPatientForConsult(c);
@@ -1776,7 +1598,7 @@
 
         function deleteConsultation(id) {
             if (confirm("Supprimer ce compte rendu ?")) {
-                db.collection("consultations").doc(id).delete().then(() => toast('🗑️ Compte rendu supprimé')).catch(err => fail(err, 'Suppression'));
+                db.collection("consultations").doc(id).delete().then(() => toast('Compte rendu supprimé')).catch(err => fail(err, 'Suppression'));
             }
         }
 
@@ -1794,13 +1616,13 @@
                 timestamp: Date.now()
             };
             const op = editId ? db.collection("locations").doc(editId).update(locData) : db.collection("locations").add(locData);
-            op.then(() => { resetLocationForm(); toast(editId ? '✅ Lieu mis à jour' : '✅ Lieu ajouté'); }).catch(err => fail(err, 'Enregistrement du lieu'));
+            op.then(() => { resetLocationForm(); toast(editId ? 'Lieu mis à jour' : 'Lieu ajouté'); }).catch(err => fail(err, 'Enregistrement du lieu'));
         }
         function resetLocationForm() {
             document.getElementById('locationForm').reset();
             document.getElementById('editLocationId').value = "";
-            document.getElementById('locationFormTitle').innerText = "➕ Ajouter un lieu";
-            document.getElementById('locSubmitBtn').innerText = "➕ Enregistrer le Lieu";
+            document.getElementById('locationFormTitle').innerText = "Ajouter un lieu";
+            document.getElementById('locSubmitBtn').innerText = "Enregistrer le Lieu";
             document.getElementById('locCancelBtn').style.display = "none";
         }
         function editLocation(id) {
@@ -1811,8 +1633,8 @@
             document.getElementById('locManager').value = l.manager || '';
             document.getElementById('locPhone').value = l.phone || '';
             document.getElementById('locDetails').value = l.details || '';
-            document.getElementById('locationFormTitle').innerText = "✏️ Modifier le Lieu";
-            document.getElementById('locSubmitBtn').innerText = "💾 Mettre à jour le Lieu";
+            document.getElementById('locationFormTitle').innerText = "Modifier le Lieu";
+            document.getElementById('locSubmitBtn').innerText = "Mettre à jour le Lieu";
             document.getElementById('locCancelBtn').style.display = "block";
             document.getElementById('locationForm').scrollIntoView({ behavior: 'smooth' });
         }
@@ -1827,22 +1649,23 @@
                 const count = patientsData.filter(p => (p.address || 'Clinique') === l.name).length;
                 const isClinique = l.id === 'clinique-def';
                 return `<div class="pat-card" onclick="openLocationDetail(${arg(l.name)})">
-                    <div style="flex:1;">
-                        <h4>📍 ${esc(l.name)}</h4>
+                    <div class="avatar"><svg class="ico"><use href="#i-pin"/></svg></div>
+                    <div style="flex:1; min-width:0;">
+                        <h4>${esc(l.name)}</h4>
                         <p>${esc(l.manager || 'Contact N/C')}${l.phone ? ' · ' + esc(l.phone) : ''}</p>
-                        <span class="badge soft">🐾 ${count} animal${count > 1 ? 'ux' : ''} suivi${count > 1 ? 's' : ''}</span>
+                        <span class="badge soft">${count} animal${count > 1 ? 'ux' : ''} suivi${count > 1 ? 's' : ''}</span>
                     </div>
                     ${!isClinique ? `<div class="actions-group" onclick="event.stopPropagation()">
-                        <button class="btn-dark" onclick="editLocation(${arg(l.id)})">✏️</button>
-                        <button class="danger" onclick="deleteLocation(${arg(l.id)})">🗑️</button>
-                    </div>` : '<span class="go">›</span>'}
+                        <button class="btn-dark" onclick="editLocation(${arg(l.id)})"><svg class="ico"><use href="#i-edit"/></svg></button>
+                        <button class="danger" onclick="deleteLocation(${arg(l.id)})"><svg class="ico"><use href="#i-trash"/></svg></button>
+                    </div>` : '<svg class="ico go"><use href="#i-chev"/></svg>'}
                 </div>`;
             }).join('');
         }
         function openLocationDetail(locName, opts = {}) {
             currentActiveLocationName = locName;
             const l = locationsData.find(item => item.name === locName) || { name: locName, manager: 'Cabinet principal / Non renseigné', phone: '', details: 'Lieu par défaut' };
-            document.getElementById('detailLocationName').innerText = `📍 ${l.name}`;
+            document.getElementById('detailLocationName').innerText = `${l.name}`;
             document.getElementById('locationInfoSummary').innerHTML = `
                 <strong>Contact :</strong> ${esc(l.manager || 'N/C')}${l.phone ? ` · <a href="tel:${esc(l.phone)}">${esc(l.phone)}</a>` : ''}<br>
                 ${l.details ? `<strong>Infos d'accès :</strong> ${nl2br(l.details)}` : ''}`;
@@ -1860,25 +1683,28 @@
             document.getElementById(selectId).value = newLoc;
             if (!locationsData.some(l => l.name === newLoc)) {
                 db.collection("locations").add({ name: newLoc, manager: '', phone: '', details: '', timestamp: Date.now() })
-                    .then(() => toast('✅ Lieu ajouté')).catch(err => fail(err, 'Ajout du lieu'));
+                    .then(() => toast('Lieu ajouté')).catch(err => fail(err, 'Ajout du lieu'));
             }
         }
 
         /* ================= PATIENTS ================= */
+        function initials(name) { return esc((String(name || '?').trim()[0] || '?').toUpperCase()); }
         function patientCardHtml(p) {
             const consults = getPatientConsults(p);
             const last = consults[0];
             const next = last && last.nextConsultDate ? daysFromToday(last.nextConsultDate) : null;
             let nextBadge = '';
             if (next !== null && next < 0) nextBadge = `<span class="badge late">RDV dépassé</span>`;
-            else if (next !== null && next <= 30) nextBadge = `<span class="badge soft">RDV ${esc(formatDate(last.nextConsultDate))}</span>`;
+            else if (next !== null && next <= 30) nextBadge = `<span class="badge soft">RDV le ${esc(formatDate(last.nextConsultDate))}</span>`;
+            const flags = (p.isDifficult ? '<span class="badge danger">Difficile</span>' : '') + (p.ownerMandatory ? '<span class="badge accent">Proprio présent</span>' : '') + nextBadge;
             return `<div class="pat-card ${p.isDifficult ? 'is-difficult' : ''}" onclick="openPatientDetail(${arg(p.id)})">
+                <div class="avatar">${initials(p.animalName)}</div>
                 <div style="flex:1; min-width:0;">
-                    <h4>${esc(p.animalName)} <span style="font-weight:400; font-size:0.8rem; color:var(--gray);">${esc(p.species)}${p.breedAge ? ' · ' + esc(p.breedAge) : ''}</span></h4>
-                    <p>${esc(p.owner)} · ${last ? 'dernière séance ' + esc(formatDate(last.consultDate || last.date)) : 'aucune séance'}</p>
-                    <div>${p.isDifficult ? '<span class="badge danger">⚠️ Difficile</span>' : ''}${p.ownerMandatory ? '<span class="badge accent">👤 Proprio</span>' : ''}${nextBadge}</div>
+                    <h4>${esc(p.animalName)} <span>${esc(p.species)}${p.breedAge ? ', ' + esc(p.breedAge) : ''}</span></h4>
+                    <p>${esc(p.owner)} · ${last ? 'vu le ' + esc(formatDate(last.consultDate || last.date)) : 'jamais vu'}</p>
+                    ${flags ? `<div>${flags}</div>` : ''}
                 </div>
-                <button class="secondary" onclick="event.stopPropagation(); startConsultForPatient(${arg(p.id)})">📝 Séance</button>
+                <button class="secondary icon-btn" title="Nouvelle séance" aria-label="Nouvelle séance pour ${esc(p.animalName)}" onclick="event.stopPropagation(); startConsultForPatient(${arg(p.id)})"><svg class="ico"><use href="#i-plus"/></svg></button>
             </div>`;
         }
 
@@ -1894,7 +1720,7 @@
             const grouped = {};
             filtered.forEach(p => { const loc = p.address || 'Clinique'; (grouped[loc] = grouped[loc] || []).push(p); });
             container.innerHTML = Object.keys(grouped).sort((a, b) => a.localeCompare(b)).map(loc =>
-                `<div class="loc-title">📍 ${esc(loc)} <span class="muted">(${grouped[loc].length})</span></div>` + grouped[loc].map(patientCardHtml).join('')
+                `<div class="loc-title">${esc(loc)} <span class="muted">(${grouped[loc].length})</span></div>` + grouped[loc].map(patientCardHtml).join('')
             ).join('');
         }
 
@@ -1916,9 +1742,9 @@
                 document.getElementById('patHistory').value = p.history || '';
                 document.getElementById('patIsDifficult').checked = !!p.isDifficult;
                 document.getElementById('patOwnerMandatory').checked = !!p.ownerMandatory;
-                document.getElementById('patientFormTitle').innerText = `✏️ Modifier : ${p.animalName}`;
+                document.getElementById('patientFormTitle').innerText = `Modifier : ${p.animalName}`;
             } else {
-                document.getElementById('patientFormTitle').innerText = "🐾 Nouveau patient";
+                document.getElementById('patientFormTitle').innerText = "Nouveau patient";
                 const q = document.getElementById('searchPatients').value.trim();
                 if (q) document.getElementById('patAnimalName').value = q;
             }
@@ -1958,7 +1784,7 @@
                     const ref = await db.collection("patients").add(patient);
                     id = ref.id;
                 }
-                toast(editId ? '✅ Fiche mise à jour' : '✅ Patient enregistré');
+                toast(editId ? 'Fiche mise à jour' : 'Patient enregistré');
                 openPatientDetail(id, { replace: true });
             } catch (err) { fail(err, 'Enregistrement du patient'); }
         });
@@ -1968,7 +1794,7 @@
             if (!p) return;
             const n = getPatientConsults(p).length;
             if (confirm(`Supprimer la fiche de ${p.animalName} ?${n ? `\n(Ses ${n} compte(s) rendu(s) resteront dans l'historique.)` : ''}`)) {
-                db.collection("patients").doc(id).delete().then(() => { toast('🗑️ Fiche supprimée'); showView('patientsView'); }).catch(err => fail(err, 'Suppression'));
+                db.collection("patients").doc(id).delete().then(() => { toast('Fiche supprimée'); showView('patientsView'); }).catch(err => fail(err, 'Suppression'));
             }
         }
 
@@ -1987,8 +1813,8 @@
             const consultsHtml = consults.length ? consults.map((c, i) => `
                 <details class="consult-item" ${i === 0 && inModal ? 'open' : ''}>
                     <summary>
-                        <span><strong>📅 ${esc(formatDate(c.consultDate || c.date))}</strong>${c.consultReason ? ' — ' + esc(c.consultReason) : ''}</span>
-                        <span class="muted" style="white-space:nowrap;">${c.nextConsultDate ? 'Proch. ' + esc(formatDate(c.nextConsultDate)) : ''}</span>
+                        <span><strong>${esc(formatDate(c.consultDate || c.date))}</strong><br><span class="reason">${esc(c.consultReason || 'Séance')}</span></span>
+                        ${c.nextConsultDate ? `<span class="badge soft">revoir le ${esc(formatDate(c.nextConsultDate))}</span>` : ''}
                     </summary>
                     <div class="consult-body">
                         ${CR_FIELDS.filter(([f]) => c[f] && c[f].trim()).map(([f, label]) => `<div class="f"><b>${label}</b>${nl2br(c[f])}</div>`).join('') || '<p class="muted">Pas de texte saisi.</p>'}
@@ -1997,9 +1823,9 @@
                         ${c.audioBilan ? `<audio controls src="${c.audioBilan}" style="width:100%; margin-top:6px;"></audio>` : ''}
                         ${c.audioTests ? `<audio controls src="${c.audioTests}" style="width:100%; margin-top:6px;"></audio>` : ''}
                         <div class="acts">
-                            <button class="secondary" onclick="generateReport(${arg(c.id)})">📄 Rapport</button>
-                            ${inModal ? '' : `<button class="btn-dark" onclick="editConsultation(${arg(c.id)})">✏️ Modifier</button>
-                            <button class="danger" onclick="deleteConsultation(${arg(c.id)})">🗑️</button>`}
+                            <button class="secondary" onclick="generateReport(${arg(c.id)})"><svg class="ico"><use href="#i-file"/></svg>Rapport</button>
+                            ${inModal ? '' : `<button class="btn-dark" onclick="editConsultation(${arg(c.id)})"><svg class="ico"><use href="#i-edit"/></svg>Modifier</button>
+                            <button class="danger" onclick="deleteConsultation(${arg(c.id)})"><svg class="ico"><use href="#i-trash"/></svg></button>`}
                         </div>
                     </div>
                 </details>`).join('') : '<p class="muted">Aucune séance pour l\'instant.</p>';
@@ -2012,35 +1838,37 @@
                 const isImg = (d.dataUrl || '').startsWith('data:image');
                 const thumb = isImg
                     ? `<img src="${d.dataUrl}" class="doc-thumbnail" style="cursor:pointer" onclick="openPatientDoc(${arg(p.id)}, ${arg(d.id)})">`
-                    : `<div class="doc-pdf" onclick="openPatientDoc(${arg(p.id)}, ${arg(d.id)})">📄</div>`;
+                    : `<div class="doc-pdf" onclick="openPatientDoc(${arg(p.id)}, ${arg(d.id)})">PDF</div>`;
                 return `<div class="list-item">
                     <div style="display:flex; gap:12px; align-items:center;">${thumb}
                         <div class="list-info"><h4 onclick="openPatientDoc(${arg(p.id)}, ${arg(d.id)})">${esc(d.title)}</h4><p>${esc(d.category)} · ${esc(d.date)}</p></div>
                     </div>
-                    ${inModal ? '' : `<button class="danger" style="width:auto; padding:6px 10px;" onclick="deletePatientDoc(${arg(d.id)})">🗑️</button>`}
+                    ${inModal ? '' : `<button class="danger" style="width:auto; padding:6px 10px;" onclick="deletePatientDoc(${arg(d.id)})"><svg class="ico"><use href="#i-trash"/></svg></button>`}
                 </div>`;
             }).join('') : '<p class="muted">Aucun document.</p>';
 
             return `
-                <h2 class="section-title" style="margin-bottom:8px;">🐾 ${esc(p.animalName)} <span style="font-weight:400; font-size:0.9rem;">(${esc(p.species)})</span></h2>
+                <div class="dossier-head">
+                    <div class="avatar">${initials(p.animalName)}</div>
+                    <div><h2>${esc(p.animalName)}</h2><p>${esc(p.species)}${p.breedAge ? ', ' + esc(p.breedAge) : ''}</p></div>
+                </div>
                 ${alertsHtml(p)}
-                <div class="dossier-info" style="margin-top:10px;">
-                    <div><strong>Propriétaire</strong><br>${esc(p.owner || 'N/C')}</div>
-                    <div><strong>Race / Âge</strong><br>${esc(p.breedAge || 'N/C')}</div>
-                    <div><strong>Téléphone</strong><br>${p.phone ? `<a href="tel:${esc(p.phone)}">${esc(p.phone)}</a>` : 'N/C'}</div>
-                    <div><strong>E-mail</strong><br>${p.email ? `<a href="mailto:${esc(p.email)}">${esc(p.email)}</a>` : 'N/C'}</div>
-                    <div class="full"><strong>Lieu / Écurie</strong> : ${esc(p.address || 'Clinique')}</div>
-                    ${p.history ? `<div class="full"><strong>Spécificités & comportement</strong><br>${nl2br(p.history)}</div>` : ''}
+                <div class="dossier-info">
+                    <div><span class="k">Propriétaire</span>${esc(p.owner || 'Non renseigné')}</div>
+                    <div><span class="k">Lieu</span>${esc(p.address || 'Clinique')}</div>
+                    <div><span class="k">Téléphone</span>${p.phone ? `<a href="tel:${esc(p.phone)}">${esc(p.phone)}</a>` : 'Non renseigné'}</div>
+                    <div><span class="k">E-mail</span>${p.email ? `<a href="mailto:${esc(p.email)}">${esc(p.email)}</a>` : 'Non renseigné'}</div>
+                    ${p.history ? `<div class="full"><span class="k">Spécificités & comportement</span>${nl2br(p.history)}</div>` : ''}
                 </div>
                 ${inModal ? '' : `<div class="dossier-actions">
-                    <button class="secondary" onclick="startConsultForPatient(${arg(p.id)})">📝 Nouvelle séance</button>
-                    <button class="btn-dark" onclick="openPatientForm(${arg(p.id)})">✏️ Modifier</button>
-                    <button class="danger" style="flex:0; min-width:auto;" onclick="deletePatient(${arg(p.id)})">🗑️</button>
+                    <button class="accent" onclick="startConsultForPatient(${arg(p.id)})"><svg class="ico"><use href="#i-plus"/></svg>Nouvelle séance</button>
+                    <button class="secondary" onclick="openPatientForm(${arg(p.id)})"><svg class="ico"><use href="#i-edit"/></svg>Modifier</button>
+                    <button class="danger icon-btn" title="Supprimer la fiche" onclick="deletePatient(${arg(p.id)})"><svg class="ico"><use href="#i-trash"/></svg></button>
                 </div>`}
-                <h3 class="sub-title">📋 Séances (${consults.length})</h3>
+                <h3 class="sub-title">Séances <span class="badge soft">${consults.length}</span></h3>
                 ${consultsHtml}
-                ${notesHtml ? `<h3 class="sub-title">🎙️ Mémos vocaux</h3>${notesHtml}` : ''}
-                <h3 class="sub-title">📁 Documents & imagerie (${docs.length})</h3>
+                ${notesHtml ? `<h3 class="sub-title">Mémos vocaux</h3>${notesHtml}` : ''}
+                <h3 class="sub-title">Documents & imagerie <span class="badge soft">${docs.length}</span></h3>
                 ${docsHtml}`;
         }
 
@@ -2114,12 +1942,12 @@
                 const docs = [...(pat.documents || []), newDoc];
                 const size = approxBytes({ ...pat, documents: docs });
                 if (size > FIRESTORE_MAX_BYTES * 0.97) {
-                    toast(`❌ Document trop lourd : la fiche ferait ${(size / 1e6).toFixed(1)} Mo (max 1 Mo). Pour un PDF, compressez-le ou prenez-le en photo.`, 'err', 8000);
+                    toast(`Document trop lourd : la fiche ferait ${(size / 1e6).toFixed(1)} Mo (max 1 Mo). Pour un PDF, compressez-le ou prenez-le en photo.`, 'err', 8000);
                     return;
                 }
                 await db.collection("patients").doc(pat.id).update({ documents: docs });
                 document.getElementById('patientDocForm').reset();
-                toast('✅ Document ajouté au dossier');
+                toast('Document ajouté au dossier');
             } catch (err) { fail(err, 'Ajout du document'); }
         }
         function deletePatientDoc(docId) {
@@ -2140,12 +1968,12 @@
                 title: document.getElementById('quickNoteTitle').value.trim() || 'Mémo vocal',
                 audioData: currentRecordedAudioUrl['quickNoteAudio'] || null
             };
-            if (approxBytes(note) > FIRESTORE_MAX_BYTES * 0.97) { toast('❌ Mémo trop long (max ~1 min).', 'err', 6000); return; }
+            if (approxBytes(note) > FIRESTORE_MAX_BYTES * 0.97) { toast('Mémo trop long (max ~1 min).', 'err', 6000); return; }
             db.collection("quicknotes").add(note).then(() => {
                 this.reset();
                 currentRecordedAudioUrl['quickNoteAudio'] = null;
                 document.getElementById('quickNoteAudioContainer').innerHTML = '';
-                toast('✅ Mémo vocal enregistré');
+                toast('Mémo vocal enregistré');
             }).catch(err => fail(err, 'Enregistrement du mémo'));
         });
         function loadQuickNotes() {
@@ -2154,11 +1982,11 @@
             if (!quickNotesData.length) { container.innerHTML = '<p class="muted" style="text-align:center;">Aucun mémo vocal.</p>'; return; }
             container.innerHTML = quickNotesData.map(n => {
                 const pat = getPatient(n.patientId);
-                const patName = pat ? `<a href="#" onclick="event.preventDefault(); openPatientDetail(${arg(pat.id)})">🐾 ${esc(pat.animalName)} (${esc(pat.owner)})</a>` : '📌 Note libre';
+                const patName = pat ? `<a href="#" onclick="event.preventDefault(); openPatientDetail(${arg(pat.id)})">${esc(pat.animalName)} (${esc(pat.owner)})</a>` : 'Note libre';
                 return `<div class="list-item" style="flex-direction:column; align-items:flex-start;">
                     <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
                         <div class="list-info"><h4>${esc(n.title || 'Mémo vocal')} · <span style="font-size:0.75rem; color:var(--gray);">${esc(n.date)}</span></h4><p>${patName}</p></div>
-                        <button class="danger" style="width:auto; padding:6px 10px;" onclick="deleteQuickNote(${arg(n.id)})">🗑️</button>
+                        <button class="danger" style="width:auto; padding:6px 10px;" onclick="deleteQuickNote(${arg(n.id)})"><svg class="ico"><use href="#i-trash"/></svg></button>
                     </div>
                     <div style="width:100%;">${n.audioData ? `<audio controls src="${n.audioData}" style="width:100%; margin-top:8px;"></audio>` : '<p class="muted">Aucun audio</p>'}</div>
                 </div>`;
@@ -2180,7 +2008,7 @@
             container.innerHTML = filtered.map(c => {
                 const p = findPatientForConsult(c);
                 const reminder = c.nextConsultDate && c.ownerEmail
-                    ? `<a class="secondary" style="padding:6px 10px; font-size:0.8rem; text-decoration:none; border-radius:6px; background:#EA5B0C; color:#fff;" href="${reminderMailto({ animalName: c.animalName, owner: c.ownerName, email: c.ownerEmail }, c)}">✉️</a>` : '';
+                    ? `<a class="icon-link" title="Envoyer un rappel" href="${reminderMailto({ animalName: c.animalName, owner: c.ownerName, email: c.ownerEmail }, c)}"><svg class="ico"><use href="#i-mail"/></svg></a>` : '';
                 return `<div class="list-item" style="align-items:flex-start;">
                     <div class="list-info" style="flex:1;">
                         <h4 ${p ? `onclick="openPatientDetail(${arg(p.id)})"` : ''}>${esc(c.animalName)} (${esc(c.animalSpecies)}) ${p ? '›' : ''}</h4>
@@ -2190,9 +2018,9 @@
                     </div>
                     <div class="actions-group">
                         ${reminder}
-                        <button class="secondary" onclick="generateReport(${arg(c.id)})">📄</button>
-                        <button class="btn-dark" onclick="editConsultation(${arg(c.id)})">✏️</button>
-                        <button class="danger" onclick="deleteConsultation(${arg(c.id)})">🗑️</button>
+                        <button class="secondary" onclick="generateReport(${arg(c.id)})"><svg class="ico"><use href="#i-file"/></svg></button>
+                        <button class="btn-dark" onclick="editConsultation(${arg(c.id)})"><svg class="ico"><use href="#i-edit"/></svg></button>
+                        <button class="danger" onclick="deleteConsultation(${arg(c.id)})"><svg class="ico"><use href="#i-trash"/></svg></button>
                     </div>
                 </div>`;
             }).join('');
@@ -2251,9 +2079,9 @@
                             </div>
                         </div>
                         <div style="text-align: right;">
-                            <p>📞 ${esc(proProfile.phone)}</p>
-                            <p>✉️ ${esc(proProfile.email)}</p>
-                            ${proProfile.address ? `<p>📍 ${esc(proProfile.address)}</p>` : ''}
+                            <p>${esc(proProfile.phone)}</p>
+                            <p>${esc(proProfile.email)}</p>
+                            ${proProfile.address ? `<p>${esc(proProfile.address)}</p>` : ''}
                         </div>
                     </div>
                     <h1>Compte Rendu de Consultation Ostéopathique</h1>
@@ -2283,9 +2111,9 @@
                     ${c.vetNotes ? `<div class="section"><h3>6. Notes & Confrères (Véto, Maréchal...)</h3><p>${t(c.vetNotes)}</p></div>` : ''}
                     <div class="section"><h3>7. Conseils Post-Séance</h3><p>${t(c.advice) || 'Non renseigné'}</p></div>
                     <div class="btn-group">
-                        <button class="btn btn-back" onclick="window.close()">⬅️ Revenir à l'application</button>
-                        <button class="btn btn-print" onclick="window.print()">🖨️ Imprimer / Enregistrer en PDF</button>
-                        ${mailHref ? `<a class="btn btn-email" href="${mailHref}">✉️ Envoyer par e-mail</a>` : ''}
+                        <button class="btn btn-back" onclick="window.close()">Revenir à l'application</button>
+                        <button class="btn btn-print" onclick="window.print()">Imprimer / Enregistrer en PDF</button>
+                        ${mailHref ? `<a class="btn btn-email" href="${mailHref}">Envoyer par e-mail</a>` : ''}
                     </div>
                 </body></html>`);
             win.document.close();
@@ -2295,6 +2123,14 @@
         setupPicker('consultPatientSearch', 'consultPickerResults', id => selectPatientForConsult(id, { prefill: true }), ' — remplissez les infos ci-dessous pour en créer un.');
         setupPicker('homeSearch', 'homeSearchResults', id => openPatientDetail(id));
         history.replaceState({ view: 'homeView' }, '');
+        (function () {
+            const now = new Date();
+            const d = now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+            document.getElementById('heroDate').textContent = d.charAt(0).toUpperCase() + d.slice(1);
+            document.getElementById('heroGreeting').textContent = (now.getHours() >= 18 ? 'Bonsoir' : 'Bonjour') + ' Lynette';
+            window.addEventListener('scroll', () => document.body.classList.toggle('scrolled', window.scrollY > 4), { passive: true });
+            document.querySelector('.tabbar [data-tab="homeView"]').classList.add('on');
+        })();
         fillProProfileForm();
         startFirestoreListeners();
     </script>
