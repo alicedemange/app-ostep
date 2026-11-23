@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ostéo 🐾 🐕 🐈 🐎  - Lynette</title>
+    <title>Ostéo🐾 🐕 🐈 🐎   - Lynette</title>
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -324,12 +324,50 @@
             .container { max-width: 760px; }
             .hero { margin: 0 0 22px; border-radius: 28px; }
         }
+        /* ---------- Écran code PIN ---------- */
+        #lockScreen { position: fixed; inset: 0; z-index: 5000; background: var(--pine); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px 24px calc(30px + env(safe-area-inset-bottom)); overflow: hidden; isolation: isolate; }
+        #lockScreen.hidden { display: none; }
+        #lockScreen::after { content: ""; position: absolute; z-index: -1; left: 50%; bottom: -40px; transform: translateX(-50%); width: 520px; height: 340px; background: url("https://i.postimg.cc/FR7TJg0L/1cheval.png") center / contain no-repeat; filter: invert(1) grayscale(1); mix-blend-mode: screen; opacity: .09; }
+        .lock-logo { width: 64px; height: 64px; border-radius: 18px; object-fit: cover; background: #fff; }
+        .lock-title { font-size: 1.6rem; font-weight: 600; letter-spacing: -0.02em; margin: 18px 0 4px; font-variation-settings: "opsz" 72; }
+        .lock-sub { opacity: .7; font-size: 0.95rem; text-align: center; min-height: 1.4em; }
+        .pin-dots { display: flex; gap: 16px; margin: 28px 0 10px; }
+        .pin-dots span { width: 15px; height: 15px; border-radius: 50%; border: 2px solid rgba(255,255,255,.55); transition: background .1s, transform .1s; }
+        .pin-dots span.on { background: #fff; border-color: #fff; transform: scale(1.08); }
+        .pin-dots.shake { animation: shake .4s; }
+        .pin-dots.busy span { animation: blink 1s infinite; }
+        @keyframes shake { 20%, 60% { transform: translateX(-10px); } 40%, 80% { transform: translateX(10px); } }
+        .lock-error { color: #FFD2BF; font-size: 0.9rem; text-align: center; max-width: 320px; min-height: 2.6em; margin-bottom: 8px; }
+        .pin-pad { display: grid; grid-template-columns: repeat(3, 76px); gap: 14px 22px; }
+        .pin-pad button { width: 76px; height: 76px; border-radius: 50%; background: rgba(255,255,255,.1); color: #fff; font-size: 1.7rem; font-weight: 500; padding: 0; }
+        .pin-pad button:active { background: rgba(255,255,255,.25); }
+        .pin-pad button.ghost { background: none; font-size: 0.9rem; }
+        .pin-pad button:disabled { visibility: hidden; }
+        .lock-help { margin-top: 22px; font-size: 0.82rem; opacity: .55; text-align: center; max-width: 320px; }
+
         .toolbar { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; }
         .icon-link { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; background: var(--mist); color: var(--sage-deep); }
     </style>
 
 </head>
 <body class="on-home">
+    <!-- ÉCRAN CODE PIN -->
+    <div id="lockScreen" aria-modal="true" role="dialog" aria-label="Code d'accès">
+        <img class="lock-logo" src="https://i.postimg.cc/6QWy5MnP/Logo-lynette-V1.jpg" alt="">
+        <h2 class="lock-title">OstéoAnimal</h2>
+        <p class="lock-sub" id="lockSub">Entrez votre code à 6 chiffres</p>
+        <div class="pin-dots" id="pinDots"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+        <p class="lock-error" id="lockError"></p>
+        <div class="pin-pad" id="pinPad">
+            <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
+            <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
+            <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button>
+            <button class="ghost" disabled></button><button data-k="0">0</button>
+            <button class="ghost" data-k="del" aria-label="Effacer"><svg class="ico" style="width:26px;height:26px"><use href="#i-back"/></svg></button>
+        </div>
+        <p class="lock-help" id="lockHelp"></p>
+    </div>
+
     <!-- Icônes -->
     <svg width="0" height="0" style="position:absolute" aria-hidden="true">
         <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20h14V9.5"/><path d="M10 20v-5h4v5"/></symbol>
@@ -354,6 +392,7 @@
         <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
         <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></symbol>
         <symbol id="i-stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></symbol>
+        <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></symbol>
         <symbol id="i-save" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></symbol>
     </svg>
 
@@ -410,6 +449,10 @@
                 <button onclick="showView('locationsView')"><svg class="ico"><use href="#i-pin"/></svg><span>Lieux & écuries<small>Contacts, accès, animaux suivis</small></span><svg class="ico chev"><use href="#i-chev"/></svg></button>
                 <button onclick="showView('notesView')"><svg class="ico"><use href="#i-mic"/></svg><span>Notes vocales<small>Mémos enregistrés sur le terrain</small></span><svg class="ico chev"><use href="#i-chev"/></svg></button>
                 <button onclick="showView('proProfileView')"><svg class="ico"><use href="#i-user"/></svg><span>Mon profil pro<small>En-tête des comptes rendus</small></span><svg class="ico chev"><use href="#i-chev"/></svg></button>
+            </div>
+            <div class="menu-list" style="margin-top:16px;">
+                <button onclick="lockApp()"><svg class="ico"><use href="#i-lock"/></svg><span>Verrouiller l'app<small>Le code sera redemandé</small></span></button>
+                <button onclick="forgetDevice()"><svg class="ico"><use href="#i-x"/></svg><span>Déconnecter cet appareil<small>À faire sur un appareil perdu ou prêté</small></span></button>
             </div>
         </div>
 
@@ -807,6 +850,12 @@
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        // Compte unique de l'app : à créer dans la console Firebase (Authentication > Users)
+        // avec cet e-mail et le code PIN à 6 chiffres comme mot de passe.
+        const AUTH_EMAIL = "cabinet@app-ostep.fr";
+        const RELOCK_AFTER_MS = 5 * 60 * 1000; // re-verrouillage après 5 min en arrière-plan
         // Cache hors-ligne : l'app reste utilisable sans réseau à l'écurie, et se synchronise au retour du réseau
         try { db.enablePersistence({ synchronizeTabs: true }).catch(() => {}); } catch (e) {}
 
@@ -2119,6 +2168,98 @@
             win.document.close();
         }
 
+        /* ================= CODE PIN ================= */
+        let pinBuffer = '';
+        let pinBusy = false;
+        let hiddenAt = null;
+        const authReady = new Promise(res => { const off = auth.onAuthStateChanged(u => { off(); res(u); }); });
+
+        async function sha256(txt) {
+            const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('ostep:' + txt));
+            return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+        function renderPinDots() {
+            document.querySelectorAll('#pinDots span').forEach((d, i) => d.classList.toggle('on', i < pinBuffer.length));
+        }
+        function lockError(msg) {
+            document.getElementById('lockError').textContent = msg || '';
+        }
+        function pinFail(msg) {
+            const dots = document.getElementById('pinDots');
+            dots.classList.remove('shake'); void dots.offsetWidth; dots.classList.add('shake');
+            if (navigator.vibrate) navigator.vibrate(120);
+            pinBuffer = ''; renderPinDots(); lockError(msg);
+        }
+        function pinKey(k) {
+            if (pinBusy) return;
+            if (k === 'del') { pinBuffer = pinBuffer.slice(0, -1); renderPinDots(); return; }
+            if (pinBuffer.length >= 6) return;
+            pinBuffer += k; renderPinDots(); lockError('');
+            if (pinBuffer.length === 6) setTimeout(() => checkPin(pinBuffer), 120);
+        }
+        function authErrorMessage(err) {
+            const c = (err && err.code) || '';
+            if (c.includes('wrong-password') || c.includes('invalid-credential') || c.includes('invalid-login')) return 'Code incorrect.';
+            if (c.includes('user-not-found')) return `Le compte ${AUTH_EMAIL} n'existe pas encore dans Firebase (Authentication > Users).`;
+            if (c.includes('operation-not-allowed')) return 'La connexion par e-mail/mot de passe n\'est pas activée dans Firebase (Authentication > Sign-in method).';
+            if (c.includes('too-many-requests')) return 'Trop d\'essais. Patientez quelques minutes.';
+            if (c.includes('network-request-failed')) return 'Pas de réseau. La toute première connexion sur cet appareil nécessite internet.';
+            if (c.includes('api-key') || c.includes('unauthorized-domain') || c.includes('requests-from-referer')) return 'Firebase refuse ce site : vérifiez la clé d\'API et les domaines autorisés (alicedemange.github.io).';
+            return 'Connexion impossible : ' + (err && err.message ? err.message : c);
+        }
+        async function checkPin(pin) {
+            pinBusy = true;
+            document.getElementById('pinDots').classList.add('busy');
+            try {
+                await authReady;
+                const savedHash = localStorage.getItem('osteoPinHash');
+                // Appareil déjà connecté : vérification locale (fonctionne sans réseau)
+                if (auth.currentUser && savedHash && savedHash === await sha256(pin)) return unlockApp();
+                // Sinon (1re fois ou code changé) : vérification par Firebase
+                await auth.signInWithEmailAndPassword(AUTH_EMAIL, pin);
+                localStorage.setItem('osteoPinHash', await sha256(pin));
+                unlockApp();
+            } catch (err) {
+                console.error('Code PIN', err);
+                pinFail(authErrorMessage(err));
+            } finally {
+                pinBusy = false;
+                document.getElementById('pinDots').classList.remove('busy');
+            }
+        }
+        function unlockApp() {
+            pinBuffer = ''; renderPinDots(); lockError('');
+            document.getElementById('lockScreen').classList.add('hidden');
+            startFirestoreListeners();
+        }
+        function lockApp() {
+            pinBuffer = ''; renderPinDots(); lockError('');
+            document.getElementById('lockScreen').classList.remove('hidden');
+        }
+        async function forgetDevice() {
+            if (!confirm('Déconnecter cet appareil ? Le code sera redemandé et vérifié en ligne.')) return;
+            localStorage.removeItem('osteoPinHash');
+            try { await auth.signOut(); } catch (e) {}
+            location.reload();
+        }
+        document.getElementById('pinPad').addEventListener('click', e => {
+            const b = e.target.closest('button[data-k]');
+            if (b) pinKey(b.dataset.k);
+        });
+        document.addEventListener('keydown', e => {
+            if (document.getElementById('lockScreen').classList.contains('hidden')) return;
+            if (/^[0-9]$/.test(e.key)) pinKey(e.key);
+            else if (e.key === 'Backspace') pinKey('del');
+        });
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) hiddenAt = Date.now();
+            else if (hiddenAt && Date.now() - hiddenAt > RELOCK_AFTER_MS) lockApp();
+        });
+        authReady.then(u => {
+            document.getElementById('lockSub').textContent = u && localStorage.getItem('osteoPinHash')
+                ? 'Entrez votre code' : 'Première connexion sur cet appareil : entrez votre code';
+        });
+
         /* ================= DÉMARRAGE ================= */
         setupPicker('consultPatientSearch', 'consultPickerResults', id => selectPatientForConsult(id, { prefill: true }), ' — remplissez les infos ci-dessous pour en créer un.');
         setupPicker('homeSearch', 'homeSearchResults', id => openPatientDetail(id));
@@ -2132,7 +2273,7 @@
             document.querySelector('.tabbar [data-tab="homeView"]').classList.add('on');
         })();
         fillProProfileForm();
-        startFirestoreListeners();
+        // startFirestoreListeners() est lancé après la saisie du bon code (unlockApp)
     </script>
 </body>
 </html>
