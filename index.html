@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ostéo🐾 🐕 🐈 🐎   - Lynette</title>
+    <title>Ostéo Pattes - Lynette</title>
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -57,18 +57,25 @@
         /* ---------- En-tête ---------- */
         header {
             position: sticky; top: 0; z-index: 100;
-            background: color-mix(in srgb, var(--paper) 88%, transparent); backdrop-filter: blur(10px);
-            padding: 10px 18px; display: flex; align-items: center; gap: 12px;
-            border-bottom: 1px solid transparent;
+            background: color-mix(in srgb, var(--paper) 90%, transparent); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid transparent; transition: border-color .15s;
         }
         body.scrolled header { border-bottom-color: var(--line); }
-        .header-brand { display: flex; align-items: center; gap: 10px; }
-        .header-logo { height: 34px; width: 34px; object-fit: cover; border-radius: 10px; background: #fff; border: 1px solid var(--line); }
-        header h1 { font-size: 1.05rem; font-weight: 600; letter-spacing: -0.01em; }
+        .header-inner { max-width: 680px; margin: 0 auto; padding: calc(14px + env(safe-area-inset-top)) 16px 10px; display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 60px; }
+        .header-brand { display: flex; align-items: center; gap: 14px; min-width: 0; }
+        .header-logo { height: 48px; width: auto; object-fit: contain; display: block; flex-shrink: 0; }
+        .header-brand .sep { width: 1px; height: 28px; background: var(--line); flex-shrink: 0; }
+        @media (max-width: 420px) { .header-logo { height: 40px; } .header-brand { gap: 12px; } }
+        header h1 { font-size: clamp(1.2rem, 4.6vw, 1.5rem); font-weight: 600; letter-spacing: -0.025em; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-variation-settings: "opsz" 72; }
+        #headerAction { width: auto; padding: 9px 14px; font-size: 0.92rem; background: var(--white); color: var(--pine); border: 1px solid var(--line); }
+        #headerAction:hover { background: var(--mist); }
+        #headerAction[hidden] { display: none; }
         body.on-home header { display: none; }
-        .header-actions, .back-home-btn { display: none !important; }
+        /* titres déjà affichés dans l'en-tête */
+        #historyView .section-title, #locationsView .card:first-child .section-title, #proProfileView .section-title, #moreView > h2 { display: none; }
 
-        .container { max-width: 680px; margin: 14px auto 0; padding: 0 16px; }
+        .container { max-width: 680px; margin: 6px auto 0; padding: 0 16px; }
+        body.on-home .container { margin-top: 0; }
         .view { display: none; }
         .view.active { display: block; animation: viewIn .18s ease-out; }
         @keyframes viewIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
@@ -86,7 +93,7 @@
             filter: invert(1) grayscale(1); mix-blend-mode: screen; opacity: .2;
         }
         .hero-top { display: flex; align-items: center; gap: 10px; margin-bottom: 26px; }
-        .hero-top img { height: 38px; width: 38px; border-radius: 11px; object-fit: cover; background: #fff; }
+        .hero-top img { height: 58px; width: auto; border-radius: 14px; object-fit: contain; background: #fff; padding: 7px 12px; }
         .hero-top span { font-size: 0.9rem; opacity: .75; }
         .hero h2 { font-size: 2.1rem; line-height: 1.05; font-weight: 600; letter-spacing: -0.025em; font-variation-settings: "opsz" 96; }
         .hero .hero-date { margin-top: 6px; font-size: 0.95rem; opacity: .72; }
@@ -164,12 +171,18 @@
         .sketch-container { border: 1px solid var(--line); border-radius: var(--r-item); background: var(--paper); padding: 8px; }
         .canvas-wrapper { position: relative; width: 100%; height: 280px; background: #fff; border-radius: 8px; overflow: hidden; }
         canvas { position: absolute; inset: 0; width: 100%; height: 100%; cursor: crosshair; touch-action: none; }
-        .sketch-tools { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; gap: 8px; }
+        .sketch-tools { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; gap: 8px; flex-wrap: wrap; }
         .sketch-tools > div:last-child { display: flex; gap: 6px; }
         .tool-btn { width: auto; padding: 8px 12px; font-size: 0.85rem; }
         .color-picker { display: flex; gap: 10px; align-items: center; padding-left: 4px; }
         .color-dot { width: 28px; height: 28px; border-radius: 50%; cursor: pointer; border: 3px solid #fff; box-shadow: 0 0 0 1px var(--line); }
         .color-dot.on { box-shadow: 0 0 0 2px var(--pine); }
+        .sketch-modes { display: inline-flex; background: var(--white); border: 1px solid var(--line); border-radius: 10px; padding: 3px; gap: 2px; }
+        .sketch-modes button { width: auto; padding: 7px 11px; font-size: 0.85rem; background: none; color: var(--muted); border-radius: 8px; }
+        .sketch-modes button.on { background: var(--pine); color: #fff; }
+        .sketch-hint { font-size: 0.8rem; color: var(--muted); margin-top: 6px; text-align: left; min-height: 1.2em; }
+        .canvas-wrapper.text-mode canvas { cursor: text; }
+        .sketch-text-input { position: absolute; z-index: 5; width: 180px; padding: 6px 9px; font-size: 15px; border-radius: 8px; border: 2px solid var(--ember); background: #fff; box-shadow: 0 6px 16px -6px rgba(0,0,0,.35); }
 
         /* ---------- Audio ---------- */
         .audio-controls { display: flex; gap: 8px; align-items: center; margin-top: 8px; flex-wrap: wrap; }
@@ -321,16 +334,16 @@
         .relances-box > .muted { padding: 14px; }
 
         @media (min-width: 900px) {
-            .container { max-width: 760px; }
+            .container, .header-inner { max-width: 760px; }
             .hero { margin: 0 0 22px; border-radius: 28px; }
         }
         /* ---------- Écran code PIN ---------- */
         #lockScreen { position: fixed; inset: 0; z-index: 5000; background: var(--pine); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px 24px calc(30px + env(safe-area-inset-bottom)); overflow: hidden; isolation: isolate; }
         #lockScreen.hidden { display: none; }
         #lockScreen::after { content: ""; position: absolute; z-index: -1; left: 50%; bottom: -40px; transform: translateX(-50%); width: 520px; height: 340px; background: url("https://i.postimg.cc/FR7TJg0L/1cheval.png") center / contain no-repeat; filter: invert(1) grayscale(1); mix-blend-mode: screen; opacity: .09; }
-        .lock-logo { width: 64px; height: 64px; border-radius: 18px; object-fit: cover; background: #fff; }
+        .lock-logo { height: 104px; width: auto; border-radius: 20px; object-fit: contain; background: #fff; padding: 12px 18px; }
         .lock-title { font-size: 1.6rem; font-weight: 600; letter-spacing: -0.02em; margin: 18px 0 4px; font-variation-settings: "opsz" 72; }
-        .lock-sub { opacity: .7; font-size: 0.95rem; text-align: center; min-height: 1.4em; }
+        .lock-sub { margin-top: 22px; opacity: .7; font-size: 0.95rem; text-align: center; min-height: 1.4em; }
         .pin-dots { display: flex; gap: 16px; margin: 28px 0 10px; }
         .pin-dots span { width: 15px; height: 15px; border-radius: 50%; border: 2px solid rgba(255,255,255,.55); transition: background .1s, transform .1s; }
         .pin-dots span.on { background: #fff; border-color: #fff; transform: scale(1.08); }
@@ -353,8 +366,7 @@
 <body class="on-home">
     <!-- ÉCRAN CODE PIN -->
     <div id="lockScreen" aria-modal="true" role="dialog" aria-label="Code d'accès">
-        <img class="lock-logo" src="https://i.postimg.cc/6QWy5MnP/Logo-lynette-V1.jpg" alt="">
-        <h2 class="lock-title">OstéoAnimal</h2>
+        <img class="lock-logo" data-logo src="" alt="">
         <p class="lock-sub" id="lockSub">Entrez votre code à 6 chiffres</p>
         <div class="pin-dots" id="pinDots"><span></span><span></span><span></span><span></span><span></span><span></span></div>
         <p class="lock-error" id="lockError"></p>
@@ -393,15 +405,19 @@
         <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></symbol>
         <symbol id="i-stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></symbol>
         <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></symbol>
+        <symbol id="i-text" viewBox="0 0 24 24"><path d="M5 7V5h14v2M12 5v14M9 19h6"/></symbol>
         <symbol id="i-save" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></symbol>
     </svg>
 
     <header>
-        <div class="header-brand">
-            <img src="https://i.postimg.cc/6QWy5MnP/Logo-lynette-V1.jpg" alt="" class="header-logo">
-            <h1 id="headerTitle">OstéoAnimal</h1>
+        <div class="header-inner">
+            <div class="header-brand">
+                <img class="header-logo" data-logo src="" alt="Logo" onclick="showView('homeView')" style="cursor:pointer" title="Accueil">
+                <span class="sep"></span>
+                <h1 id="headerTitle">Ostéo Pattes</h1>
+            </div>
+            <button id="headerAction" type="button" hidden></button>
         </div>
-        <div class="header-actions"><button id="homeBtn" class="back-home-btn" onclick="showView('homeView')">Accueil</button></div>
     </header>
 
     <div id="toastZone" role="status" aria-live="polite"></div>
@@ -411,8 +427,7 @@
         <div id="homeView" class="view active">
             <section class="hero">
                 <div class="hero-top">
-                    <img src="https://i.postimg.cc/6QWy5MnP/Logo-lynette-V1.jpg" alt="">
-                    <span>OstéoAnimal</span>
+                    <img data-logo src="" alt="">
                 </div>
                 <h2 id="heroGreeting">Bonjour Lynette</h2>
                 <p class="hero-date" id="heroDate"></p>
@@ -485,7 +500,7 @@
         <!-- FAIRE UNE CONSULTATION -->
         <div id="consultView" class="view">
             <div class="card">
-                <h2 id="consultFormTitle" class="section-title">Nouvelle séance</h2>
+                <h2 id="consultFormTitle" class="section-title" style="display:none">Nouvelle séance</h2>
                 <form id="consultForm" autocomplete="off">
                     <input type="hidden" id="editConsultId" value="">
                     <input type="hidden" id="consultPatientId" value="">
@@ -558,6 +573,10 @@
                         <div class="sketch-container">
                             <div class="canvas-wrapper"><canvas id="sketchCanvas"></canvas></div>
                             <div class="sketch-tools">
+                                <div class="sketch-modes" role="group" aria-label="Outil">
+                                    <button type="button" id="modeDraw" class="on" onclick="setSketchMode('draw')"><svg class="ico"><use href="#i-pen"/></svg>Dessiner</button>
+                                    <button type="button" id="modeText" onclick="setSketchMode('text')"><svg class="ico"><use href="#i-text"/></svg>Texte</button>
+                                </div>
                                 <div class="color-picker">
                                     <div class="color-dot on" style="background: #EA5B0C;" onclick="setPenColor('#EA5B0C', this)" title="Blocage / Douleur"></div>
                                     <div class="color-dot" style="background: #5F998E;" onclick="setPenColor('#5F998E', this)" title="Normal"></div>
@@ -568,6 +587,7 @@
                                     <button type="button" class="tool-btn danger" onclick="clearCanvas()">Effacer</button>
                                 </div>
                             </div>
+                            <p class="sketch-hint" id="sketchHint">Dessinez au doigt ou au stylet. Passez en mode Texte pour écrire sur une zone.</p>
                         </div>
                     </div>
 
@@ -854,6 +874,9 @@
 
         // Compte unique de l'app : à créer dans la console Firebase (Authentication > Users)
         // avec cet e-mail et le code PIN à 6 chiffres comme mot de passe.
+        const LOGO_SRC = "data:image/png;base64,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";
+        document.querySelectorAll("img[data-logo]").forEach(i => i.src = LOGO_SRC);
+
         const AUTH_EMAIL = "cabinet@app-ostep.fr";
         const RELOCK_AFTER_MS = 5 * 60 * 1000; // re-verrouillage après 5 min en arrière-plan
         // Cache hors-ligne : l'app reste utilisable sans réseau à l'écurie, et se synchronise au retour du réseau
@@ -1119,7 +1142,7 @@
 
         /* ================= NAVIGATION (avec bouton retour du téléphone) ================= */
         const viewTitles = {
-            homeView: 'OstéoAnimal', consultView: 'Compte rendu', locationsView: 'Lieux',
+            homeView: 'OstéoAnimal', consultView: 'Nouvelle séance', locationsView: 'Lieux & écuries',
             patientsView: 'Patients', patientDetailView: 'Fiche patient', patientFormView: 'Fiche patient',
             historyView: 'Séances', notesView: 'Notes vocales', proProfileView: 'Profil pro', locationDetailView: 'Lieu', moreView: 'Plus'
         };
@@ -1131,6 +1154,10 @@
             const tabOf = { homeView: 'homeView', patientsView: 'patientsView', patientDetailView: 'patientsView', patientFormView: 'patientsView', historyView: 'historyView', moreView: 'moreView', locationsView: 'moreView', locationDetailView: 'moreView', notesView: 'moreView', proProfileView: 'moreView' };
             document.querySelectorAll('.tabbar [data-tab]').forEach(b => b.classList.toggle('on', b.dataset.tab === tabOf[viewId]));
             document.getElementById('headerTitle').innerText = viewTitles[viewId] || 'OstéoAnimal';
+            const ha = document.getElementById('headerAction');
+            if (viewId === 'consultView') { ha.innerHTML = '<svg class="ico"><use href="#i-x"/></svg>Fermer'; ha.onclick = closeConsult; ha.hidden = false; }
+            else if (viewId === 'patientFormView') { ha.innerHTML = '<svg class="ico"><use href="#i-x"/></svg>Annuler'; ha.onclick = () => history.back(); ha.hidden = false; }
+            else { ha.hidden = true; ha.onclick = null; }
 
             if (viewId === 'homeView') { updateDashboardStats(); renderRelances(); }
             if (viewId === 'consultView') populateSelects();
@@ -1150,6 +1177,11 @@
             if (ignoreNextPop) { ignoreNextPop = false; return; }
             if (document.getElementById('dossierModal').classList.contains('open')) { closeDossierModal(true); return; }
             const s = e.state || { view: 'homeView' };
+            // Retour (bouton du téléphone) pendant la saisie d'un CR : on demande confirmation
+            if (document.getElementById('consultView').classList.contains('active') && s.view !== 'consultView') {
+                if (!confirmLeaveConsult()) { history.pushState({ view: 'consultView' }, ''); return; }
+                resetConsultForm();
+            }
             if (s.view === 'patientDetailView' && s.patientId) openPatientDetail(s.patientId, { push: false });
             else if (s.view === 'locationDetailView' && s.loc) openLocationDetail(s.loc, { push: false });
             else showView(s.view, { push: false });
@@ -1210,7 +1242,27 @@
         function speciesToConsult(s) { return ['Cheval', 'Chien', 'Chat', 'Vache'].includes(s) ? s : 'Custom'; }
         function speciesToPatient(s) { return ['Cheval', 'Chien', 'Chat', 'Vache'].includes(s) ? s : 'Autre'; }
 
+        let consultDirty = false;
+        document.getElementById('consultForm').addEventListener('input', e => {
+            if (e.target.id !== 'consultPatientSearch') consultDirty = true;
+        });
+        function confirmLeaveConsult() {
+            if (!consultDirty) return true;
+            const editing = !!document.getElementById('editConsultId').value;
+            return confirm(editing ? 'Quitter sans enregistrer les modifications ?' : 'Abandonner ce compte rendu ? Ce qui a été saisi sera perdu.');
+        }
+        function closeConsult() {
+            if (!confirmLeaveConsult()) return;
+            consultDirty = false;
+            resetConsultForm();
+            if (history.state && history.state.view === 'consultView' && history.length > 1) history.back();
+            else showView('homeView');
+        }
+
         function resetConsultForm() {
+            consultDirty = false;
+            cancelTextInput();
+            setSketchMode('draw');
             document.getElementById('consultForm').reset();
             document.getElementById('editConsultId').value = "";
             document.getElementById('consultPatientId').value = "";
@@ -1440,6 +1492,7 @@
         }
         function setPenColor(color, el) {
             penColor = color;
+            if (activeTextInput) { activeTextInput._color = color; activeTextInput.style.borderColor = color; }
             document.querySelectorAll('.color-dot').forEach(d => d.classList.toggle('on', d === el));
         }
         function clearCanvas() { initCanvas(); }
@@ -1454,17 +1507,91 @@
         canvas.addEventListener('mousemove', draw);
         canvas.addEventListener('mouseup', stopDraw);
         canvas.addEventListener('mouseleave', stopDraw);
-        canvas.addEventListener('touchstart', (e) => { startDraw(e); e.preventDefault(); }, { passive: false });
+        canvas.addEventListener('touchstart', (e) => { e.preventDefault(); startDraw(e); }, { passive: false });
         canvas.addEventListener('touchmove', (e) => { draw(e); e.preventDefault(); }, { passive: false });
         canvas.addEventListener('touchend', stopDraw);
-        function startDraw(e) { isDrawing = true; const pos = getPos(e); ctx.beginPath(); ctx.moveTo(pos.x, pos.y); }
+        /* ----- Mode texte : toucher une zone puis écrire ----- */
+        let sketchMode = 'draw';
+        let activeTextInput = null;
+        function setSketchMode(m) {
+            sketchMode = m;
+            document.getElementById('modeDraw').classList.toggle('on', m === 'draw');
+            document.getElementById('modeText').classList.toggle('on', m === 'text');
+            canvas.parentElement.classList.toggle('text-mode', m === 'text');
+            document.getElementById('sketchHint').textContent = m === 'text'
+                ? 'Touchez la zone à annoter, tapez votre texte puis validez (Entrée ou OK).'
+                : 'Dessinez au doigt ou au stylet. Passez en mode Texte pour écrire sur une zone.';
+        }
+        function openTextInput(pos) {
+            const wrap = canvas.parentElement;
+            const rect = canvas.getBoundingClientRect();
+            const cssX = pos.x * rect.width / canvas.width, cssY = pos.y * rect.height / canvas.height;
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'sketch-text-input';
+            input.placeholder = 'Ex : blocage C3';
+            input.enterKeyHint = 'done';
+            input.style.borderColor = penColor;
+            input.style.left = Math.max(4, Math.min(cssX - 10, rect.width - 186)) + 'px';
+            input.style.top = Math.max(4, Math.min(cssY + 12, rect.height - 44)) + 'px';
+            input._pos = pos;
+            input._color = penColor;
+            wrap.appendChild(input);
+            activeTextInput = input;
+            // petit repère provisoire à l'endroit touché
+            input.addEventListener('keydown', ev => {
+                if (ev.key === 'Enter') { ev.preventDefault(); commitTextInput(); }
+                else if (ev.key === 'Escape') { ev.preventDefault(); cancelTextInput(); }
+            });
+            input.addEventListener('blur', () => setTimeout(commitTextInput, 0));
+            setTimeout(() => input.focus(), 0);
+        }
+        function cancelTextInput() {
+            if (!activeTextInput) return;
+            const el = activeTextInput; activeTextInput = null; el.remove();
+        }
+        function commitTextInput() {
+            if (!activeTextInput) return;
+            const el = activeTextInput; activeTextInput = null;
+            const txt = el.value.trim(); const pos = el._pos; const color = el._color;
+            el.remove();
+            if (!txt) return;
+            drawLabel(pos, txt, color);
+            saveCanvasState();
+            consultDirty = true;
+        }
+        function drawLabel(pos, txt, color) {
+            const fontSize = Math.round(14 * canvas.width / canvas.getBoundingClientRect().width) || 14;
+            ctx.save();
+            ctx.font = `600 ${fontSize}px "Bricolage Grotesque", system-ui, sans-serif`;
+            const w = ctx.measureText(txt).width;
+            const r = Math.max(4, fontSize * 0.3);
+            // repère
+            ctx.beginPath(); ctx.arc(pos.x, pos.y, r, 0, Math.PI * 2);
+            ctx.fillStyle = color; ctx.fill();
+            ctx.lineWidth = 2; ctx.strokeStyle = '#fff'; ctx.stroke();
+            // texte à droite du repère, ou à gauche s'il dépasse
+            const toLeft = pos.x + r + 6 + w > canvas.width - 4;
+            const tx = toLeft ? pos.x - r - 6 - w : pos.x + r + 6;
+            const ty = Math.min(Math.max(pos.y + fontSize * 0.35, fontSize), canvas.height - 4);
+            ctx.lineJoin = 'round'; ctx.lineWidth = Math.max(3, fontSize * 0.28); ctx.strokeStyle = '#fff';
+            ctx.strokeText(txt, Math.max(2, tx), ty);
+            ctx.fillStyle = color; ctx.fillText(txt, Math.max(2, tx), ty);
+            ctx.restore();
+        }
+
+        function startDraw(e) {
+            if (activeTextInput) { activeTextInput.blur(); return; }
+            if (sketchMode === 'text') { openTextInput(getPos(e)); return; }
+            isDrawing = true; const pos = getPos(e); ctx.beginPath(); ctx.moveTo(pos.x, pos.y);
+        }
         function draw(e) {
             if (!isDrawing) return;
             const pos = getPos(e);
             ctx.strokeStyle = penColor; ctx.lineWidth = 3; ctx.lineCap = 'round';
             ctx.lineTo(pos.x, pos.y); ctx.stroke();
         }
-        function stopDraw() { if (isDrawing) { isDrawing = false; saveCanvasState(); } }
+        function stopDraw() { if (isDrawing) { isDrawing = false; saveCanvasState(); consultDirty = true; } }
 
         /* ----- Audio ----- */
         function startAudioRecord(containerId, statusId) {
@@ -1614,6 +1741,7 @@
             resetConsultForm();
             showView('consultView');
             document.getElementById('consultFormTitle').innerText = "Modifier la séance";
+            document.getElementById('headerTitle').innerText = 'Modifier la séance';
             document.getElementById('editConsultId').value = c.id;
 
             const p = findPatientForConsult(c);
@@ -2101,7 +2229,7 @@
                         body { font-family: Arial, sans-serif; padding: 30px; color: #333; max-width: 800px; margin: auto; line-height: 1.5; }
                         .pro-header { background: #5F998E; color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
                         .pro-header-left { display: flex; align-items: center; gap: 15px; }
-                        .pro-header-logo { height: 52px; width: auto; object-fit: contain; border-radius: 4px; background: #fff; padding: 2px; }
+                        .pro-header-logo { height: 64px; width: auto; object-fit: contain; border-radius: 8px; background: #fff; padding: 5px 9px; }
                         .pro-header h2 { margin: 0; font-size: 1.3rem; }
                         .pro-header p { margin: 2px 0 0 0; font-size: 0.85rem; opacity: 0.9; }
                         h1 { color: #5F998E; border-bottom: 2px solid #5F998E; padding-bottom: 10px; font-size: 1.3rem; margin-top: 10px; }
@@ -2120,7 +2248,7 @@
                 </head><body>
                     <div class="pro-header">
                         <div class="pro-header-left">
-                            <img src="https://i.postimg.cc/6QWy5MnP/Logo-lynette-V1.jpg" alt="Logo" class="pro-header-logo">
+                            <img src="${LOGO_SRC}" alt="Logo" class="pro-header-logo">
                             <div>
                                 <h2>${esc(proProfile.firstName)} ${esc(proProfile.lastName)}</h2>
                                 <p>${esc(proProfile.status)}</p>
@@ -2204,7 +2332,7 @@
             if (c.includes('operation-not-allowed')) return 'La connexion par e-mail/mot de passe n\'est pas activée dans Firebase (Authentication > Sign-in method).';
             if (c.includes('too-many-requests')) return 'Trop d\'essais. Patientez quelques minutes.';
             if (c.includes('network-request-failed')) return 'Pas de réseau. La toute première connexion sur cet appareil nécessite internet.';
-            if (c.includes('api-key') || c.includes('unauthorized-domain') || c.includes('requests-from-referer')) return 'Firebase refuse ce site : vérifiez la clé d\'API et les domaines autorisés (alicedemange.github.io).';
+            if (c.includes('permission-denied-on-the-service') || c.includes('api-key') || c.includes('unauthorized-domain') || c.includes('requests-from-referer')) return 'La clé d\'API Firebase bloque la connexion : autorisez « Identity Toolkit API » et « Token Service API » sur cette clé (Google Cloud > Identifiants).';
             return 'Connexion impossible : ' + (err && err.message ? err.message : c);
         }
         async function checkPin(pin) {
