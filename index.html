@@ -429,6 +429,105 @@
             align-items: center;
             justify-content: center;
         }
+
+        /* ====== AJOUTS v2 : fluidité ====== */
+        .btn-inline { width: auto; padding: 8px 14px; font-size: 0.85rem; }
+        .btn-ghost { background: #EDF2F7; color: var(--text); }
+        .btn-dark { background: #4A5568; }
+        .toolbar { display: flex; gap: 8px; align-items: center; margin-bottom: 15px; }
+        .toolbar input { flex: 1; }
+        .toolbar button { width: auto; white-space: nowrap; }
+
+        /* Toasts (remplacent les alert()) */
+        #toastZone { position: fixed; left: 50%; bottom: 90px; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 8px; align-items: center; pointer-events: none; }
+        .toast { background: #2B2D42; color: #fff; padding: 12px 18px; border-radius: 10px; font-size: 0.9rem; box-shadow: 0 6px 18px rgba(0,0,0,.2); animation: toastIn .2s ease-out; max-width: 90vw; text-align: center; }
+        .toast.ok { background: var(--primary); }
+        .toast.err { background: var(--danger); }
+        @keyframes toastIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+        /* Badges */
+        .badge { display: inline-block; font-size: 0.7rem; padding: 3px 8px; border-radius: 12px; font-weight: 600; margin: 2px 4px 2px 0; }
+        .badge.danger { background: var(--danger); color: #fff; }
+        .badge.accent { background: var(--accent); color: #fff; }
+        .badge.soft { background: var(--primary-light); color: var(--primary); }
+        .badge.late { background: var(--danger-light); color: var(--danger); }
+
+        /* Cartes patients compactes */
+        .pat-card { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 12px; border: 1px solid #E5E7EB; border-radius: 10px; margin-bottom: 8px; background: #fff; cursor: pointer; }
+        .pat-card:active { background: var(--primary-light); }
+        .pat-card.is-difficult { border-left: 4px solid var(--danger); }
+        .pat-card h4 { font-size: 0.98rem; color: var(--primary); margin-bottom: 2px; }
+        .pat-card p { font-size: 0.8rem; color: var(--gray); }
+        .pat-card .go { font-size: 1.2rem; color: var(--gray); }
+        .pat-card button { width: auto; padding: 8px 12px; font-size: 0.8rem; flex-shrink: 0; }
+        .loc-title { margin: 14px 0 6px; font-weight: 700; color: var(--primary); font-size: 0.9rem; }
+
+        /* Sélecteur de patient (recherche) */
+        .picker { position: relative; }
+        .picker-results { position: absolute; left: 0; right: 0; top: 100%; background: #fff; border: 1px solid #D1D5DB; border-radius: 8px; box-shadow: 0 8px 20px rgba(0,0,0,.12); z-index: 50; max-height: 320px; overflow-y: auto; display: none; }
+        .picker-results.open { display: block; }
+        .picker-item { padding: 10px 12px; border-bottom: 1px solid #F0F0F0; cursor: pointer; }
+        .picker-item:hover, .picker-item.hl { background: var(--primary-light); }
+        .picker-item strong { color: var(--primary); }
+        .picker-item small { display: block; color: var(--gray); font-size: 0.75rem; }
+        .picker-empty { padding: 12px; color: var(--gray); font-size: 0.85rem; }
+
+        /* Bandeau patient dans le CR */
+        .patient-banner { border: 2px solid var(--primary); background: var(--primary-light); border-radius: 10px; padding: 12px; margin-bottom: 15px; }
+        .patient-banner .pb-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+        .patient-banner h3 { font-size: 1.05rem; color: var(--primary); }
+        .patient-banner .pb-sub { font-size: 0.8rem; color: var(--text); margin-top: 2px; }
+        .patient-banner .pb-spec { font-size: 0.85rem; margin-top: 8px; background: #fff; padding: 8px; border-radius: 6px; }
+        .patient-banner .pb-last { font-size: 0.82rem; margin-top: 8px; background: #fff; padding: 8px; border-radius: 6px; border-left: 3px solid var(--accent); }
+        .patient-banner .pb-actions { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+        .patient-banner .pb-actions button { width: auto; padding: 8px 12px; font-size: 0.82rem; }
+        .hint { font-size: 0.78rem; color: var(--accent); margin-top: 4px; }
+        .match-hint { background: var(--accent-light); border: 1px solid var(--accent); border-radius: 8px; padding: 8px 10px; font-size: 0.85rem; margin: -6px 0 12px; display: none; }
+        .match-hint button { width: auto; padding: 6px 10px; font-size: 0.8rem; margin-left: 6px; }
+
+        details.block { border: 1px solid #E5E7EB; border-radius: 10px; padding: 10px 12px; margin-bottom: 15px; background: #FCFCFC; }
+        details.block > summary { cursor: pointer; font-weight: 600; font-size: 0.9rem; color: var(--accent); list-style: none; }
+        details.block > summary::-webkit-details-marker { display: none; }
+        details.block > summary::before { content: '▸ '; }
+        details.block[open] > summary::before { content: '▾ '; }
+        details.block[open] > summary { margin-bottom: 12px; }
+
+        /* Barre d'enregistrement collante */
+        .sticky-save { position: sticky; bottom: 0; background: linear-gradient(transparent, var(--white) 30%); padding: 14px 0 6px; margin-top: 10px; z-index: 10; }
+
+        /* Dossier patient */
+        .dossier-info { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 14px; font-size: 0.85rem; background: var(--primary-light); padding: 12px; border-radius: 8px; margin-bottom: 12px; }
+        .dossier-info .full { grid-column: 1 / -1; }
+        .dossier-info a { color: var(--primary); font-weight: 600; }
+        .dossier-actions { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+        .dossier-actions button { width: auto; flex: 1; min-width: 120px; padding: 12px; font-size: 0.9rem; }
+        .sub-title { font-size: 1rem; color: var(--primary); margin: 20px 0 10px; }
+        details.consult-item { border: 1px solid #E5E7EB; border-radius: 8px; margin-bottom: 8px; background: #fff; }
+        details.consult-item > summary { padding: 10px 12px; cursor: pointer; font-size: 0.88rem; list-style: none; display: flex; justify-content: space-between; gap: 8px; }
+        details.consult-item > summary::-webkit-details-marker { display: none; }
+        details.consult-item[open] > summary { border-bottom: 1px solid #EEE; background: #FAFAFA; }
+        .consult-body { padding: 10px 12px; font-size: 0.85rem; }
+        .consult-body .f { margin-bottom: 8px; }
+        .consult-body .f b { color: var(--primary); display: block; font-size: 0.78rem; text-transform: uppercase; letter-spacing: .02em; }
+        .consult-body img.sk { max-width: 100%; border: 1px solid #DDD; border-radius: 6px; margin: 6px 0; }
+        .consult-body .acts { display: flex; gap: 6px; margin-top: 8px; }
+        .consult-body .acts button { width: auto; padding: 7px 12px; font-size: 0.8rem; }
+        .doc-pdf { width: 75px; height: 75px; display: flex; align-items: center; justify-content: center; font-size: 2rem; background: #F4F4F4; border: 1px solid #DDD; border-radius: 6px; cursor: pointer; }
+
+        /* Pop-up fiche patient (consultable pendant la saisie du CR) */
+        .modal { position: fixed; inset: 0; background: rgba(20,25,30,.45); z-index: 1000; display: none; }
+        .modal.open { display: block; }
+        .modal-panel { position: absolute; right: 0; top: 0; bottom: 0; width: min(560px, 100%); background: var(--bg); overflow-y: auto; padding: 16px; box-shadow: -8px 0 24px rgba(0,0,0,.15); animation: slideIn .2s ease-out; }
+        @keyframes slideIn { from { transform: translateX(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+        .modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; position: sticky; top: -16px; background: var(--bg); padding: 6px 0; }
+        .modal-head h2 { font-size: 1.1rem; color: var(--primary); }
+        .modal-head button { width: auto; padding: 8px 14px; }
+
+        /* Relances accueil */
+        .relance { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid #F0F0F0; font-size: 0.85rem; cursor: pointer; }
+        .relance:last-child { border-bottom: none; }
+        .relance a { text-decoration: none; font-size: 1.1rem; }
+        .muted { color: var(--gray); font-size: 0.85rem; }
     </style>
 </head>
 <body>
@@ -442,6 +541,8 @@
         </div>
     </header>
 
+    <div id="toastZone"></div>
+
     <div class="container">
         <!-- ACCUEIL -->
         <div id="homeView" class="view active">
@@ -450,28 +551,14 @@
                 <p>Prête pour vos consultations sur le terrain ? Gérez vos patients et comptes rendus en toute simplicité.</p>
             </div>
 
-            <!-- DASHBOARD / RAPPORTS ACTIVITÉ -->
-            <div class="stats-box">
-                <h3>📊 Dashboard & Rapports d'Activité</h3>
-                <div class="stats-row">
-                    <span>Total consultations :</span>
-                    <strong id="statTotalConsult">0</strong>
-                </div>
-                <div class="stats-row">
-                    <span>Réalisées cette semaine :</span>
-                    <strong id="statWeekConsult">0</strong>
-                </div>
-                <div class="stats-row">
-                    <span>Lieu le plus visité :</span>
-                    <strong id="statTopLocation">-</strong>
+            <div class="card" style="padding:14px;">
+                <div class="picker">
+                    <input type="text" id="homeSearch" placeholder="🔍 Ouvrir une fiche : nom de l'animal, propriétaire, écurie…" autocomplete="off">
+                    <div id="homeSearchResults" class="picker-results"></div>
                 </div>
             </div>
 
-            <div style="text-align: center;">
-                <span class="offline-badge">☁️ Synchronisation Cloud Firebase Active</span>
-            </div>
-
-            <div class="dashboard-grid">
+            <div class="dashboard-grid" style="margin-bottom:20px;">
                 <div class="dash-tile" onclick="startNewConsult()">
                     <span>📝</span>
                     <h3>Faire une consultation</h3>
@@ -497,6 +584,22 @@
                     <h3>Mon Espace Pro (CR)</h3>
                 </div>
             </div>
+
+            <div class="stats-box">
+                <h3>📅 Suivis à relancer (30 prochains jours)</h3>
+                <div id="relancesContainer"><p class="muted">Chargement…</p></div>
+            </div>
+
+            <div class="stats-box">
+                <h3>📊 Dashboard & Rapports d'Activité</h3>
+                <div class="stats-row"><span>Total consultations :</span><strong id="statTotalConsult">0</strong></div>
+                <div class="stats-row"><span>Réalisées cette semaine :</span><strong id="statWeekConsult">0</strong></div>
+                <div class="stats-row"><span>Lieu le plus visité :</span><strong id="statTopLocation">-</strong></div>
+            </div>
+
+            <div style="text-align: center;">
+                <span class="offline-badge" id="syncBadge">☁️ Connexion au cloud…</span>
+            </div>
         </div>
 
         <!-- ESPACE PRO / EN-TÊTE COMPTE RENDU -->
@@ -505,38 +608,20 @@
                 <h2 class="section-title">👤 Profil Professionnel & En-tête des Rapports</h2>
                 <form id="proProfileForm" onsubmit="saveProProfile(event)">
                     <div class="row">
-                        <div class="form-group">
-                            <label>Prénom</label>
-                            <input type="text" id="proFirstName" value="Lyna">
-                        </div>
-                        <div class="form-group">
-                            <label>Nom</label>
-                            <input type="text" id="proLastName" value="Nicolaescu">
-                        </div>
+                        <div class="form-group"><label>Prénom</label><input type="text" id="proFirstName"></div>
+                        <div class="form-group"><label>Nom</label><input type="text" id="proLastName"></div>
                     </div>
                     <div class="row">
-                        <div class="form-group">
-                            <label>Téléphone</label>
-                            <input type="tel" id="proPhone" value="06 44 84 66 92">
-                        </div>
-                        <div class="form-group">
-                            <label>E-mail</label>
-                            <input type="email" id="proEmail" value="lynanicolaescu@gmail.com">
-                        </div>
+                        <div class="form-group"><label>Téléphone</label><input type="tel" id="proPhone"></div>
+                        <div class="form-group"><label>E-mail</label><input type="email" id="proEmail"></div>
                     </div>
                     <div class="form-group">
                         <label>Statut / Titre (apparaît sous le nom)</label>
-                        <input type="text" id="proStatus" value="Étudiante en 4ème année d'ostéopathie animale, EOOA">
+                        <input type="text" id="proStatus">
                     </div>
                     <div class="row">
-                        <div class="form-group">
-                            <label>N° SIRET (Optionnel)</label>
-                            <input type="text" id="proSiret" placeholder="En cours de création...">
-                        </div>
-                        <div class="form-group">
-                            <label>Adresse Pro / Cabinet (Optionnel)</label>
-                            <input type="text" id="proAddress" placeholder="31000 Toulouse...">
-                        </div>
+                        <div class="form-group"><label>N° SIRET (Optionnel)</label><input type="text" id="proSiret" placeholder="En cours de création..."></div>
+                        <div class="form-group"><label>Adresse Pro / Cabinet (Optionnel)</label><input type="text" id="proAddress" placeholder="31000 Toulouse..."></div>
                     </div>
                     <button type="submit">💾 Enregistrer mes coordonnées pro</button>
                 </form>
@@ -547,17 +632,21 @@
         <div id="consultView" class="view">
             <div class="card">
                 <h2 id="consultFormTitle" class="section-title">📝 Nouvelle Consultation</h2>
-                <form id="consultForm">
+                <form id="consultForm" autocomplete="off">
                     <input type="hidden" id="editConsultId" value="">
-                    
-                    <div class="form-group">
-                        <label>Sélectionner un patient existant (Optionnel)</label>
-                        <select id="consultPatientSelect" onchange="loadPatientIntoConsult()">
-                            <option value="">-- Choisir dans mes fiches patients --</option>
-                        </select>
-                    </div>
+                    <input type="hidden" id="consultPatientId" value="">
 
-                    <h3 style="font-size: 0.95rem; color: var(--accent); margin-bottom: 10px;">1. Informations & Dates</h3>
+                    <!-- 1. Choix du patient -->
+                    <div id="patientPickerBlock" class="form-group">
+                        <label>Patient</label>
+                        <div class="picker">
+                            <input type="text" id="consultPatientSearch" placeholder="🔍 Tapez le nom de l'animal, du proprio ou de l'écurie…">
+                            <div id="consultPickerResults" class="picker-results"></div>
+                        </div>
+                        <p class="hint">Nouveau patient ? Remplissez simplement les infos ci-dessous : sa fiche sera créée automatiquement.</p>
+                    </div>
+                    <div id="selectedPatientBanner"></div>
+
                     <div class="row">
                         <div class="form-group">
                             <label>Date de la consultation</label>
@@ -569,93 +658,83 @@
                         </div>
                     </div>
 
-                    <div class="row">
-                        <div class="form-group">
-                            <label>Nom du Propriétaire</label>
-                            <input type="text" id="ownerName" placeholder="Ex: Claire Martin">
+                    <details class="block" id="identityBlock" open>
+                        <summary id="identitySummary">Propriétaire & animal</summary>
+                        <div class="row">
+                            <div class="form-group"><label>Nom de l'Animal</label><input type="text" id="animalName" placeholder="Ex: Foley"></div>
+                            <div class="form-group">
+                                <label>Espèce</label>
+                                <select id="animalSpecies" onchange="updateSkeleton()">
+                                    <option value="Cheval">Cheval</option>
+                                    <option value="Chien">Chien</option>
+                                    <option value="Chat">Chat</option>
+                                    <option value="Vache">Vache</option>
+                                    <option value="Custom">Autre / Squelette importé</option>
+                                </select>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label>Téléphone</label>
-                            <input type="tel" id="ownerPhone" placeholder="06 00 00 00 00">
+                        <div id="matchHint" class="match-hint"></div>
+                        <div class="row">
+                            <div class="form-group"><label>Nom du Propriétaire</label><input type="text" id="ownerName" placeholder="Ex: Claire Martin"></div>
+                            <div class="form-group"><label>Téléphone</label><input type="tel" id="ownerPhone" placeholder="06 00 00 00 00"></div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group">
-                            <label>E-mail</label>
-                            <input type="email" id="ownerEmail" placeholder="claire@exemple.com">
+                        <div class="row">
+                            <div class="form-group"><label>E-mail</label><input type="email" id="ownerEmail" placeholder="claire@exemple.com"></div>
+                            <div class="form-group">
+                                <label>Lieu / Écurie</label>
+                                <div style="display:flex; gap:6px;">
+                                    <select id="ownerAddress" style="flex:1;"><option value="Clinique">Clinique (Par défaut)</option></select>
+                                    <button type="button" class="secondary" style="width:auto; padding:0 12px; font-size:0.8rem;" onclick="quickAddLocation('ownerAddress')">➕</button>
+                                </div>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label>Lieu / Écurie</label>
-                            <select id="ownerAddress">
-                                <option value="Clinique">Clinique (Par défaut)</option>
-                            </select>
+                        <label class="checkbox-group" id="createPatientRow" style="margin-bottom:4px;">
+                            <input type="checkbox" id="createPatientCheckbox" checked style="accent-color: var(--primary);">
+                            <span>🐾 Créer la fiche patient automatiquement à l'enregistrement</span>
+                        </label>
+                        <div class="form-group" style="margin:10px 0 0;">
+                            <label style="font-weight:400; font-size:0.8rem; color:var(--gray);">Importer votre propre squelette (Optionnel)</label>
+                            <input type="file" id="customSkeletonInput" accept="image/*" onchange="loadCustomSkeleton(event)">
                         </div>
-                    </div>
+                    </details>
 
-                    <div class="row">
-                        <div class="form-group">
-                            <label>Nom de l'Animal</label>
-                            <input type="text" id="animalName" placeholder="Ex: Foley">
-                        </div>
-                        <div class="form-group">
-                            <label>Espèce</label>
-                            <select id="animalSpecies" onchange="updateSkeleton()">
-                                <option value="Cheval">Cheval</option>
-                                <option value="Chien">Chien</option>
-                                <option value="Chat">Chat</option>
-                                <option value="Vache">Vache</option>
-                                <option value="Custom">Autre / Squelette importé</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Importer votre propre squelette (Optionnel)</label>
-                        <input type="file" id="customSkeletonInput" accept="image/*" onchange="loadCustomSkeleton(event)">
-                    </div>
-
-                    <!-- Schéma et Annotations Stylet -->
-                    <h3 style="font-size: 0.95rem; color: var(--accent); margin: 20px 0 10px 0;">2. Schéma Anatomique & Annotations (Stylet)</h3>
+                    <!-- Schéma -->
+                    <h3 style="font-size: 0.95rem; color: var(--accent); margin: 10px 0 10px 0;">Schéma Anatomique & Annotations (Stylet)</h3>
                     <div class="form-group">
                         <div class="sketch-container">
-                            <div class="canvas-wrapper">
-                                <canvas id="sketchCanvas"></canvas>
-                            </div>
+                            <div class="canvas-wrapper"><canvas id="sketchCanvas"></canvas></div>
                             <div class="sketch-tools">
                                 <div class="color-picker">
-                                    <div class="color-dot" style="background: #EA5B0C;" onclick="setPenColor('#EA5B0C')" title="Blocage / Douleur"></div>
-                                    <div class="color-dot" style="background: #5F998E;" onclick="setPenColor('#5F998E')" title="Normal"></div>
-                                    <div class="color-dot" style="background: #1D3557;" onclick="setPenColor('#1D3557')" title="Autre"></div>
+                                    <div class="color-dot" style="background: #EA5B0C;" onclick="setPenColor('#EA5B0C', this)" title="Blocage / Douleur"></div>
+                                    <div class="color-dot" style="background: #5F998E;" onclick="setPenColor('#5F998E', this)" title="Normal"></div>
+                                    <div class="color-dot" style="background: #1D3557;" onclick="setPenColor('#1D3557', this)" title="Autre"></div>
                                 </div>
                                 <div>
-                                    <button type="button" class="tool-btn secondary" onclick="undoCanvas()">↩️ Annuler dernier trait</button>
-                                    <button type="button" class="tool-btn danger" onclick="clearCanvas()">🗑️ Effacer tout</button>
+                                    <button type="button" class="tool-btn secondary" onclick="undoCanvas()">↩️ Annuler</button>
+                                    <button type="button" class="tool-btn danger" onclick="clearCanvas()">🗑️ Effacer</button>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Photos de consultation -->
+                    <!-- Photos -->
                     <h3 style="font-size: 0.95rem; color: var(--accent); margin: 20px 0 10px 0;">📸 Photos de la Séance</h3>
                     <div class="form-group">
-                        <label>Prendre une photo ou importer depuis la galerie</label>
                         <input type="file" id="consultPhotosInput" accept="image/*" multiple onchange="handleConsultPhotos(event)">
                         <div id="consultPhotosPreview" style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;"></div>
                     </div>
 
-                    <!-- Protocole Ostéopathique -->
-                    <h3 style="font-size: 0.95rem; color: var(--accent); margin: 20px 0 10px 0;">3. Bilan & Protocole Ostéo</h3>
-                    
+                    <!-- Bilan -->
+                    <h3 style="font-size: 0.95rem; color: var(--accent); margin: 20px 0 10px 0;">Bilan & Protocole Ostéo</h3>
                     <div class="form-group">
                         <label>Motif de consultation</label>
                         <input type="text" id="consultReason" placeholder="Baisse de forme, boiterie, contrôle routine...">
                     </div>
-
                     <div class="form-group">
                         <label>Anamnèse et commémoratifs</label>
-                        <textarea id="anamnesis" rows="2" placeholder="Antécédents, mode de vie, activité..."></textarea>
+                        <textarea id="anamnesis" rows="3" placeholder="Antécédents, mode de vie, activité..."></textarea>
+                        <p id="anamnesisHint" class="hint" style="display:none;"></p>
                     </div>
-
                     <div class="form-group">
                         <label>Bilan statique et/ou dynamique</label>
                         <textarea id="dynamicBilan" rows="2" placeholder="Examen statique, allures, aplombs..."></textarea>
@@ -666,7 +745,6 @@
                         </div>
                         <div id="dynamicBilanAudioContainer" style="margin-top: 5px;"></div>
                     </div>
-
                     <div class="form-group">
                         <label>Tests ostéopathiques & Restrictions</label>
                         <textarea id="osteotests" rows="3" placeholder="Restrictions articulaires, vertébrales, viscérales..."></textarea>
@@ -677,124 +755,66 @@
                         </div>
                         <div id="osteotestsAudioContainer" style="margin-top: 5px;"></div>
                     </div>
-
                     <div class="form-group">
                         <label>Traitement</label>
                         <textarea id="treatment" rows="2" placeholder="Techniques tissulaires, structurelles..."></textarea>
                     </div>
-
                     <div class="form-group">
                         <label>Notes & Confrères (Vétérinaire, Maréchal, Dentiste...)</label>
                         <textarea id="vetNotes" rows="2" placeholder="Ex: Avis véto : radios ok, maréchal : parage équilibré..."></textarea>
                     </div>
-
                     <div class="form-group">
                         <label>Conseils post-séance</label>
                         <textarea id="advice" rows="2" placeholder="48h de repos, réhabilitation progressive..."></textarea>
                     </div>
 
-                    <button type="submit" style="margin-top: 15px;">💾 Enregistrer et Générer le Rapport</button>
+                    <div class="sticky-save">
+                        <button type="submit" id="consultSubmitBtn">💾 Enregistrer le compte rendu</button>
+                    </div>
                 </form>
             </div>
         </div>
 
-        <!-- FICHE PATIENT DÉTAILLÉE -->
+        <!-- FICHE PATIENT (HUB) -->
         <div id="patientDetailView" class="view">
             <div class="card">
-                <button class="secondary" style="width: auto; margin-bottom: 15px;" onclick="showView('patientsView')">⬅️ Retour aux fiches patients</button>
-                <h2 id="detailPatientName" class="section-title">🐾 Dossier Médical Patient</h2>
-                <div id="patientInfoSummary" style="margin-bottom: 20px; font-size: 0.9rem; background: var(--primary-light); padding: 12px; border-radius: 8px;"></div>
+                <button class="btn-ghost btn-inline" style="margin-bottom: 12px;" onclick="showView('patientsView')">⬅️ Tous les patients</button>
+                <div id="patientDossier"></div>
 
-                <h3 style="font-size: 1rem; color: var(--accent); margin-bottom: 10px;">📁 Documents & Imagerie (Radios, CR Véto...)</h3>
-                <form id="patientDocForm" onsubmit="uploadPatientDocument(event)">
-                    <div class="row">
-                        <div class="form-group">
-                            <label>Type de document</label>
-                            <select id="docCategory">
-                                <option value="Compte rendu Vétérinaire">Compte rendu Vétérinaire</option>
-                                <option value="Radiographie / Imagerie">Radiographie / Imagerie</option>
-                                <option value="Photo / Morphologie">Photo / Morphologie</option>
-                                <option value="Autre document">Autre document</option>
-                            </select>
+                <details class="block" style="margin-top:18px;">
+                    <summary>➕ Ajouter un document (radio, CR véto…)</summary>
+                    <form id="patientDocForm" onsubmit="uploadPatientDocument(event)">
+                        <div class="row">
+                            <div class="form-group">
+                                <label>Type de document</label>
+                                <select id="docCategory">
+                                    <option value="Compte rendu Vétérinaire">Compte rendu Vétérinaire</option>
+                                    <option value="Radiographie / Imagerie">Radiographie / Imagerie</option>
+                                    <option value="Photo / Morphologie">Photo / Morphologie</option>
+                                    <option value="Autre document">Autre document</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Fichier / Photo</label>
+                                <input type="file" id="docFileInput" accept="image/*,.pdf" required>
+                            </div>
                         </div>
                         <div class="form-group">
-                            <label>Fichier / Photo</label>
-                            <input type="file" id="docFileInput" accept="image/*,.pdf" required>
+                            <label>Titre du document</label>
+                            <input type="text" id="docTitle" placeholder="Ex: Radio boulet antérieur droit">
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Titre du document</label>
-                        <input type="text" id="docTitle" placeholder="Ex: Radio boulet antérieur droit">
-                    </div>
-                    <button type="submit" style="background: var(--accent);">➕ Ajouter au dossier</button>
-                </form>
-
-                <h3 style="font-size: 1rem; color: var(--primary); margin: 25px 0 10px 0;">📂 Fichiers classés</h3>
-                <div id="patientDocsContainer">
-                    <p style="font-size: 0.85rem; color: var(--gray);">Aucun document pour l'instant.</p>
-                </div>
+                        <button type="submit" style="background: var(--accent);">➕ Ajouter au dossier</button>
+                    </form>
+                </details>
             </div>
         </div>
 
-        <!-- FICHE LIEU DÉTAILLÉE -->
-        <div id="locationDetailView" class="view">
+        <!-- FORMULAIRE PATIENT (création / modification) -->
+        <div id="patientFormView" class="view">
             <div class="card">
-                <button class="secondary" style="width: auto; margin-bottom: 15px;" onclick="showView('locationsView')">⬅️ Retour aux lieux</button>
-                <h2 id="detailLocationName" class="section-title">📍 Détails du Lieu & Animaux Suivis</h2>
-                <div id="locationInfoSummary" style="margin-bottom: 20px; font-size: 0.9rem; background: var(--primary-light); padding: 12px; border-radius: 8px;"></div>
-                <h3 style="font-size: 1rem; color: var(--primary); margin: 25px 0 10px 0;">🐾 Liste des animaux dans ce lieu</h3>
-                <div id="locationPatientsContainer">
-                    <p style="font-size: 0.85rem; color: var(--gray);">Aucun animal pour l'instant.</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- LIEUX DE CONSULTATION -->
-        <div id="locationsView" class="view">
-            <div class="card">
-                <h2 id="locationFormTitle" class="section-title">📍 Gestion des Lieux & Écuries</h2>
-                <form id="locationForm" onsubmit="saveLocation(event)">
-                    <input type="hidden" id="editLocationId" value="">
-                    
-                    <div class="form-group">
-                        <label>Nom du lieu / Écurie</label>
-                        <input type="text" id="locName" required placeholder="Ex: Écurie des Prés, Haras de Lauragais...">
-                    </div>
-                    <div class="row">
-                        <div class="form-group">
-                            <label>Nom du Gérant / Contact</label>
-                            <input type="text" id="locManager" placeholder="Ex: Marc Dubois">
-                        </div>
-                        <div class="form-group">
-                            <label>Téléphone du Gérant</label>
-                            <input type="tel" id="locPhone" placeholder="06 00 00 00 00">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Adresse & Infos d'accès</label>
-                        <textarea id="locDetails" rows="2" placeholder="Lieu-dit, 31290 Villefranche..."></textarea>
-                    </div>
-
-                    <button type="submit" id="locSubmitBtn">➕ Enregistrer le Lieu</button>
-                    <button type="button" id="locCancelBtn" class="secondary" style="display:none; margin-top:8px;" onclick="resetLocationForm()">Annuler la modification</button>
-                </form>
-            </div>
-
-            <div class="card">
-                <h2 class="section-title">📋 Liste des Lieux (Clique sur un lieu pour voir sa fiche)</h2>
-                <div id="locationsListContainer">
-                    <p style="font-size: 0.9rem; color: var(--gray); text-align: center;">Chargement des lieux...</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- FICHES PATIENTS -->
-        <div id="patientsView" class="view">
-            <div class="card">
-                <h2 id="patientFormTitle" class="section-title">🐾 Gestion des Fiches Patients</h2>
+                <h2 id="patientFormTitle" class="section-title">🐾 Nouveau patient</h2>
                 <form id="patientForm">
                     <input type="hidden" id="editPatientId" value="">
-                    
                     <div class="form-group">
                         <label>Nom de l'Animal</label>
                         <input type="text" id="patAnimalName" required placeholder="Ex: Boston">
@@ -816,63 +836,88 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="form-group">
-                            <label>Nom du Propriétaire</label>
-                            <input type="text" id="patOwner" required placeholder="Ex: Marc Dubois">
-                        </div>
-                        <div class="form-group">
-                            <label>Téléphone</label>
-                            <input type="tel" id="patPhone" placeholder="06 00 00 00 00">
-                        </div>
+                        <div class="form-group"><label>Nom du Propriétaire</label><input type="text" id="patOwner" required placeholder="Ex: Marc Dubois"></div>
+                        <div class="form-group"><label>Téléphone</label><input type="tel" id="patPhone" placeholder="06 00 00 00 00"></div>
                     </div>
                     <div class="row">
-                        <div class="form-group">
-                            <label>E-mail</label>
-                            <input type="email" id="patEmail" placeholder="marc@exemple.com">
-                        </div>
+                        <div class="form-group"><label>E-mail</label><input type="email" id="patEmail" placeholder="marc@exemple.com"></div>
                         <div class="form-group">
                             <label>Lieu / Écurie de rattachement</label>
                             <div style="display: flex; gap: 6px;">
-                                <select id="patAddress" style="flex: 1;">
-                                    <option value="Clinique">Clinique (Par défaut)</option>
-                                </select>
-                                <button type="button" class="secondary" style="width: auto; padding: 0 12px; font-size: 0.8rem;" onclick="quickAddLocationFromPatient()">➕ Lieu</button>
+                                <select id="patAddress" style="flex: 1;"><option value="Clinique">Clinique (Par défaut)</option></select>
+                                <button type="button" class="secondary" style="width: auto; padding: 0 12px; font-size: 0.8rem;" onclick="quickAddLocation('patAddress')">➕</button>
                             </div>
                         </div>
                     </div>
-
                     <div class="form-group">
                         <label>Spécificités & Comportement</label>
-                        <textarea id="patHistory" rows="2" placeholder="Chirurgie passée, sensible au dos..."></textarea>
+                        <textarea id="patHistory" rows="3" placeholder="Chirurgie passée, sensible au dos..."></textarea>
                     </div>
-
                     <div class="form-group">
                         <label class="checkbox-group">
                             <input type="checkbox" id="patIsDifficult">
                             <span>⚠️ <strong>Animal difficile / Risque (mord, botte, tape...)</strong></span>
                         </label>
                     </div>
-
                     <div class="form-group">
                         <label class="checkbox-group">
                             <input type="checkbox" id="patOwnerMandatory">
                             <span>👤 <strong>Présence du propriétaire impérative pendant la séance</strong></span>
                         </label>
                     </div>
-
-                    <button type="submit" id="patientSubmitBtn">➕ Enregistrer le Patient</button>
-                    <button type="button" id="patientCancelBtn" class="secondary" style="display:none; margin-top:8px;" onclick="resetPatientForm()">Annuler la modification</button>
+                    <button type="submit" id="patientSubmitBtn">💾 Enregistrer le patient</button>
+                    <button type="button" class="btn-ghost" style="margin-top:8px;" onclick="history.back()">Annuler</button>
                 </form>
             </div>
+        </div>
 
+        <!-- FICHE LIEU DÉTAILLÉE -->
+        <div id="locationDetailView" class="view">
             <div class="card">
-                <h2 class="section-title">📍 Patients Groupés par Lieux & Écuries</h2>
-                <div class="form-group">
-                    <input type="text" id="searchPatients" placeholder="🔍 Recherche semi-prédictive..." oninput="loadPatients()">
+                <button class="btn-ghost btn-inline" style="margin-bottom: 12px;" onclick="showView('locationsView')">⬅️ Retour aux lieux</button>
+                <h2 id="detailLocationName" class="section-title">📍 Détails du Lieu</h2>
+                <div id="locationInfoSummary" style="margin-bottom: 20px; font-size: 0.9rem; background: var(--primary-light); padding: 12px; border-radius: 8px;"></div>
+                <h3 class="sub-title">🐾 Animaux suivis dans ce lieu</h3>
+                <div id="locationPatientsContainer"></div>
+            </div>
+        </div>
+
+        <!-- LIEUX DE CONSULTATION -->
+        <div id="locationsView" class="view">
+            <div class="card">
+                <h2 class="section-title">📋 Lieux & Écuries</h2>
+                <div id="locationsListContainer"><p class="muted" style="text-align:center;">Chargement des lieux...</p></div>
+            </div>
+            <div class="card">
+                <h2 id="locationFormTitle" class="section-title">➕ Ajouter un lieu</h2>
+                <form id="locationForm" onsubmit="saveLocation(event)">
+                    <input type="hidden" id="editLocationId" value="">
+                    <div class="form-group">
+                        <label>Nom du lieu / Écurie</label>
+                        <input type="text" id="locName" required placeholder="Ex: Écurie des Prés, Haras de Lauragais...">
+                    </div>
+                    <div class="row">
+                        <div class="form-group"><label>Nom du Gérant / Contact</label><input type="text" id="locManager" placeholder="Ex: Marc Dubois"></div>
+                        <div class="form-group"><label>Téléphone du Gérant</label><input type="tel" id="locPhone" placeholder="06 00 00 00 00"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Adresse & Infos d'accès</label>
+                        <textarea id="locDetails" rows="2" placeholder="Lieu-dit, 31290 Villefranche..."></textarea>
+                    </div>
+                    <button type="submit" id="locSubmitBtn">➕ Enregistrer le Lieu</button>
+                    <button type="button" id="locCancelBtn" class="btn-ghost" style="display:none; margin-top:8px;" onclick="resetLocationForm()">Annuler la modification</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- LISTE DES PATIENTS -->
+        <div id="patientsView" class="view">
+            <div class="card">
+                <div class="toolbar">
+                    <input type="text" id="searchPatients" placeholder="🔍 Animal, propriétaire, écurie…" oninput="loadPatients()" autocomplete="off">
+                    <button onclick="openPatientForm()">➕ Nouveau</button>
                 </div>
-                <div id="patientsListContainer">
-                    <p style="font-size: 0.9rem; color: var(--gray); text-align: center;">Chargement des patients...</p>
-                </div>
+                <div id="patientsListContainer"><p class="muted" style="text-align:center;">Chargement des patients...</p></div>
             </div>
         </div>
 
@@ -883,9 +928,7 @@
                 <div class="form-group">
                     <input type="text" id="searchHistory" placeholder="🔍 Rechercher..." oninput="loadHistory()">
                 </div>
-                <div id="historyListContainer">
-                    <p style="font-size: 0.9rem; color: var(--gray); text-align: center;">Chargement de l'historique...</p>
-                </div>
+                <div id="historyListContainer"><p class="muted" style="text-align:center;">Chargement de l'historique...</p></div>
             </div>
         </div>
 
@@ -896,9 +939,7 @@
                 <form id="quickNoteForm">
                     <div class="form-group">
                         <label>Associer à un Patient (Optionnel)</label>
-                        <select id="quickNotePatient">
-                            <option value="">-- Note libre / Non assignée --</option>
-                        </select>
+                        <select id="quickNotePatient"><option value="">-- Note libre / Non assignée --</option></select>
                     </div>
                     <div class="form-group">
                         <label>Titre / Sujet de la note</label>
@@ -916,13 +957,21 @@
                     <button type="submit">💾 Enregistrer la Note Vocale</button>
                 </form>
             </div>
-
             <div class="card">
                 <h2 class="section-title">⚡ Mémos Vocaux Enregistrés</h2>
-                <div id="quickNotesListContainer">
-                    <p style="font-size: 0.9rem; color: var(--gray); text-align: center;">Aucun mémo vocal.</p>
-                </div>
+                <div id="quickNotesListContainer"><p class="muted" style="text-align:center;">Aucun mémo vocal.</p></div>
             </div>
+        </div>
+    </div>
+
+    <!-- POP-UP FICHE PATIENT (pendant la saisie d'un CR) -->
+    <div id="dossierModal" class="modal" onclick="if(event.target===this) closeDossierModal()">
+        <div class="modal-panel">
+            <div class="modal-head">
+                <h2>📂 Fiche patient</h2>
+                <button class="btn-dark" onclick="closeDossierModal()">✕ Fermer</button>
+            </div>
+            <div id="dossierModalContent"></div>
         </div>
     </div>
 
@@ -939,7 +988,8 @@
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-        const auth = firebase.auth();
+        // Cache hors-ligne : l'app reste utilisable sans réseau à l'écurie, et se synchronise au retour du réseau
+        try { db.enablePersistence({ synchronizeTabs: true }).catch(() => {}); } catch (e) {}
 
         let patientsData = [];
         let consultationsData = [];
@@ -950,11 +1000,21 @@
         let currentConsultPhotos = [];
         let firestoreListenersStarted = false;
 
-        // Variables pour l'enregistrement audio (MediaRecorder)
         let mediaRecorder = null;
         let audioChunks = [];
         let activeAudioContainerId = null;
         let currentRecordedAudioUrl = {};
+
+        const FIRESTORE_MAX_BYTES = 1000000; // limite Firestore : 1 Mo par document
+
+        /* ================= OUTILS ================= */
+        function esc(s) {
+            return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        }
+        // Argument sûr pour un onclick="fn(...)" (gère les apostrophes : "Écurie de l'Étang")
+        function arg(s) { return esc(JSON.stringify(String(s ?? ''))); }
+        function nl2br(s) { return esc(s).replace(/\n/g, '<br>'); }
+        function norm(s) { return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim(); }
 
         function formatDate(dateStr) {
             if (!dateStr) return '';
@@ -964,18 +1024,84 @@
             }
             return dateStr;
         }
+        function todayISO() {
+            const d = new Date();
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        }
+        function daysFromToday(iso) {
+            if (!iso) return null;
+            const [y, m, d] = iso.split('-').map(Number);
+            const t = new Date(); t.setHours(0, 0, 0, 0);
+            return Math.round((new Date(y, m - 1, d) - t) / 86400000);
+        }
 
-        // Profil Pro (Lyna Nicolaescu par défaut)
-        let proProfile = JSON.parse(localStorage.getItem('osteoProProfile')) || {
-            firstName: 'Lyna',
-            lastName: 'Nicolaescu',
-            phone: '06 44 84 66 92',
-            email: 'lynanicolaescu@gmail.com',
-            status: 'Étudiante en 4ème année d\'ostéopathie animale, EOOA',
-            siret: '',
-            address: ''
+        function toast(msg, type = 'ok', ms = 2600) {
+            const z = document.getElementById('toastZone');
+            const el = document.createElement('div');
+            el.className = 'toast ' + type;
+            el.textContent = msg;
+            z.appendChild(el);
+            setTimeout(() => el.remove(), ms);
+        }
+        function fail(err, what) {
+            console.error(what, err);
+            toast(`❌ ${what} : ${err && err.message ? err.message : err}`, 'err', 6000);
+        }
+
+        // Compression des photos (une photo de téléphone fait 3-5 Mo, Firestore accepte 1 Mo par fiche)
+        function compressImage(file, maxDim = 1280, quality = 0.72) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onerror = reject;
+                reader.onload = (evt) => {
+                    const img = new Image();
+                    img.onerror = reject;
+                    img.onload = () => {
+                        const ratio = Math.min(1, maxDim / Math.max(img.width, img.height));
+                        const c = document.createElement('canvas');
+                        c.width = Math.round(img.width * ratio);
+                        c.height = Math.round(img.height * ratio);
+                        const cx = c.getContext('2d');
+                        cx.fillStyle = '#fff'; cx.fillRect(0, 0, c.width, c.height);
+                        cx.drawImage(img, 0, 0, c.width, c.height);
+                        resolve(c.toDataURL('image/jpeg', quality));
+                    };
+                    img.src = evt.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+        function readAsDataURL(file) {
+            return new Promise((resolve, reject) => {
+                const r = new FileReader();
+                r.onload = e => resolve(e.target.result);
+                r.onerror = reject;
+                r.readAsDataURL(file);
+            });
+        }
+        function approxBytes(obj) { return new Blob([JSON.stringify(obj)]).size; }
+        function openDataUrl(dataUrl) {
+            // Chrome bloque l'ouverture directe des "data:" : on passe par un Blob
+            try {
+                const [meta, b64] = dataUrl.split(',');
+                const mime = meta.match(/data:(.*?);/)[1];
+                const bin = atob(b64);
+                const arr = new Uint8Array(bin.length);
+                for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+                window.open(URL.createObjectURL(new Blob([arr], { type: mime })), '_blank');
+            } catch (e) { window.open(dataUrl, '_blank'); }
+        }
+
+        /* ================= PROFIL PRO ================= */
+        const defaultProProfile = {
+            firstName: 'Lyna', lastName: 'Nicolaescu', phone: '06 44 84 66 92', email: 'lynanicolaescu@gmail.com',
+            status: 'Étudiante en 4ème année d\'ostéopathie animale, EOOA', siret: '', address: ''
         };
-
+        let proProfile = Object.assign({}, defaultProProfile, JSON.parse(localStorage.getItem('osteoProProfile') || 'null') || {});
+        function fillProProfileForm() {
+            const map = { proFirstName: 'firstName', proLastName: 'lastName', proPhone: 'phone', proEmail: 'email', proStatus: 'status', proSiret: 'siret', proAddress: 'address' };
+            for (const id in map) document.getElementById(id).value = proProfile[map[id]] || '';
+        }
         function saveProProfile(e) {
             e.preventDefault();
             proProfile = {
@@ -988,36 +1114,68 @@
                 address: document.getElementById('proAddress').value
             };
             localStorage.setItem('osteoProProfile', JSON.stringify(proProfile));
-            alert('Profil professionnel sauvegardé !');
+            toast('✅ Profil professionnel sauvegardé');
             showView('homeView');
+        }
+
+        /* ================= DONNÉES ================= */
+        function getPatient(id) { return patientsData.find(p => p.id === id); }
+
+        // Séances d'un patient : lien par identifiant (nouveau) ou par nom + propriétaire (anciennes séances)
+        function getPatientConsults(p) {
+            if (!p) return [];
+            return consultationsData.filter(c =>
+                (c.patientId && c.patientId === p.id) ||
+                (!c.patientId && norm(c.animalName) === norm(p.animalName) && norm(c.ownerName) === norm(p.owner))
+            ).sort(sortConsultsDesc);
+        }
+        function sortConsultsDesc(a, b) {
+            const da = a.consultDate || '', dbb = b.consultDate || '';
+            if (da !== dbb) return da < dbb ? 1 : -1;
+            return (b.timestamp || 0) - (a.timestamp || 0);
+        }
+        function findPatientForConsult(c) {
+            if (c.patientId) return getPatient(c.patientId);
+            return patientsData.find(p => norm(p.animalName) === norm(c.animalName) && norm(p.owner) === norm(c.ownerName));
+        }
+        function searchPatients(q) {
+            q = norm(q);
+            const list = patientsData.filter(p => !q ||
+                norm(p.animalName).includes(q) || norm(p.owner).includes(q) ||
+                norm(p.address).includes(q) || norm(p.species).includes(q) || norm(p.breedAge).includes(q));
+            // Les noms qui commencent par la recherche d'abord
+            return list.sort((a, b) => {
+                const sa = norm(a.animalName).startsWith(q) ? 0 : 1, sb = norm(b.animalName).startsWith(q) ? 0 : 1;
+                return sa - sb || norm(a.animalName).localeCompare(norm(b.animalName));
+            });
         }
 
         function startFirestoreListeners() {
             if (firestoreListenersStarted) return;
             firestoreListenersStarted = true;
+            const badge = document.getElementById('syncBadge');
 
             db.collection("patients").onSnapshot((snapshot) => {
                 patientsData = [];
                 snapshot.forEach((doc) => { patientsData.push({ id: doc.id, ...doc.data() }); });
-                loadPatients();
-                populateSelects();
-            }, (err) => console.error("Erreur Firestore patients:", err));
+                badge.textContent = snapshot.metadata.fromCache ? '📴 Hors-ligne : les données se synchroniseront au retour du réseau' : '☁️ Synchronisation Cloud Firebase Active';
+                refreshAll();
+            }, (err) => fail(err, "Chargement des patients"));
 
             db.collection("consultations").onSnapshot((snapshot) => {
                 consultationsData = [];
                 snapshot.forEach((doc) => { consultationsData.push({ id: doc.id, ...doc.data() }); });
-                consultationsData.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-                loadHistory();
-                loadPatients();
-                updateDashboardStats();
-            }, (err) => console.error("Erreur Firestore consultations:", err));
+                consultationsData.sort(sortConsultsDesc);
+                refreshAll();
+            }, (err) => fail(err, "Chargement des consultations"));
 
             db.collection("quicknotes").onSnapshot((snapshot) => {
                 quickNotesData = [];
                 snapshot.forEach((doc) => { quickNotesData.push({ id: doc.id, ...doc.data() }); });
                 quickNotesData.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
                 loadQuickNotes();
-            }, (err) => console.error("Erreur Firestore quicknotes:", err));
+                refreshPatientDetailIfOpen();
+            }, (err) => fail(err, "Chargement des notes"));
 
             db.collection("locations").onSnapshot((snapshot) => {
                 locationsData = [];
@@ -1025,7 +1183,22 @@
                 loadLocations();
                 populateSelects();
                 updateDashboardStats();
-            }, (err) => console.error("Erreur Firestore locations:", err));
+            }, (err) => fail(err, "Chargement des lieux"));
+        }
+
+        function refreshAll() {
+            loadPatients();
+            loadHistory();
+            populateSelects();
+            updateDashboardStats();
+            renderRelances();
+            refreshPatientDetailIfOpen();
+            renderSelectedPatientBanner();
+        }
+        function refreshPatientDetailIfOpen() {
+            if (document.getElementById('patientDetailView').classList.contains('active') && currentActivePatientId) {
+                renderPatientDetail(currentActivePatientId);
+            }
         }
 
         function updateDashboardStats() {
@@ -1034,7 +1207,6 @@
             const day = now.getDay() === 0 ? 6 : now.getDay() - 1;
             const startOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() - day);
             startOfWeek.setHours(0, 0, 0, 0);
-
             let weekCount = consultationsData.filter(c => c.consultDate && new Date(c.consultDate) >= startOfWeek).length;
             document.getElementById('statWeekConsult').innerText = weekCount;
 
@@ -1043,26 +1215,288 @@
                 let loc = c.ownerAddress || 'Clinique';
                 locationCounts[loc] = (locationCounts[loc] || 0) + 1;
             });
-
-            let topLoc = '-';
-            let maxCount = 0;
+            let topLoc = '-', maxCount = 0;
             for (let loc in locationCounts) {
-                if (locationCounts[loc] > maxCount) {
-                    maxCount = locationCounts[loc];
-                    topLoc = `${loc} (${maxCount} consult.)`;
-                }
+                if (locationCounts[loc] > maxCount) { maxCount = locationCounts[loc]; topLoc = `${loc} (${maxCount} consult.)`; }
             }
             document.getElementById('statTopLocation').innerText = topLoc;
         }
 
-        // Squelettes avec liens Postimages
+        // Accueil : patients dont le prochain RDV préconisé approche (ou est dépassé)
+        function renderRelances() {
+            const box = document.getElementById('relancesContainer');
+            const items = [];
+            patientsData.forEach(p => {
+                const last = getPatientConsults(p)[0];
+                if (!last || !last.nextConsultDate) return;
+                const d = daysFromToday(last.nextConsultDate);
+                if (d === null || d > 30 || d < -90) return;
+                items.push({ p, last, d });
+            });
+            items.sort((a, b) => a.d - b.d);
+            if (!items.length) { box.innerHTML = '<p class="muted">Rien à relancer pour le moment.</p>'; return; }
+            box.innerHTML = items.map(({ p, last, d }) => {
+                const when = d < 0 ? `<span class="badge late">en retard de ${-d} j</span>` : d === 0 ? `<span class="badge accent">aujourd'hui</span>` : `<span class="badge soft">dans ${d} j</span>`;
+                const mail = p.email ? `<a href="${reminderMailto(p, last)}" onclick="event.stopPropagation()" title="Envoyer un rappel">✉️</a>` : '';
+                return `<div class="relance" onclick="openPatientDetail(${arg(p.id)})">
+                    <span><strong>${esc(p.animalName)}</strong> · ${esc(p.owner)} <span class="muted">(${esc(formatDate(last.nextConsultDate))})</span></span>
+                    <span>${when} ${mail}</span></div>`;
+            }).join('');
+        }
+        function reminderMailto(p, c) {
+            const subject = `Rappel - Suivi ostéopathique ${p.animalName}`;
+            const body = `Bonjour ${p.owner},\n\nLe suivi ostéopathique de ${p.animalName} préconisé pour le ${formatDate(c.nextConsultDate)} approche.\n\nPensez à prendre contact pour fixer un rendez-vous.\n\nBien cordialement,\n${proProfile.firstName} ${proProfile.lastName}\n${proProfile.phone}`;
+            return `mailto:${encodeURIComponent(p.email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        }
+
+        /* ================= NAVIGATION (avec bouton retour du téléphone) ================= */
+        const viewTitles = {
+            homeView: 'OstéoAnimal - Lynette', consultView: 'Consultation', locationsView: 'Lieux de consultation',
+            patientsView: 'Fiches Patients', patientDetailView: 'Fiche Patient', patientFormView: 'Fiche Patient',
+            historyView: 'Historique', notesView: 'Notes Vocales', proProfileView: 'Profil Professionnel', locationDetailView: 'Lieu'
+        };
+        function showView(viewId, opts = {}) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            document.getElementById('homeBtn').style.display = viewId === 'homeView' ? 'none' : 'inline-block';
+            document.getElementById('headerTitle').innerText = viewTitles[viewId] || 'OstéoAnimal';
+
+            if (viewId === 'homeView') { updateDashboardStats(); renderRelances(); }
+            if (viewId === 'consultView') populateSelects();
+            if (viewId === 'locationsView') loadLocations();
+            if (viewId === 'patientsView') loadPatients();
+            if (viewId === 'historyView') loadHistory();
+            if (viewId === 'notesView') { populateSelects(); loadQuickNotes(); }
+            if (viewId === 'proProfileView') fillProProfileForm();
+
+            if (opts.push !== false) {
+                history.pushState({ view: viewId, patientId: currentActivePatientId, loc: currentActiveLocationName }, '');
+            }
+            if (!opts.keepScroll) window.scrollTo(0, 0);
+        }
+        let ignoreNextPop = false;
+        window.addEventListener('popstate', (e) => {
+            if (ignoreNextPop) { ignoreNextPop = false; return; }
+            if (document.getElementById('dossierModal').classList.contains('open')) { closeDossierModal(true); return; }
+            const s = e.state || { view: 'homeView' };
+            if (s.view === 'patientDetailView' && s.patientId) openPatientDetail(s.patientId, { push: false });
+            else if (s.view === 'locationDetailView' && s.loc) openLocationDetail(s.loc, { push: false });
+            else showView(s.view, { push: false });
+        });
+
+        /* ================= RECHERCHE RAPIDE (accueil + CR) ================= */
+        function setupPicker(inputId, resultsId, onPick, emptyHint = '') {
+            const input = document.getElementById(inputId);
+            const results = document.getElementById(resultsId);
+            let hl = -1, current = [];
+            const render = () => {
+                current = searchPatients(input.value).slice(0, 8);
+                hl = -1;
+                if (!current.length) {
+                    results.innerHTML = `<div class="picker-empty">${patientsData.length ? 'Aucun patient trouvé' : 'Aucun patient enregistré'}${input.value ? emptyHint : ''}</div>`;
+                } else {
+                    results.innerHTML = current.map((p, i) => {
+                        const last = getPatientConsults(p)[0];
+                        return `<div class="picker-item" data-i="${i}">
+                            <strong>${esc(p.animalName)}</strong> (${esc(p.species)}) ${p.isDifficult ? '⚠️' : ''}
+                            <small>${esc(p.owner)} · 📍 ${esc(p.address || 'Clinique')}${last ? ' · dernière séance ' + esc(formatDate(last.consultDate)) : ''}</small>
+                        </div>`;
+                    }).join('');
+                }
+                results.classList.add('open');
+            };
+            input.addEventListener('input', render);
+            input.addEventListener('focus', render);
+            input.addEventListener('blur', () => setTimeout(() => results.classList.remove('open'), 150));
+            input.addEventListener('keydown', (e) => {
+                const items = results.querySelectorAll('.picker-item');
+                if (e.key === 'ArrowDown') { hl = Math.min(hl + 1, items.length - 1); e.preventDefault(); }
+                else if (e.key === 'ArrowUp') { hl = Math.max(hl - 1, 0); e.preventDefault(); }
+                else if (e.key === 'Enter') { e.preventDefault(); const p = current[hl >= 0 ? hl : 0]; if (p) { results.classList.remove('open'); input.value = ''; onPick(p.id); } return; }
+                else if (e.key === 'Escape') { results.classList.remove('open'); return; }
+                items.forEach((el, i) => el.classList.toggle('hl', i === hl));
+            });
+            // mousedown (et pas click) pour passer avant le blur
+            results.addEventListener('mousedown', (e) => {
+                const it = e.target.closest('.picker-item');
+                if (!it) return;
+                e.preventDefault();
+                const p = current[+it.dataset.i];
+                results.classList.remove('open');
+                input.value = '';
+                input.blur();
+                if (p) onPick(p.id);
+            });
+        }
+
+        /* ================= CONSULTATION ================= */
         const speciesSkeletons = {
             "Cheval": "https://i.postimg.cc/FR7TJg0L/1cheval.png",
             "Chien": "https://i.postimg.cc/26V0BFnv/chien.png",
             "Chat": "https://i.postimg.cc/4dmWhbpc/chat.png",
             "Vache": "https://i.postimg.cc/G2HXsJvm/vache.png"
         };
+        function speciesToConsult(s) { return ['Cheval', 'Chien', 'Chat', 'Vache'].includes(s) ? s : 'Custom'; }
+        function speciesToPatient(s) { return ['Cheval', 'Chien', 'Chat', 'Vache'].includes(s) ? s : 'Autre'; }
 
+        function resetConsultForm() {
+            document.getElementById('consultForm').reset();
+            document.getElementById('editConsultId').value = "";
+            document.getElementById('consultPatientId').value = "";
+            document.getElementById('consultFormTitle').innerText = "📝 Nouvelle Consultation";
+            document.getElementById('consultDateInput').value = todayISO();
+            document.getElementById('anamnesisHint').style.display = 'none';
+            document.getElementById('matchHint').style.display = 'none';
+            currentConsultPhotos = [];
+            currentRecordedAudioUrl = {};
+            document.getElementById('dynamicBilanAudioContainer').innerHTML = '';
+            document.getElementById('osteotestsAudioContainer').innerHTML = '';
+            renderConsultPhotosPreview();
+            setConsultPatientUI(null);
+        }
+
+        function startNewConsult(patientId = null) {
+            resetConsultForm();
+            showView('consultView');
+            initCanvas();
+            if (patientId) selectPatientForConsult(patientId, { prefill: true });
+        }
+        function startConsultForPatient(id) { startNewConsult(id); }
+
+        // Choix d'un patient existant : tout est pré-rempli
+        function selectPatientForConsult(id, opts = { prefill: true }) {
+            const p = getPatient(id);
+            if (!p) return;
+            const prevSpecies = document.getElementById('animalSpecies').value;
+            document.getElementById('consultPatientId').value = p.id;
+            document.getElementById('animalName').value = p.animalName || '';
+            document.getElementById('animalSpecies').value = speciesToConsult(p.species);
+            document.getElementById('ownerName').value = p.owner || '';
+            document.getElementById('ownerPhone').value = p.phone || '';
+            document.getElementById('ownerEmail').value = p.email || '';
+            ensureLocationOption('ownerAddress', p.address || 'Clinique');
+            document.getElementById('ownerAddress').value = p.address || 'Clinique';
+            document.getElementById('matchHint').style.display = 'none';
+
+            if (opts.prefill) {
+                const last = getPatientConsults(p)[0];
+                const an = document.getElementById('anamnesis');
+                const hint = document.getElementById('anamnesisHint');
+                if (last && last.anamnesis && !an.value.trim()) {
+                    an.value = last.anamnesis;
+                    hint.textContent = `↪️ Reprise de l'anamnèse de la séance du ${formatDate(last.consultDate)} — complétez ou modifiez si besoin.`;
+                    hint.style.display = 'block';
+                } else if (!last && p.history && !an.value.trim()) {
+                    an.value = p.history;
+                    hint.textContent = `↪️ Pré-rempli avec les spécificités de la fiche patient.`;
+                    hint.style.display = 'block';
+                }
+                // On ne repart d'un schéma vierge que si rien n'a été dessiné ou si l'espèce change
+                if (drawHistory.length <= 1 || prevSpecies !== document.getElementById('animalSpecies').value) initCanvas();
+            }
+            setConsultPatientUI(p);
+        }
+
+        function setConsultPatientUI(p) {
+            const picker = document.getElementById('patientPickerBlock');
+            const identity = document.getElementById('identityBlock');
+            const summary = document.getElementById('identitySummary');
+            document.getElementById('createPatientRow').style.display = p ? 'none' : 'flex';
+            if (p) {
+                picker.style.display = 'none';
+                identity.open = false;
+                summary.textContent = `Coordonnées pré-remplies depuis la fiche (${p.owner || '—'}, ${p.address || 'Clinique'}) — modifier`;
+            } else {
+                picker.style.display = 'block';
+                identity.open = true;
+                summary.textContent = 'Propriétaire & animal';
+            }
+            renderSelectedPatientBanner();
+        }
+
+        function clearConsultPatient() {
+            document.getElementById('consultPatientId').value = '';
+            ['animalName', 'ownerName', 'ownerPhone', 'ownerEmail'].forEach(id => document.getElementById(id).value = '');
+            document.getElementById('ownerAddress').value = 'Clinique';
+            const hint = document.getElementById('anamnesisHint');
+            if (hint.style.display !== 'none') { document.getElementById('anamnesis').value = ''; hint.style.display = 'none'; }
+            setConsultPatientUI(null);
+            document.getElementById('consultPatientSearch').focus();
+        }
+
+        function renderSelectedPatientBanner() {
+            const box = document.getElementById('selectedPatientBanner');
+            const p = getPatient(document.getElementById('consultPatientId').value);
+            if (!p) { box.innerHTML = ''; return; }
+            const consults = getPatientConsults(p);
+            const editId = document.getElementById('editConsultId').value;
+            const last = consults.find(c => c.id !== editId);
+            box.innerHTML = `
+                <div class="patient-banner">
+                    <div class="pb-head">
+                        <div>
+                            <h3>🐾 ${esc(p.animalName)} <span style="font-weight:400; font-size:0.85rem;">(${esc(p.species)}${p.breedAge ? ' · ' + esc(p.breedAge) : ''})</span></h3>
+                            <div class="pb-sub">${esc(p.owner)}${p.phone ? ' · <a href="tel:' + esc(p.phone) + '">' + esc(p.phone) + '</a>' : ''} · 📍 ${esc(p.address || 'Clinique')}</div>
+                        </div>
+                        <span class="badge soft">${consults.length} séance${consults.length > 1 ? 's' : ''}</span>
+                    </div>
+                    ${alertsHtml(p)}
+                    ${p.history ? `<div class="pb-spec">📝 <strong>Spécificités :</strong> ${nl2br(p.history)}</div>` : ''}
+                    ${last ? `<div class="pb-last">
+                        <strong>Dernière séance : ${esc(formatDate(last.consultDate || last.date))}</strong>${last.consultReason ? ' — ' + esc(last.consultReason) : ''}<br>
+                        ${last.treatment ? `<span><b>Traitement :</b> ${esc(last.treatment).slice(0, 220)}${last.treatment.length > 220 ? '…' : ''}</span><br>` : ''}
+                        ${last.advice ? `<span><b>Conseils donnés :</b> ${esc(last.advice).slice(0, 180)}${last.advice.length > 180 ? '…' : ''}</span>` : ''}
+                    </div>` : `<div class="pb-last">Première séance pour ce patient.</div>`}
+                    <div class="pb-actions">
+                        <button type="button" onclick="openDossierModal(${arg(p.id)})">📂 Voir la fiche complète</button>
+                        ${!editId ? `<button type="button" class="btn-ghost" onclick="clearConsultPatient()">✖ Changer de patient</button>` : ''}
+                    </div>
+                </div>`;
+        }
+
+        function alertsHtml(p) {
+            let h = '';
+            if (p.isDifficult) h += `<span class="badge danger">⚠️ Animal difficile</span>`;
+            if (p.ownerMandatory) h += `<span class="badge accent">👤 Proprio impératif</span>`;
+            return h ? `<div style="margin-top:6px;">${h}</div>` : '';
+        }
+
+        // Saisie manuelle d'un nom qui existe déjà -> on propose la fiche
+        function checkExistingMatch() {
+            if (document.getElementById('consultPatientId').value) return;
+            const name = norm(document.getElementById('animalName').value);
+            const owner = norm(document.getElementById('ownerName').value);
+            const box = document.getElementById('matchHint');
+            if (name.length < 2) { box.style.display = 'none'; return; }
+            const matches = patientsData.filter(p => norm(p.animalName) === name && (!owner || norm(p.owner).includes(owner)));
+            if (!matches.length) { box.style.display = 'none'; return; }
+            box.innerHTML = matches.slice(0, 3).map(p =>
+                `💡 <strong>${esc(p.animalName)}</strong> (${esc(p.owner)}) existe déjà <button type="button" onclick="selectPatientForConsult(${arg(p.id)})">Utiliser sa fiche</button>`
+            ).join('<br>');
+            box.style.display = 'block';
+        }
+        document.getElementById('animalName').addEventListener('input', checkExistingMatch);
+        document.getElementById('ownerName').addEventListener('input', checkExistingMatch);
+
+        async function handleConsultPhotos(e) {
+            const files = Array.from(e.target.files || []);
+            for (const file of files) {
+                try { currentConsultPhotos.push(await compressImage(file)); }
+                catch (err) { fail(err, 'Lecture de la photo'); }
+            }
+            e.target.value = '';
+            renderConsultPhotosPreview();
+        }
+        function renderConsultPhotosPreview() {
+            document.getElementById('consultPhotosPreview').innerHTML = currentConsultPhotos.map((p, index) => `
+                <div class="photo-thumb-wrapper">
+                    <img src="${p}" class="doc-thumbnail">
+                    <button type="button" class="delete-photo-btn" onclick="deleteConsultPhoto(${index})">✕</button>
+                </div>`).join('');
+        }
+        function deleteConsultPhoto(index) { currentConsultPhotos.splice(index, 1); renderConsultPhotosPreview(); }
+
+        /* ----- Canvas ----- */
         let customSkeletonImage = null;
         const canvas = document.getElementById('sketchCanvas');
         const ctx = canvas.getContext('2d');
@@ -1070,87 +1504,15 @@
         let penColor = '#EA5B0C';
         let drawHistory = [];
 
-        function showView(viewId) {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.getElementById(viewId).classList.add('active');
-            
-            const homeBtn = document.getElementById('homeBtn');
-            const headerTitle = document.getElementById('headerTitle');
-            if (viewId === 'homeView') {
-                if (homeBtn) homeBtn.style.display = 'none';
-                if (headerTitle) headerTitle.innerText = "OstéoAnimal - Lynette";
-                updateDashboardStats();
-            } else {
-                if (homeBtn) homeBtn.style.display = 'inline-block';
-                if (viewId === 'consultView') { 
-                    if (headerTitle) headerTitle.innerText = "Consultation"; 
-                    populateSelects(); 
-                    if (!document.getElementById('editConsultId').value) {
-                        document.getElementById('consultDateInput').valueAsDate = new Date();
-                    }
-                }
-                if (viewId === 'locationsView') { if (headerTitle) headerTitle.innerText = "Lieux de consultation"; loadLocations(); }
-                if (viewId === 'patientsView') { if (headerTitle) headerTitle.innerText = "Fiches Patients"; loadPatients(); populateSelects(); }
-                if (viewId === 'historyView') { if (headerTitle) headerTitle.innerText = "Historique"; loadHistory(); }
-                if (viewId === 'notesView') { if (headerTitle) headerTitle.innerText = "Notes Vocales"; populateSelects(); loadQuickNotes(); }
-                if (viewId === 'proProfileView') { if (headerTitle) headerTitle.innerText = "Profil Professionnel"; }
-            }
-        }
-
-        function startNewConsult() {
-            document.getElementById('consultForm').reset();
-            document.getElementById('editConsultId').value = "";
-            document.getElementById('consultFormTitle').innerText = "📝 Nouvelle Consultation";
-            document.getElementById('consultDateInput').valueAsDate = new Date();
-            currentConsultPhotos = [];
-            currentRecordedAudioUrl = {};
-            document.getElementById('dynamicBilanAudioContainer').innerHTML = '';
-            document.getElementById('osteotestsAudioContainer').innerHTML = '';
-            renderConsultPhotosPreview();
-            showView('consultView');
-            initCanvas();
-        }
-
-        function handleConsultPhotos(e) {
-            const files = e.target.files;
-            for (let file of files) {
-                const reader = new FileReader();
-                reader.onload = function(evt) {
-                    currentConsultPhotos.push(evt.target.result);
-                    renderConsultPhotosPreview();
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function renderConsultPhotosPreview() {
-            const preview = document.getElementById('consultPhotosPreview');
-            preview.innerHTML = '';
-            currentConsultPhotos.forEach((p, index) => {
-                preview.innerHTML += `
-                    <div class="photo-thumb-wrapper">
-                        <img src="${p}" class="doc-thumbnail">
-                        <button type="button" class="delete-photo-btn" onclick="deleteConsultPhoto(${index})">✕</button>
-                    </div>
-                `;
-            });
-        }
-
-        function deleteConsultPhoto(index) {
-            currentConsultPhotos.splice(index, 1);
-            renderConsultPhotosPreview();
-        }
-
         function initCanvas(existingImageSrc = null) {
             const wrapper = canvas.parentElement;
-            canvas.width = wrapper.clientWidth;
+            canvas.width = wrapper.clientWidth || 600;
             canvas.height = 280;
             drawHistory = [];
-            
             if (existingImageSrc) {
                 const img = new Image();
-                img.onload = function() {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                img.onload = function () {
+                    ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, canvas.width, canvas.height);
                     drawScaledImage(img);
                 };
                 img.src = existingImageSrc;
@@ -1158,35 +1520,23 @@
                 updateSkeleton();
             }
         }
-
-        function saveCanvasState() {
-            drawHistory.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
-        }
-
+        function saveCanvasState() { drawHistory.push(ctx.getImageData(0, 0, canvas.width, canvas.height)); }
         function undoCanvas() {
-            if (drawHistory.length > 1) {
-                drawHistory.pop();
-                ctx.putImageData(drawHistory[drawHistory.length - 1], 0, 0);
-            } else if (drawHistory.length === 1) {
-                drawHistory.pop();
-                updateSkeleton();
-            }
+            if (drawHistory.length > 1) { drawHistory.pop(); ctx.putImageData(drawHistory[drawHistory.length - 1], 0, 0); }
+            else if (drawHistory.length === 1) { drawHistory.pop(); updateSkeleton(); }
         }
-
         function updateSkeleton() {
             const species = document.getElementById('animalSpecies').value;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = '#FFFFFF';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-
             if (species === 'Custom' && customSkeletonImage) {
                 drawScaledImage(customSkeletonImage);
-            } else if (speciesSkeletons[species] && speciesSkeletons[species] !== "") {
+            } else if (speciesSkeletons[species]) {
                 const img = new Image();
                 img.crossOrigin = "anonymous";
-                img.onload = function() {
-                    drawScaledImage(img);
-                };
+                img.onload = function () { drawScaledImage(img); };
+                img.onerror = function () { saveCanvasState(); };
                 img.src = speciesSkeletons[species];
             } else {
                 ctx.fillStyle = '#6B7280';
@@ -1196,210 +1546,263 @@
                 saveCanvasState();
             }
         }
-
         function drawScaledImage(img) {
-            let hRatio = canvas.width / img.width;
-            let vRatio = canvas.height / img.height;
-            let ratio = Math.min(hRatio, vRatio);
-            let centerShiftX = (canvas.width - img.width * ratio) / 2;
-            let centerShiftY = (canvas.height - img.height * ratio) / 2;
-            
-            ctx.drawImage(img, 0, 0, img.width, img.height, centerShiftX, centerShiftY, img.width * ratio, img.height * ratio);
+            let ratio = Math.min(canvas.width / img.width, canvas.height / img.height);
+            let cx = (canvas.width - img.width * ratio) / 2;
+            let cy = (canvas.height - img.height * ratio) / 2;
+            ctx.drawImage(img, 0, 0, img.width, img.height, cx, cy, img.width * ratio, img.height * ratio);
             saveCanvasState();
         }
-
         function loadCustomSkeleton(e) {
             const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const img = new Image();
-                    img.onload = function() {
-                        customSkeletonImage = img;
-                        document.getElementById('animalSpecies').value = 'Custom';
-                        updateSkeleton();
-                    };
-                    img.src = event.target.result;
+            if (!file) return;
+            compressImage(file, 1200, 0.85).then(src => {
+                const img = new Image();
+                img.onload = function () {
+                    customSkeletonImage = img;
+                    document.getElementById('animalSpecies').value = 'Custom';
+                    updateSkeleton();
                 };
-                reader.readAsDataURL(file);
-            }
+                img.src = src;
+            }).catch(err => fail(err, 'Import du squelette'));
         }
-
-        function setPenColor(color) { penColor = color; }
+        function setPenColor(color, el) {
+            penColor = color;
+            document.querySelectorAll('.color-dot').forEach(d => d.style.outline = '');
+            if (el) el.style.outline = '2px solid #2B2D42';
+        }
         function clearCanvas() { initCanvas(); }
-
         function getPos(e) {
             const rect = canvas.getBoundingClientRect();
-            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
-            const clientY = e.clientY || (e.touches && e.touches[0].clientY);
-            return { x: clientX - rect.left, y: clientY - rect.top };
+            const t = e.touches && e.touches[0];
+            const clientX = t ? t.clientX : e.clientX;
+            const clientY = t ? t.clientY : e.clientY;
+            return { x: (clientX - rect.left) * (canvas.width / rect.width), y: (clientY - rect.top) * (canvas.height / rect.height) };
         }
-
         canvas.addEventListener('mousedown', startDraw);
         canvas.addEventListener('mousemove', draw);
         canvas.addEventListener('mouseup', stopDraw);
         canvas.addEventListener('mouseleave', stopDraw);
-        canvas.addEventListener('touchstart', (e) => { startDraw(e); e.preventDefault(); });
-        canvas.addEventListener('touchmove', (e) => { draw(e); e.preventDefault(); });
+        canvas.addEventListener('touchstart', (e) => { startDraw(e); e.preventDefault(); }, { passive: false });
+        canvas.addEventListener('touchmove', (e) => { draw(e); e.preventDefault(); }, { passive: false });
         canvas.addEventListener('touchend', stopDraw);
-
-        function startDraw(e) {
-            isDrawing = true;
-            const pos = getPos(e);
-            ctx.beginPath();
-            ctx.moveTo(pos.x, pos.y);
-        }
+        function startDraw(e) { isDrawing = true; const pos = getPos(e); ctx.beginPath(); ctx.moveTo(pos.x, pos.y); }
         function draw(e) {
             if (!isDrawing) return;
             const pos = getPos(e);
-            ctx.strokeStyle = penColor;
-            ctx.lineWidth = 3;
-            ctx.lineCap = 'round';
-            ctx.lineTo(pos.x, pos.y);
-            ctx.stroke();
+            ctx.strokeStyle = penColor; ctx.lineWidth = 3; ctx.lineCap = 'round';
+            ctx.lineTo(pos.x, pos.y); ctx.stroke();
         }
-        function stopDraw() {
-            if (isDrawing) {
-                isDrawing = false;
-                saveCanvasState();
-            }
-        }
+        function stopDraw() { if (isDrawing) { isDrawing = false; saveCanvasState(); } }
 
-        // ENREGISTREUR AUDIO (MÉMOS VOCAUX)
+        /* ----- Audio ----- */
         function startAudioRecord(containerId, statusId) {
             activeAudioContainerId = containerId;
             const statusEl = document.getElementById(statusId);
-
             if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                alert("Votre navigateur ne supporte pas l'enregistrement audio.");
+                toast("Votre navigateur ne supporte pas l'enregistrement audio.", 'err');
                 return;
             }
-
             navigator.mediaDevices.getUserMedia({ audio: true })
                 .then(stream => {
                     mediaRecorder = new MediaRecorder(stream);
                     audioChunks = [];
-
-                    mediaRecorder.ondataavailable = event => {
-                        audioChunks.push(event.data);
-                    };
-
+                    mediaRecorder.ondataavailable = event => audioChunks.push(event.data);
                     mediaRecorder.onstop = () => {
-                        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                        const audioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType || 'audio/webm' });
                         const reader = new FileReader();
                         reader.readAsDataURL(audioBlob);
                         reader.onloadend = () => {
-                            const base64Audio = reader.result;
-                            currentRecordedAudioUrl[activeAudioContainerId] = base64Audio;
-                            
+                            currentRecordedAudioUrl[activeAudioContainerId] = reader.result;
                             const container = document.getElementById(activeAudioContainerId + 'Container');
-                            if (container) {
-                                container.innerHTML = `<audio controls src="${base64Audio}" style="width:100%; margin-top:5px;"></audio>`;
-                            }
+                            if (container) container.innerHTML = `<audio controls src="${reader.result}" style="width:100%; margin-top:5px;"></audio>`;
+                            if (audioBlob.size > 600000) toast('⚠️ Mémo long : au-delà d\'1 min environ, la fiche risque d\'être trop lourde pour être enregistrée.', 'err', 6000);
                         };
                         stream.getTracks().forEach(track => track.stop());
                     };
-
                     mediaRecorder.start();
                     statusEl.style.display = 'inline';
                 })
-                .catch(err => {
-                    alert("Erreur d'accès au micro : " + err);
-                });
+                .catch(err => toast("Erreur d'accès au micro : " + err, 'err'));
         }
-
         function stopAudioRecord(statusId) {
             const statusEl = document.getElementById(statusId);
-            if (mediaRecorder && mediaRecorder.state !== "inactive") {
-                mediaRecorder.stop();
-                statusEl.style.display = 'none';
-            }
+            if (mediaRecorder && mediaRecorder.state !== "inactive") { mediaRecorder.stop(); statusEl.style.display = 'none'; }
         }
 
+        /* ----- Listes déroulantes (on garde la sélection en cours !) ----- */
         function populateSelects() {
-            let selectConsult = document.getElementById('consultPatientSelect');
-            let selectNote = document.getElementById('quickNotePatient');
-            let selectConsultAddr = document.getElementById('ownerAddress');
-            let selectPatAddr = document.getElementById('patAddress');
-            
-            if (selectConsult) {
-                selectConsult.innerHTML = '<option value="">-- Choisir dans mes fiches patients --</option>';
-                patientsData.forEach(p => {
-                    selectConsult.innerHTML += `<option value="${p.id}">${p.animalName} (${p.species}) - ${p.owner}</option>`;
-                });
-            }
-
+            const selectNote = document.getElementById('quickNotePatient');
             if (selectNote) {
-                selectNote.innerHTML = '<option value="">-- Note libre / Non assignée --</option>';
-                patientsData.forEach(p => {
-                    selectNote.innerHTML += `<option value="${p.id}">${p.animalName} (${p.owner})</option>`;
-                });
+                const cur = selectNote.value;
+                selectNote.innerHTML = '<option value="">-- Note libre / Non assignée --</option>' +
+                    [...patientsData].sort((a, b) => norm(a.animalName).localeCompare(norm(b.animalName)))
+                        .map(p => `<option value="${esc(p.id)}">${esc(p.animalName)} (${esc(p.owner)})</option>`).join('');
+                selectNote.value = cur;
             }
-
-            let allLocations = ['Clinique', ...locationsData.map(l => l.name)];
-            allLocations = [...new Set(allLocations)];
-
-            [selectConsultAddr, selectPatAddr].forEach(sel => {
-                if (sel) {
-                    let currentVal = sel.value;
-                    sel.innerHTML = '';
-                    allLocations.forEach(loc => {
-                        sel.innerHTML += `<option value="${loc}">${loc}</option>`;
-                    });
-                    sel.value = allLocations.includes(currentVal) ? currentVal : 'Clinique';
-                }
+            let allLocations = [...new Set(['Clinique', ...locationsData.map(l => l.name)])];
+            ['ownerAddress', 'patAddress'].forEach(id => {
+                const sel = document.getElementById(id);
+                if (!sel) return;
+                const cur = sel.value;
+                const opts = allLocations.includes(cur) || !cur ? allLocations : [...allLocations, cur];
+                sel.innerHTML = opts.map(loc => `<option value="${esc(loc)}">${esc(loc)}</option>`).join('');
+                sel.value = cur && opts.includes(cur) ? cur : 'Clinique';
             });
         }
-
-        function loadPatientIntoConsult() {
-            const patientId = document.getElementById('consultPatientSelect').value;
-            if (!patientId) return;
-            const pat = patientsData.find(p => p.id == patientId);
-            if (pat) {
-                document.getElementById('animalName').value = pat.animalName;
-                document.getElementById('animalSpecies').value = pat.species;
-                document.getElementById('ownerName').value = pat.owner;
-                document.getElementById('ownerPhone').value = pat.phone || '';
-                document.getElementById('ownerEmail').value = pat.email || '';
-                document.getElementById('ownerAddress').value = pat.address || 'Clinique';
-                updateSkeleton();
+        function ensureLocationOption(selectId, value) {
+            const sel = document.getElementById(selectId);
+            if (value && ![...sel.options].some(o => o.value === value)) {
+                const o = document.createElement('option'); o.value = value; o.textContent = value; sel.appendChild(o);
             }
         }
 
-        // Gestion des Lieux
+        /* ----- Enregistrement du CR ----- */
+        document.getElementById('consultForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const btn = document.getElementById('consultSubmitBtn');
+            if (btn.disabled) return;
+
+            const editId = document.getElementById('editConsultId').value;
+            let patientId = document.getElementById('consultPatientId').value;
+            const consultDateVal = document.getElementById('consultDateInput').value || todayISO();
+            const v = id => document.getElementById(id).value.trim();
+
+            const consultation = {
+                date: formatDate(consultDateVal),
+                consultDate: consultDateVal,
+                nextConsultDate: v('nextConsultDate'),
+                timestamp: new Date(consultDateVal).getTime(),
+                ownerName: v('ownerName') || 'Anonyme',
+                ownerPhone: v('ownerPhone'),
+                ownerEmail: v('ownerEmail'),
+                ownerAddress: v('ownerAddress') || 'Clinique',
+                animalName: v('animalName') || 'Patient sans nom',
+                animalSpecies: document.getElementById('animalSpecies').value,
+                sketchCombined: canvas.toDataURL('image/jpeg', 0.8),
+                photos: currentConsultPhotos,
+                audioBilan: currentRecordedAudioUrl['dynamicBilanAudio'] || null,
+                audioTests: currentRecordedAudioUrl['osteotestsAudio'] || null,
+                consultReason: v('consultReason'),
+                anamnesis: document.getElementById('anamnesis').value,
+                dynamicBilan: document.getElementById('dynamicBilan').value,
+                osteotests: document.getElementById('osteotests').value,
+                treatment: document.getElementById('treatment').value,
+                vetNotes: document.getElementById('vetNotes').value,
+                advice: document.getElementById('advice').value
+            };
+
+            const size = approxBytes(consultation);
+            if (size > FIRESTORE_MAX_BYTES * 0.97) {
+                toast(`❌ Compte rendu trop lourd (${(size / 1e6).toFixed(1)} Mo, max 1 Mo). Retirez une photo ou raccourcissez un mémo vocal.`, 'err', 8000);
+                return;
+            }
+
+            btn.disabled = true; btn.textContent = '⏳ Enregistrement…';
+            try {
+                // Nouveau patient -> création automatique de sa fiche
+                if (!patientId && document.getElementById('createPatientCheckbox').checked && v('animalName')) {
+                    const ref = await db.collection('patients').add({
+                        animalName: v('animalName'), species: speciesToPatient(consultation.animalSpecies), breedAge: '',
+                        owner: consultation.ownerName, phone: consultation.ownerPhone, email: consultation.ownerEmail,
+                        address: consultation.ownerAddress, history: '', isDifficult: false, ownerMandatory: false,
+                        documents: [], timestamp: Date.now()
+                    });
+                    patientId = ref.id;
+                }
+                consultation.patientId = patientId || '';
+
+                if (editId) await db.collection("consultations").doc(editId).set(consultation);
+                else await db.collection("consultations").add(consultation);
+
+                // Coordonnées modifiées pendant la séance -> on met à jour la fiche
+                const p = getPatient(patientId);
+                if (p) {
+                    const upd = {};
+                    if (consultation.ownerPhone && consultation.ownerPhone !== (p.phone || '')) upd.phone = consultation.ownerPhone;
+                    if (consultation.ownerEmail && consultation.ownerEmail !== (p.email || '')) upd.email = consultation.ownerEmail;
+                    if (consultation.ownerAddress && consultation.ownerAddress !== (p.address || 'Clinique')) upd.address = consultation.ownerAddress;
+                    if (Object.keys(upd).length) await db.collection('patients').doc(p.id).update(upd);
+                }
+
+                toast(editId ? '✅ Consultation mise à jour' : '✅ Compte rendu enregistré');
+                const goTo = patientId;
+                resetConsultForm();
+                if (goTo) openPatientDetail(goTo, { replace: true }); else showView('historyView');
+            } catch (err) {
+                fail(err, "Enregistrement impossible");
+            } finally {
+                btn.disabled = false; btn.textContent = '💾 Enregistrer le compte rendu';
+            }
+        });
+
+        function editConsultation(id) {
+            const c = consultationsData.find(item => item.id === id);
+            if (!c) return;
+            closeDossierModal(true);
+            resetConsultForm();
+            showView('consultView');
+            document.getElementById('consultFormTitle').innerText = "✏️ Modifier la Consultation";
+            document.getElementById('editConsultId').value = c.id;
+
+            const p = findPatientForConsult(c);
+            if (p) selectPatientForConsult(p.id, { prefill: false });
+
+            // Les valeurs de la séance priment sur la fiche
+            document.getElementById('consultDateInput').value = c.consultDate || todayISO();
+            document.getElementById('nextConsultDate').value = c.nextConsultDate || '';
+            document.getElementById('ownerName').value = c.ownerName || '';
+            document.getElementById('ownerPhone').value = c.ownerPhone || '';
+            document.getElementById('ownerEmail').value = c.ownerEmail || '';
+            ensureLocationOption('ownerAddress', c.ownerAddress || 'Clinique');
+            document.getElementById('ownerAddress').value = c.ownerAddress || 'Clinique';
+            document.getElementById('animalName').value = c.animalName || '';
+            document.getElementById('animalSpecies').value = c.animalSpecies || 'Cheval';
+            ['consultReason', 'anamnesis', 'dynamicBilan', 'osteotests', 'treatment', 'vetNotes', 'advice']
+                .forEach(f => document.getElementById(f).value = c[f] || '');
+            if (!p) document.getElementById('createPatientCheckbox').checked = false;
+
+            currentConsultPhotos = [...(c.photos || [])];
+            renderConsultPhotosPreview();
+            currentRecordedAudioUrl = {};
+            [['audioBilan', 'dynamicBilanAudio'], ['audioTests', 'osteotestsAudio']].forEach(([field, key]) => {
+                const cont = document.getElementById(key + 'Container');
+                if (c[field]) { currentRecordedAudioUrl[key] = c[field]; cont.innerHTML = `<audio controls src="${c[field]}" style="width:100%; margin-top:5px;"></audio>`; }
+                else cont.innerHTML = '';
+            });
+            renderSelectedPatientBanner();
+            initCanvas(c.sketchCombined);
+        }
+
+        function deleteConsultation(id) {
+            if (confirm("Supprimer ce compte rendu ?")) {
+                db.collection("consultations").doc(id).delete().then(() => toast('🗑️ Compte rendu supprimé')).catch(err => fail(err, 'Suppression'));
+            }
+        }
+
+        /* ================= LIEUX ================= */
         function saveLocation(e) {
             e.preventDefault();
             const editId = document.getElementById('editLocationId').value;
             const name = document.getElementById('locName').value.trim();
-            const manager = document.getElementById('locManager').value.trim();
-            const phone = document.getElementById('locPhone').value.trim();
-            const details = document.getElementById('locDetails').value.trim();
-
             if (!name) return;
-
-            const locData = { name, manager, phone, details, timestamp: Date.now() };
-
-            if (editId) {
-                db.collection("locations").doc(editId).update(locData).then(() => {
-                    resetLocationForm();
-                    alert("Lieu mis à jour !");
-                });
-            } else {
-                db.collection("locations").add(locData).then(() => {
-                    resetLocationForm();
-                    alert("Lieu ajouté !");
-                });
-            }
+            const locData = {
+                name,
+                manager: document.getElementById('locManager').value.trim(),
+                phone: document.getElementById('locPhone').value.trim(),
+                details: document.getElementById('locDetails').value.trim(),
+                timestamp: Date.now()
+            };
+            const op = editId ? db.collection("locations").doc(editId).update(locData) : db.collection("locations").add(locData);
+            op.then(() => { resetLocationForm(); toast(editId ? '✅ Lieu mis à jour' : '✅ Lieu ajouté'); }).catch(err => fail(err, 'Enregistrement du lieu'));
         }
-
         function resetLocationForm() {
             document.getElementById('locationForm').reset();
             document.getElementById('editLocationId').value = "";
-            document.getElementById('locationFormTitle').innerText = "📍 Gestion des Lieux & Écuries";
+            document.getElementById('locationFormTitle').innerText = "➕ Ajouter un lieu";
             document.getElementById('locSubmitBtn').innerText = "➕ Enregistrer le Lieu";
             document.getElementById('locCancelBtn').style.display = "none";
         }
-
         function editLocation(id) {
             const l = locationsData.find(item => item.id === id);
             if (!l) return;
@@ -1411,337 +1814,324 @@
             document.getElementById('locationFormTitle').innerText = "✏️ Modifier le Lieu";
             document.getElementById('locSubmitBtn').innerText = "💾 Mettre à jour le Lieu";
             document.getElementById('locCancelBtn').style.display = "block";
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('locationForm').scrollIntoView({ behavior: 'smooth' });
         }
-
         function deleteLocation(id) {
-            if (confirm("Supprimer ce lieu ?")) {
-                db.collection("locations").doc(id).delete();
-            }
+            if (confirm("Supprimer ce lieu ?")) db.collection("locations").doc(id).delete().catch(err => fail(err, 'Suppression'));
         }
-
         function loadLocations() {
             const container = document.getElementById('locationsListContainer');
             if (!container) return;
-
-            let allLocs = [{ id: 'clinique-def', name: 'Clinique', manager: 'Cabinet principal', phone: '', details: 'Lieu par défaut' }, ...locationsData];
-
-            container.innerHTML = '';
-            allLocs.forEach(l => {
-                let count = patientsData.filter(p => (p.address || 'Clinique') === l.name).length;
-                let isClinique = l.id === 'clinique-def';
-
-                container.innerHTML += `
-                    <div class="list-item" style="flex-direction:column; align-items:flex-start;">
-                        <div style="display:flex; justify-content:space-between; width:100%; align-items:flex-start;">
-                            <div class="list-info">
-                                <h4 onclick="openLocationDetail('${l.name}')" style="cursor:pointer; color:var(--primary); font-size:1rem;">📍 ${l.name} 🔍</h4>
-                                <p>Gérant : ${l.manager || 'N/C'} • Tél : ${l.phone || 'N/C'}</p>
-                                ${l.details ? `<p style="font-size:0.75rem; margin-top:2px;">📌 ${l.details}</p>` : ''}
-                                <div style="margin-top:6px;">
-                                    <span style="background:var(--primary-light); color:var(--primary); font-size:0.75rem; padding:3px 8px; border-radius:12px; font-weight:600;">🐴 ${count} animal / chevaux suivis</span>
-                                </div>
-                            </div>
-                            <div class="actions-group">
-                                <button class="secondary" onclick="openLocationDetail('${l.name}')">👁️ Fiche</button>
-                                ${!isClinique ? `
-                                    <button class="secondary" style="background:#4A5568;" onclick="editLocation('${l.id}')">✏️</button>
-                                    <button class="danger" onclick="deleteLocation('${l.id}')">🗑️</button>
-                                ` : ''}
-                            </div>
-                        </div>
+            const allLocs = [{ id: 'clinique-def', name: 'Clinique', manager: 'Cabinet principal', phone: '', details: 'Lieu par défaut' }, ...locationsData];
+            container.innerHTML = allLocs.map(l => {
+                const count = patientsData.filter(p => (p.address || 'Clinique') === l.name).length;
+                const isClinique = l.id === 'clinique-def';
+                return `<div class="pat-card" onclick="openLocationDetail(${arg(l.name)})">
+                    <div style="flex:1;">
+                        <h4>📍 ${esc(l.name)}</h4>
+                        <p>${esc(l.manager || 'Contact N/C')}${l.phone ? ' · ' + esc(l.phone) : ''}</p>
+                        <span class="badge soft">🐾 ${count} animal${count > 1 ? 'ux' : ''} suivi${count > 1 ? 's' : ''}</span>
                     </div>
-                `;
-            });
+                    ${!isClinique ? `<div class="actions-group" onclick="event.stopPropagation()">
+                        <button class="btn-dark" onclick="editLocation(${arg(l.id)})">✏️</button>
+                        <button class="danger" onclick="deleteLocation(${arg(l.id)})">🗑️</button>
+                    </div>` : '<span class="go">›</span>'}
+                </div>`;
+            }).join('');
         }
-
-        function openLocationDetail(locName) {
+        function openLocationDetail(locName, opts = {}) {
             currentActiveLocationName = locName;
-            const l = locationsData.find(item => item.name === locName) || { name: locName, manager: 'Cabinet principal / Non renseigné', phone: 'N/C', details: 'Lieu par défaut' };
-            
-            document.getElementById('detailLocationName').innerText = `📍 Fiche Lieu : ${l.name}`;
+            const l = locationsData.find(item => item.name === locName) || { name: locName, manager: 'Cabinet principal / Non renseigné', phone: '', details: 'Lieu par défaut' };
+            document.getElementById('detailLocationName').innerText = `📍 ${l.name}`;
             document.getElementById('locationInfoSummary').innerHTML = `
-                <strong>Gérant / Contact :</strong> ${l.manager || 'N/C'} • <strong>Tél :</strong> ${l.phone || 'N/C'}<br>
-                ${l.details ? `<strong>Infos d'accès :</strong> ${l.details}` : ''}
-            `;
-
-            const container = document.getElementById('locationPatientsContainer');
+                <strong>Contact :</strong> ${esc(l.manager || 'N/C')}${l.phone ? ` · <a href="tel:${esc(l.phone)}">${esc(l.phone)}</a>` : ''}<br>
+                ${l.details ? `<strong>Infos d'accès :</strong> ${nl2br(l.details)}` : ''}`;
             const locPatients = patientsData.filter(p => (p.address || 'Clinique') === locName);
-
-            if (locPatients.length === 0) {
-                container.innerHTML = '<p style="font-size: 0.85rem; color: var(--gray);">Aucun patient enregistré dans ce lieu pour l\'instant.</p>';
-            } else {
-                container.innerHTML = '';
-                locPatients.forEach(p => {
-                    container.innerHTML += `
-                        <div class="list-item">
-                            <div class="list-info">
-                                <h4 onclick="openPatientDetail('${p.id}')">📂 ${p.animalName} (${p.species}) - ${p.breedAge || ''}</h4>
-                                <p>Propriétaire : ${p.owner} • Tél : ${p.phone || 'N/C'}</p>
-                            </div>
-                            <button class="secondary" onclick="startConsultForPatient('${p.id}')">📝 Consulter</button>
-                        </div>
-                    `;
-                });
-            }
-            showView('locationDetailView');
+            document.getElementById('locationPatientsContainer').innerHTML = locPatients.length
+                ? locPatients.map(patientCardHtml).join('')
+                : '<p class="muted">Aucun patient enregistré dans ce lieu pour l\'instant.</p>';
+            showView('locationDetailView', opts);
         }
-
-        function quickAddLocationFromPatient() {
+        function quickAddLocation(selectId) {
             let newLoc = prompt("Nom de la nouvelle écurie / lieu :");
-            if (newLoc && newLoc.trim() !== '') {
-                newLoc = newLoc.trim();
-                db.collection("locations").add({ name: newLoc, manager: '', phone: '', details: '', timestamp: Date.now() }).then(() => {
-                    setTimeout(() => {
-                        populateSelects();
-                        document.getElementById('patAddress').value = newLoc;
-                    }, 500);
-                });
+            if (!newLoc || !newLoc.trim()) return;
+            newLoc = newLoc.trim();
+            ensureLocationOption(selectId, newLoc);
+            document.getElementById(selectId).value = newLoc;
+            if (!locationsData.some(l => l.name === newLoc)) {
+                db.collection("locations").add({ name: newLoc, manager: '', phone: '', details: '', timestamp: Date.now() })
+                    .then(() => toast('✅ Lieu ajouté')).catch(err => fail(err, 'Ajout du lieu'));
             }
         }
 
-        document.getElementById('patientForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const editId = document.getElementById('editPatientId').value;
-
-            const patient = {
-                animalName: document.getElementById('patAnimalName').value,
-                species: document.getElementById('patSpecies').value,
-                breedAge: document.getElementById('patBreedAge').value,
-                owner: document.getElementById('patOwner').value,
-                phone: document.getElementById('patPhone').value,
-                email: document.getElementById('patEmail').value,
-                address: document.getElementById('patAddress').value || 'Clinique',
-                history: document.getElementById('patHistory').value,
-                isDifficult: document.getElementById('patIsDifficult').checked,
-                ownerMandatory: document.getElementById('patOwnerMandatory').checked,
-                documents: editId ? (patientsData.find(p => p.id === editId)?.documents || []) : [],
-                timestamp: Date.now()
-            };
-
-            if (editId) {
-                db.collection("patients").doc(editId).update(patient).then(() => {
-                    resetPatientForm();
-                    alert('Fiche patient mise à jour !');
-                });
-            } else {
-                db.collection("patients").add(patient).then(() => {
-                    resetPatientForm();
-                    alert('Patient enregistré !');
-                });
-            }
-        });
-
-        function resetPatientForm() {
-            document.getElementById('patientForm').reset();
-            document.getElementById('editPatientId').value = "";
-            document.getElementById('patientFormTitle').innerText = "🐾 Gestion des Fiches Patients";
-            document.getElementById('patientSubmitBtn').innerText = "➕ Enregistrer le Patient";
-            document.getElementById('patientCancelBtn').style.display = "none";
-        }
-
-        function editPatient(id) {
-            const p = patientsData.find(item => item.id === id);
-            if (!p) return;
-
-            document.getElementById('editPatientId').value = p.id;
-            document.getElementById('patAnimalName').value = p.animalName;
-            document.getElementById('patSpecies').value = p.species;
-            document.getElementById('patBreedAge').value = p.breedAge || '';
-            document.getElementById('patOwner').value = p.owner;
-            document.getElementById('patPhone').value = p.phone || '';
-            document.getElementById('patEmail').value = p.email || '';
-            document.getElementById('patAddress').value = p.address || 'Clinique';
-            document.getElementById('patHistory').value = p.history || '';
-            document.getElementById('patIsDifficult').checked = p.isDifficult || false;
-            document.getElementById('patOwnerMandatory').checked = p.ownerMandatory || false;
-
-            document.getElementById('patientFormTitle').innerText = "✏️ Modifier la Fiche Patient";
-            document.getElementById('patientSubmitBtn').innerText = "💾 Mettre à jour le Patient";
-            document.getElementById('patientCancelBtn').style.display = "block";
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function openPatientDetail(id) {
-            currentActivePatientId = id;
-            const p = patientsData.find(item => item.id === id);
-            if (!p) return;
-
-            document.getElementById('detailPatientName').innerText = `🐾 Dossier : ${p.animalName} (${p.species})`;
-            document.getElementById('patientInfoSummary').innerHTML = `
-                <strong>Propriétaire :</strong> ${p.owner} • <strong>Tél :</strong> ${p.phone || 'N/C'}<br>
-                <strong>Écurie / Lieu :</strong> ${p.address || 'Clinique'} • <strong>Race/Âge :</strong> ${p.breedAge || 'N/C'}<br>
-                ${p.history ? `<strong>Spécificités :</strong> ${p.history}` : ''}
-            `;
-            renderPatientDocs(p);
-            showView('patientDetailView');
-        }
-
-        function uploadPatientDocument(e) {
-            e.preventDefault();
-            const fileInput = document.getElementById('docFileInput');
-            const category = document.getElementById('docCategory').value;
-            const title = document.getElementById('docTitle').value.trim() || 'Document sans titre';
-
-            if (fileInput.files && fileInput.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(evt) {
-                    const newDoc = {
-                        id: Date.now().toString(),
-                        category,
-                        title,
-                        dataUrl: evt.target.result,
-                        date: new Date().toLocaleDateString('fr-FR')
-                    };
-
-                    const pat = patientsData.find(p => p.id === currentActivePatientId);
-                    if (pat) {
-                        let docs = pat.documents || [];
-                        docs.push(newDoc);
-                        db.collection("patients").doc(currentActivePatientId).update({ documents: docs }).then(() => {
-                            document.getElementById('patientDocForm').reset();
-                            alert("Document ajouté au dossier !");
-                            openPatientDetail(currentActivePatientId);
-                        });
-                    }
-                };
-                reader.readAsDataURL(fileInput.files[0]);
-            }
-        }
-
-        function renderPatientDocs(patient) {
-            const container = document.getElementById('patientDocsContainer');
-            let docs = patient.documents || [];
-
-            if (docs.length === 0) {
-                container.innerHTML = '<p style="font-size: 0.85rem; color: var(--gray);">Aucun document classé pour ce patient.</p>';
-                return;
-            }
-
-            container.innerHTML = '';
-            docs.forEach(d => {
-                container.innerHTML += `
-                    <div class="list-item">
-                        <div style="display:flex; gap:12px; align-items:center;">
-                            <img src="${d.dataUrl}" class="doc-thumbnail" onclick="window.open('${d.dataUrl}')" title="Agrandir">
-                            <div class="list-info">
-                                <h4>📂 ${d.title}</h4>
-                                <p>Catégorie : <strong>${d.category}</strong> • ${d.date}</p>
-                            </div>
-                        </div>
-                        <button class="danger" onclick="deletePatientDoc('${d.id}')">🗑️</button>
-                    </div>
-                `;
-            });
-        }
-
-        function deletePatientDoc(docId) {
-            if (confirm("Supprimer ce document ?")) {
-                const pat = patientsData.find(p => p.id === currentActivePatientId);
-                if (pat) {
-                    let docs = (pat.documents || []).filter(d => d.id !== docId);
-                    db.collection("patients").doc(currentActivePatientId).update({ documents: docs }).then(() => {
-                        openPatientDetail(currentActivePatientId);
-                    });
-                }
-            }
+        /* ================= PATIENTS ================= */
+        function patientCardHtml(p) {
+            const consults = getPatientConsults(p);
+            const last = consults[0];
+            const next = last && last.nextConsultDate ? daysFromToday(last.nextConsultDate) : null;
+            let nextBadge = '';
+            if (next !== null && next < 0) nextBadge = `<span class="badge late">RDV dépassé</span>`;
+            else if (next !== null && next <= 30) nextBadge = `<span class="badge soft">RDV ${esc(formatDate(last.nextConsultDate))}</span>`;
+            return `<div class="pat-card ${p.isDifficult ? 'is-difficult' : ''}" onclick="openPatientDetail(${arg(p.id)})">
+                <div style="flex:1; min-width:0;">
+                    <h4>${esc(p.animalName)} <span style="font-weight:400; font-size:0.8rem; color:var(--gray);">${esc(p.species)}${p.breedAge ? ' · ' + esc(p.breedAge) : ''}</span></h4>
+                    <p>${esc(p.owner)} · ${last ? 'dernière séance ' + esc(formatDate(last.consultDate || last.date)) : 'aucune séance'}</p>
+                    <div>${p.isDifficult ? '<span class="badge danger">⚠️ Difficile</span>' : ''}${p.ownerMandatory ? '<span class="badge accent">👤 Proprio</span>' : ''}${nextBadge}</div>
+                </div>
+                <button class="secondary" onclick="event.stopPropagation(); startConsultForPatient(${arg(p.id)})">📝 Séance</button>
+            </div>`;
         }
 
         function loadPatients() {
             const container = document.getElementById('patientsListContainer');
-            const searchInput = document.getElementById('searchPatients');
             if (!container) return;
-
-            let query = searchInput ? searchInput.value.toLowerCase().trim() : '';
-
-            let filtered = patientsData.filter(p => 
-                (p.animalName || '').toLowerCase().includes(query) ||
-                (p.owner || '').toLowerCase().includes(query) ||
-                (p.species || '').toLowerCase().includes(query) ||
-                (p.address && p.address.toLowerCase().includes(query))
-            );
-
-            if (filtered.length === 0) {
-                container.innerHTML = '<p style="font-size: 0.9rem; color: var(--gray); text-align: center;">Aucun patient trouvé.</p>';
+            const q = document.getElementById('searchPatients').value;
+            const filtered = searchPatients(q);
+            if (!filtered.length) {
+                container.innerHTML = `<p class="muted" style="text-align:center;">${patientsData.length ? 'Aucun patient trouvé.' : 'Aucun patient pour l\'instant. Ajoutez-en un, ou faites directement une consultation : la fiche se crée toute seule.'}</p>`;
                 return;
             }
-
-            let grouped = {};
-            filtered.forEach(p => {
-                let loc = p.address ? p.address : 'Clinique';
-                if (!grouped[loc]) grouped[loc] = [];
-                grouped[loc].push(p);
-            });
-
-            container.innerHTML = '';
-            for (let location in grouped) {
-                let htmlList = '';
-                grouped[location].forEach(p => {
-                    let patConsults = consultationsData.filter(c => (c.animalName || '').toLowerCase() === (p.animalName || '').toLowerCase() && (c.ownerName || '').toLowerCase() === (p.owner || '').toLowerCase());
-                    
-                    let historyHtml = patConsults.length > 0 ? patConsults.map(c => `
-                        <div style="background:#FFF; padding:8px; border-radius:6px; margin-top:5px; display:flex; justify-content:space-between; align-items:center; border:1px solid #DDD;">
-                            <span style="font-size:0.8rem;">📅 ${formatDate(c.consultDate || c.date)} - Prochain : ${formatDate(c.nextConsultDate) || 'Non planifié'}</span>
-                            <div style="display:flex; gap:4px;">
-                                <button class="secondary" style="padding:4px 8px; font-size:0.75rem; width:auto;" onclick="generateReport('${c.id}')">📄 Rapport</button>
-                                <button class="secondary" style="padding:4px 8px; font-size:0.75rem; width:auto; background:#4A5568;" onclick="editConsultation('${c.id}')">✏️</button>
-                            </div>
-                        </div>
-                    `).join('') : '<p style="font-size:0.8rem; color:var(--gray); margin-top:5px;">Aucune consultation enregistrée.</p>';
-
-                    let difficultClass = p.isDifficult ? 'is-difficult' : '';
-                    let alertsHtml = '';
-                    if (p.isDifficult) alertsHtml += `<span style="background:var(--danger); color:white; font-size:0.7rem; padding:2px 6px; border-radius:4px; margin-right:5px;">⚠️ Animal difficile</span>`;
-                    if (p.ownerMandatory) alertsHtml += `<span style="background:var(--accent); color:white; font-size:0.7rem; padding:2px 6px; border-radius:4px;">👤 Proprio impératif</span>`;
-
-                    htmlList += `
-                        <div class="list-item ${difficultClass}" style="flex-direction:column; align-items:flex-start;">
-                            <div style="display:flex; justify-content:space-between; width:100%; align-items:flex-start;">
-                                <div class="list-info">
-                                    <h4 onclick="openPatientDetail('${p.id}')">📂 ${p.animalName} (${p.species}) - ${p.breedAge || ''}</h4>
-                                    <p>Propriétaire : ${p.owner} • Tél : ${p.phone || 'N/C'}</p>
-                                    ${p.history ? `<p style="font-size:0.75rem; margin-top:4px;">📝 <em>${p.history}</em></p>` : ''}
-                                    <div style="margin-top:6px;">${alertsHtml}</div>
-                                </div>
-                                <div class="actions-group">
-                                    <button class="secondary" onclick="startConsultForPatient('${p.id}')">📝 Consulter</button>
-                                    <button class="secondary" style="background:#4A5568;" onclick="editPatient('${p.id}')">✏️</button>
-                                    <button class="danger" onclick="deletePatient('${p.id}')">🗑️</button>
-                                </div>
-                            </div>
-                            <div style="width:100%; margin-top:10px; border-top:1px dashed #BBB; padding-top:8px;">
-                                <strong style="font-size:0.85rem; color:var(--primary);">Historique des séances :</strong>
-                                ${historyHtml}
-                            </div>
-                        </div>
-                    `;
-                });
-
-                container.innerHTML += `
-                    <div class="location-section">
-                        <div class="location-title" style="margin: 10px 0 5px 0; font-weight: bold; color: var(--primary);">
-                            <span>📍 ${location}</span>
-                        </div>
-                        ${htmlList}
-                    </div>
-                `;
-            }
+            const grouped = {};
+            filtered.forEach(p => { const loc = p.address || 'Clinique'; (grouped[loc] = grouped[loc] || []).push(p); });
+            container.innerHTML = Object.keys(grouped).sort((a, b) => a.localeCompare(b)).map(loc =>
+                `<div class="loc-title">📍 ${esc(loc)} <span class="muted">(${grouped[loc].length})</span></div>` + grouped[loc].map(patientCardHtml).join('')
+            ).join('');
         }
+
+        function openPatientForm(id = null) {
+            document.getElementById('patientForm').reset();
+            document.getElementById('editPatientId').value = id || '';
+            populateSelects();
+            if (id) {
+                const p = getPatient(id);
+                if (!p) return;
+                document.getElementById('patAnimalName').value = p.animalName || '';
+                document.getElementById('patSpecies').value = speciesToPatient(p.species);
+                document.getElementById('patBreedAge').value = p.breedAge || '';
+                document.getElementById('patOwner').value = p.owner || '';
+                document.getElementById('patPhone').value = p.phone || '';
+                document.getElementById('patEmail').value = p.email || '';
+                ensureLocationOption('patAddress', p.address || 'Clinique');
+                document.getElementById('patAddress').value = p.address || 'Clinique';
+                document.getElementById('patHistory').value = p.history || '';
+                document.getElementById('patIsDifficult').checked = !!p.isDifficult;
+                document.getElementById('patOwnerMandatory').checked = !!p.ownerMandatory;
+                document.getElementById('patientFormTitle').innerText = `✏️ Modifier : ${p.animalName}`;
+            } else {
+                document.getElementById('patientFormTitle').innerText = "🐾 Nouveau patient";
+                const q = document.getElementById('searchPatients').value.trim();
+                if (q) document.getElementById('patAnimalName').value = q;
+            }
+            showView('patientFormView');
+            if (!id) document.getElementById('patAnimalName').focus();
+        }
+        function editPatient(id) { openPatientForm(id); }
+
+        document.getElementById('patientForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const editId = document.getElementById('editPatientId').value;
+            const patient = {
+                animalName: document.getElementById('patAnimalName').value.trim(),
+                species: document.getElementById('patSpecies').value,
+                breedAge: document.getElementById('patBreedAge').value.trim(),
+                owner: document.getElementById('patOwner').value.trim(),
+                phone: document.getElementById('patPhone').value.trim(),
+                email: document.getElementById('patEmail').value.trim(),
+                address: document.getElementById('patAddress').value || 'Clinique',
+                history: document.getElementById('patHistory').value,
+                isDifficult: document.getElementById('patIsDifficult').checked,
+                ownerMandatory: document.getElementById('patOwnerMandatory').checked,
+                timestamp: Date.now()
+            };
+            try {
+                let id = editId;
+                if (editId) {
+                    const old = getPatient(editId);
+                    await db.collection("patients").doc(editId).update(patient);
+                    // Nom ou propriétaire changé : on rattache les anciennes séances pour ne pas les perdre
+                    if (old && (norm(old.animalName) !== norm(patient.animalName) || norm(old.owner) !== norm(patient.owner))) {
+                        const orphans = getPatientConsults(old).filter(c => !c.patientId);
+                        await Promise.all(orphans.map(c => db.collection('consultations').doc(c.id).update({ patientId: editId })));
+                    }
+                } else {
+                    patient.documents = [];
+                    const ref = await db.collection("patients").add(patient);
+                    id = ref.id;
+                }
+                toast(editId ? '✅ Fiche mise à jour' : '✅ Patient enregistré');
+                openPatientDetail(id, { replace: true });
+            } catch (err) { fail(err, 'Enregistrement du patient'); }
+        });
 
         function deletePatient(id) {
-            if (confirm("Supprimer ce patient ?")) {
-                db.collection("patients").doc(id).delete();
+            const p = getPatient(id);
+            if (!p) return;
+            const n = getPatientConsults(p).length;
+            if (confirm(`Supprimer la fiche de ${p.animalName} ?${n ? `\n(Ses ${n} compte(s) rendu(s) resteront dans l'historique.)` : ''}`)) {
+                db.collection("patients").doc(id).delete().then(() => { toast('🗑️ Fiche supprimée'); showView('patientsView'); }).catch(err => fail(err, 'Suppression'));
             }
         }
 
-        function startConsultForPatient(id) {
-            startNewConsult();
-            document.getElementById('consultPatientSelect').value = id;
-            loadPatientIntoConsult();
+        /* ----- Dossier patient (fiche complète, réutilisé dans la pop-up) ----- */
+        const CR_FIELDS = [
+            ['anamnesis', 'Anamnèse'], ['dynamicBilan', 'Bilan statique / dynamique'], ['osteotests', 'Tests & restrictions'],
+            ['treatment', 'Traitement'], ['vetNotes', 'Notes confrères'], ['advice', 'Conseils post-séance']
+        ];
+
+        function dossierHtml(p, opts = {}) {
+            const consults = getPatientConsults(p);
+            const notes = quickNotesData.filter(n => n.patientId === p.id);
+            const docs = p.documents || [];
+            const inModal = !!opts.inModal;
+
+            const consultsHtml = consults.length ? consults.map((c, i) => `
+                <details class="consult-item" ${i === 0 && inModal ? 'open' : ''}>
+                    <summary>
+                        <span><strong>📅 ${esc(formatDate(c.consultDate || c.date))}</strong>${c.consultReason ? ' — ' + esc(c.consultReason) : ''}</span>
+                        <span class="muted" style="white-space:nowrap;">${c.nextConsultDate ? 'Proch. ' + esc(formatDate(c.nextConsultDate)) : ''}</span>
+                    </summary>
+                    <div class="consult-body">
+                        ${CR_FIELDS.filter(([f]) => c[f] && c[f].trim()).map(([f, label]) => `<div class="f"><b>${label}</b>${nl2br(c[f])}</div>`).join('') || '<p class="muted">Pas de texte saisi.</p>'}
+                        ${c.sketchCombined ? `<img class="sk" src="${c.sketchCombined}" alt="Schéma">` : ''}
+                        ${(c.photos || []).length ? `<div style="display:flex; gap:6px; flex-wrap:wrap;">${c.photos.map((ph, k) => `<img src="${ph}" class="doc-thumbnail" style="cursor:pointer" onclick="openConsultPhoto(${arg(c.id)}, ${k})">`).join('')}</div>` : ''}
+                        ${c.audioBilan ? `<audio controls src="${c.audioBilan}" style="width:100%; margin-top:6px;"></audio>` : ''}
+                        ${c.audioTests ? `<audio controls src="${c.audioTests}" style="width:100%; margin-top:6px;"></audio>` : ''}
+                        <div class="acts">
+                            <button class="secondary" onclick="generateReport(${arg(c.id)})">📄 Rapport</button>
+                            ${inModal ? '' : `<button class="btn-dark" onclick="editConsultation(${arg(c.id)})">✏️ Modifier</button>
+                            <button class="danger" onclick="deleteConsultation(${arg(c.id)})">🗑️</button>`}
+                        </div>
+                    </div>
+                </details>`).join('') : '<p class="muted">Aucune séance pour l\'instant.</p>';
+
+            const notesHtml = notes.length ? notes.map(n => `
+                <div style="margin-bottom:8px;"><span style="font-size:0.85rem;"><strong>${esc(n.title || 'Mémo vocal')}</strong> · <span class="muted">${esc(n.date)}</span></span>
+                ${n.audioData ? `<audio controls src="${n.audioData}" style="width:100%; margin-top:4px;"></audio>` : ''}</div>`).join('') : '';
+
+            const docsHtml = docs.length ? docs.map(d => {
+                const isImg = (d.dataUrl || '').startsWith('data:image');
+                const thumb = isImg
+                    ? `<img src="${d.dataUrl}" class="doc-thumbnail" style="cursor:pointer" onclick="openPatientDoc(${arg(p.id)}, ${arg(d.id)})">`
+                    : `<div class="doc-pdf" onclick="openPatientDoc(${arg(p.id)}, ${arg(d.id)})">📄</div>`;
+                return `<div class="list-item">
+                    <div style="display:flex; gap:12px; align-items:center;">${thumb}
+                        <div class="list-info"><h4 onclick="openPatientDoc(${arg(p.id)}, ${arg(d.id)})">${esc(d.title)}</h4><p>${esc(d.category)} · ${esc(d.date)}</p></div>
+                    </div>
+                    ${inModal ? '' : `<button class="danger" style="width:auto; padding:6px 10px;" onclick="deletePatientDoc(${arg(d.id)})">🗑️</button>`}
+                </div>`;
+            }).join('') : '<p class="muted">Aucun document.</p>';
+
+            return `
+                <h2 class="section-title" style="margin-bottom:8px;">🐾 ${esc(p.animalName)} <span style="font-weight:400; font-size:0.9rem;">(${esc(p.species)})</span></h2>
+                ${alertsHtml(p)}
+                <div class="dossier-info" style="margin-top:10px;">
+                    <div><strong>Propriétaire</strong><br>${esc(p.owner || 'N/C')}</div>
+                    <div><strong>Race / Âge</strong><br>${esc(p.breedAge || 'N/C')}</div>
+                    <div><strong>Téléphone</strong><br>${p.phone ? `<a href="tel:${esc(p.phone)}">${esc(p.phone)}</a>` : 'N/C'}</div>
+                    <div><strong>E-mail</strong><br>${p.email ? `<a href="mailto:${esc(p.email)}">${esc(p.email)}</a>` : 'N/C'}</div>
+                    <div class="full"><strong>Lieu / Écurie</strong> : ${esc(p.address || 'Clinique')}</div>
+                    ${p.history ? `<div class="full"><strong>Spécificités & comportement</strong><br>${nl2br(p.history)}</div>` : ''}
+                </div>
+                ${inModal ? '' : `<div class="dossier-actions">
+                    <button class="secondary" onclick="startConsultForPatient(${arg(p.id)})">📝 Nouvelle séance</button>
+                    <button class="btn-dark" onclick="openPatientForm(${arg(p.id)})">✏️ Modifier</button>
+                    <button class="danger" style="flex:0; min-width:auto;" onclick="deletePatient(${arg(p.id)})">🗑️</button>
+                </div>`}
+                <h3 class="sub-title">📋 Séances (${consults.length})</h3>
+                ${consultsHtml}
+                ${notesHtml ? `<h3 class="sub-title">🎙️ Mémos vocaux</h3>${notesHtml}` : ''}
+                <h3 class="sub-title">📁 Documents & imagerie (${docs.length})</h3>
+                ${docsHtml}`;
         }
 
-        // Soumission Note Vocale / Rapide
-        document.getElementById('quickNoteForm').addEventListener('submit', function(e) {
+        function renderPatientDetail(id) {
+            const p = getPatient(id);
+            if (!p) return false;
+            // On garde ouvertes les séances déjà dépliées
+            const box = document.getElementById('patientDossier');
+            const openIdx = [...box.querySelectorAll('details.consult-item')].map((d, i) => d.open ? i : -1).filter(i => i >= 0);
+            box.innerHTML = dossierHtml(p);
+            box.querySelectorAll('details.consult-item').forEach((d, i) => { if (openIdx.includes(i)) d.open = true; });
+            return true;
+        }
+        function openPatientDetail(id, opts = {}) {
+            if (currentActivePatientId !== id) document.getElementById('patientDossier').innerHTML = '';
+            currentActivePatientId = id;
+            if (!renderPatientDetail(id)) {
+                // La fiche vient d'être créée, Firestore n'a pas encore renvoyé la donnée
+                setTimeout(() => renderPatientDetail(id), 400);
+            }
+            if (opts.replace) {
+                showView('patientDetailView', { push: false });
+                history.replaceState({ view: 'patientDetailView', patientId: id }, '');
+            } else {
+                showView('patientDetailView', opts);
+            }
+        }
+
+        function openDossierModal(id) {
+            const p = getPatient(id);
+            if (!p) return;
+            document.getElementById('dossierModalContent').innerHTML = dossierHtml(p, { inModal: true });
+            document.getElementById('dossierModal').classList.add('open');
+            document.body.style.overflow = 'hidden';
+            history.pushState({ view: 'consultView', modal: true }, '');
+        }
+        function closeDossierModal(fromPop) {
+            const m = document.getElementById('dossierModal');
+            if (!m.classList.contains('open')) return;
+            m.classList.remove('open');
+            document.body.style.overflow = '';
+            if (!fromPop) { ignoreNextPop = true; history.back(); }
+        }
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDossierModal(); });
+
+        function openPatientDoc(pid, docId) {
+            const p = getPatient(pid);
+            const d = p && (p.documents || []).find(x => x.id === docId);
+            if (d) openDataUrl(d.dataUrl);
+        }
+        function openConsultPhoto(cid, k) {
+            const c = consultationsData.find(x => x.id === cid);
+            if (c && c.photos && c.photos[k]) openDataUrl(c.photos[k]);
+        }
+
+        async function uploadPatientDocument(e) {
+            e.preventDefault();
+            const fileInput = document.getElementById('docFileInput');
+            const file = fileInput.files && fileInput.files[0];
+            const pat = getPatient(currentActivePatientId);
+            if (!file || !pat) return;
+            try {
+                const dataUrl = file.type.startsWith('image/') ? await compressImage(file, 1600, 0.75) : await readAsDataURL(file);
+                const newDoc = {
+                    id: Date.now().toString(),
+                    category: document.getElementById('docCategory').value,
+                    title: document.getElementById('docTitle').value.trim() || file.name || 'Document sans titre',
+                    dataUrl,
+                    date: new Date().toLocaleDateString('fr-FR')
+                };
+                const docs = [...(pat.documents || []), newDoc];
+                const size = approxBytes({ ...pat, documents: docs });
+                if (size > FIRESTORE_MAX_BYTES * 0.97) {
+                    toast(`❌ Document trop lourd : la fiche ferait ${(size / 1e6).toFixed(1)} Mo (max 1 Mo). Pour un PDF, compressez-le ou prenez-le en photo.`, 'err', 8000);
+                    return;
+                }
+                await db.collection("patients").doc(pat.id).update({ documents: docs });
+                document.getElementById('patientDocForm').reset();
+                toast('✅ Document ajouté au dossier');
+            } catch (err) { fail(err, 'Ajout du document'); }
+        }
+        function deletePatientDoc(docId) {
+            if (!confirm("Supprimer ce document ?")) return;
+            const pat = getPatient(currentActivePatientId);
+            if (!pat) return;
+            db.collection("patients").doc(pat.id).update({ documents: (pat.documents || []).filter(d => d.id !== docId) })
+                .catch(err => fail(err, 'Suppression du document'));
+        }
+
+        /* ================= NOTES VOCALES ================= */
+        document.getElementById('quickNoteForm').addEventListener('submit', function (e) {
             e.preventDefault();
             const note = {
                 date: new Date().toLocaleDateString('fr-FR'),
@@ -1750,309 +2140,162 @@
                 title: document.getElementById('quickNoteTitle').value.trim() || 'Mémo vocal',
                 audioData: currentRecordedAudioUrl['quickNoteAudio'] || null
             };
+            if (approxBytes(note) > FIRESTORE_MAX_BYTES * 0.97) { toast('❌ Mémo trop long (max ~1 min).', 'err', 6000); return; }
             db.collection("quicknotes").add(note).then(() => {
                 this.reset();
                 currentRecordedAudioUrl['quickNoteAudio'] = null;
                 document.getElementById('quickNoteAudioContainer').innerHTML = '';
-                alert('Mémo vocal enregistré !');
-            });
+                toast('✅ Mémo vocal enregistré');
+            }).catch(err => fail(err, 'Enregistrement du mémo'));
         });
-
         function loadQuickNotes() {
             const container = document.getElementById('quickNotesListContainer');
             if (!container) return;
-
-            if (quickNotesData.length === 0) {
-                container.innerHTML = '<p style="font-size: 0.9rem; color: var(--gray); text-align: center;">Aucun mémo vocal.</p>';
-                return;
-            }
-            container.innerHTML = '';
-            quickNotesData.forEach(n => {
-                let pat = patientsData.find(p => p.id == n.patientId);
-                let patName = pat ? `🐾 ${pat.animalName} (${pat.owner})` : '📌 Note libre';
-                let audioHtml = n.audioData ? `<audio controls src="${n.audioData}" style="width:100%; margin-top:8px;"></audio>` : '<p style="color:var(--gray); font-size:0.8rem;">Aucun audio</p>';
-
-                container.innerHTML += `
-                    <div class="list-item" style="flex-direction:column; align-items:flex-start;">
-                        <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
-                            <div class="list-info">
-                                <h4>${n.title || 'Mémo vocal'} • <span style="font-size:0.75rem; color:var(--gray);">${n.date}</span></h4>
-                                <p>${patName}</p>
-                            </div>
-                            <button class="danger" onclick="deleteQuickNote('${n.id}')">🗑️</button>
-                        </div>
-                        <div style="width:100%;">${audioHtml}</div>
+            if (!quickNotesData.length) { container.innerHTML = '<p class="muted" style="text-align:center;">Aucun mémo vocal.</p>'; return; }
+            container.innerHTML = quickNotesData.map(n => {
+                const pat = getPatient(n.patientId);
+                const patName = pat ? `<a href="#" onclick="event.preventDefault(); openPatientDetail(${arg(pat.id)})">🐾 ${esc(pat.animalName)} (${esc(pat.owner)})</a>` : '📌 Note libre';
+                return `<div class="list-item" style="flex-direction:column; align-items:flex-start;">
+                    <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+                        <div class="list-info"><h4>${esc(n.title || 'Mémo vocal')} · <span style="font-size:0.75rem; color:var(--gray);">${esc(n.date)}</span></h4><p>${patName}</p></div>
+                        <button class="danger" style="width:auto; padding:6px 10px;" onclick="deleteQuickNote(${arg(n.id)})">🗑️</button>
                     </div>
-                `;
-            });
+                    <div style="width:100%;">${n.audioData ? `<audio controls src="${n.audioData}" style="width:100%; margin-top:8px;"></audio>` : '<p class="muted">Aucun audio</p>'}</div>
+                </div>`;
+            }).join('');
+        }
+        function deleteQuickNote(id) {
+            if (confirm('Supprimer ce mémo ?')) db.collection("quicknotes").doc(id).delete().catch(err => fail(err, 'Suppression'));
         }
 
-        function deleteQuickNote(id) { db.collection("quicknotes").doc(id).delete(); }
-
-        // Soumission Consultation
-        document.getElementById('consultForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const editId = document.getElementById('editConsultId').value;
-            let consultDateVal = document.getElementById('consultDateInput').value || new Date().toISOString().split('T')[0];
-            let formattedDate = formatDate(consultDateVal);
-            let timestampVal = new Date(consultDateVal).getTime();
-
-            const consultation = {
-                date: formattedDate,
-                consultDate: consultDateVal,
-                nextConsultDate: document.getElementById('nextConsultDate').value || '',
-                timestamp: timestampVal,
-                ownerName: document.getElementById('ownerName').value || 'Anonyme',
-                ownerPhone: document.getElementById('ownerPhone').value || '',
-                ownerEmail: document.getElementById('ownerEmail').value || '',
-                ownerAddress: document.getElementById('ownerAddress').value || 'Clinique',
-                animalName: document.getElementById('animalName').value || 'Patient sans nom',
-                animalSpecies: document.getElementById('animalSpecies').value,
-                sketchCombined: canvas.toDataURL(),
-                photos: currentConsultPhotos,
-                audioBilan: currentRecordedAudioUrl['dynamicBilanAudio'] || null,
-                audioTests: currentRecordedAudioUrl['osteotestsAudio'] || null,
-                consultReason: document.getElementById('consultReason').value || '',
-                anamnesis: document.getElementById('anamnesis').value,
-                dynamicBilan: document.getElementById('dynamicBilan').value,
-                osteotests: document.getElementById('osteotests').value,
-                treatment: document.getElementById('treatment').value,
-                vetNotes: document.getElementById('vetNotes').value || '',
-                advice: document.getElementById('advice').value
-            };
-
-            if (editId) {
-                db.collection("consultations").doc(editId).set(consultation).then(() => {
-                    document.getElementById('consultForm').reset();
-                    document.getElementById('editConsultId').value = "";
-                    showView('historyView');
-                    alert('Consultation mise à jour !');
-                });
-            } else {
-                db.collection("consultations").add(consultation).then(() => {
-                    document.getElementById('consultForm').reset();
-                    document.getElementById('editConsultId').value = "";
-                    showView('historyView');
-                    alert('Consultation enregistrée !');
-                });
-            }
-        });
-
-        function loadHistory() { renderHistory(); }
-
-        function renderHistory() {
-            const search = document.getElementById('searchHistory') ? document.getElementById('searchHistory').value.toLowerCase().trim() : '';
+        /* ================= HISTORIQUE ================= */
+        function loadHistory() {
+            const search = norm(document.getElementById('searchHistory').value);
             const container = document.getElementById('historyListContainer');
             if (!container) return;
-
-            let filtered = consultationsData.filter(c => 
-                (c.animalName || '').toLowerCase().includes(search) || 
-                (c.ownerName || '').toLowerCase().includes(search) ||
-                (c.ownerAddress && c.ownerAddress.toLowerCase().includes(search))
-            );
-
-            if (filtered.length === 0) {
-                container.innerHTML = '<p style="font-size: 0.9rem; color: var(--gray); text-align: center;">Aucune consultation trouvée.</p>';
-                return;
-            }
-
-            container.innerHTML = '';
-            filtered.forEach(c => {
-                let formattedNextDate = formatDate(c.nextConsultDate);
-                let reminderBtn = c.nextConsultDate && c.ownerEmail ? `
-                    <a class="secondary" style="padding:6px 10px; font-size:0.8rem; text-decoration:none; display:inline-block; border-radius:6px; background:#EA5B0C; color:#fff;" href="mailto:${c.ownerEmail}?subject=Rappel%20-%20Suivi%20ost%C3%A9opathique%20${encodeURIComponent(c.animalName)}&body=Bonjour%20${encodeURIComponent(c.ownerName)},%0A%0ALe%20suivi%20ost%C3%A9opathique%20de%20${encodeURIComponent(c.animalName)}%20pr%C3%A9conis%C3%A9%20pour%20le%20${formattedNextDate}%20approche.%0A%0APensez%20a%20prendre%20contact%20pour%20fixer%20un%20rendez-vous.%0A%0ABien%20cordialement,%0A${encodeURIComponent(proProfile.firstName + ' ' + proProfile.lastName)}">✉️ Rappel RDV</a>
-                ` : '';
-
-                container.innerHTML += `
-                    <div class="list-item" style="flex-direction:column; align-items:flex-start;">
-                        <div style="display:flex; justify-content:space-between; width:100%; align-items:flex-start;">
-                            <div class="list-info">
-                                <h4>${c.animalName} (${c.animalSpecies}) - <span style="font-size:0.8rem; color:var(--accent);">${c.ownerAddress || 'Clinique'}</span></h4>
-                                <p>${c.ownerName} • Séance du : ${formatDate(c.consultDate || c.date)}</p>
-                                <p style="font-size:0.75rem; color:var(--primary); font-weight:bold; margin-top:2px;">Prochain RDV préconisé : ${formattedNextDate || 'Non défini'}</p>
-                            </div>
-                            <div class="actions-group">
-                                ${reminderBtn}
-                                <button class="secondary" onclick="generateReport('${c.id}')">📄 Rapport</button>
-                                <button class="secondary" style="background:#4A5568;" onclick="editConsultation('${c.id}')">✏️</button>
-                                <button class="danger" onclick="deleteConsultation('${c.id}')">🗑️</button>
-                            </div>
-                        </div>
+            const filtered = consultationsData.filter(c =>
+                norm(c.animalName).includes(search) || norm(c.ownerName).includes(search) ||
+                norm(c.ownerAddress).includes(search) || norm(c.consultReason).includes(search));
+            if (!filtered.length) { container.innerHTML = '<p class="muted" style="text-align:center;">Aucune consultation trouvée.</p>'; return; }
+            container.innerHTML = filtered.map(c => {
+                const p = findPatientForConsult(c);
+                const reminder = c.nextConsultDate && c.ownerEmail
+                    ? `<a class="secondary" style="padding:6px 10px; font-size:0.8rem; text-decoration:none; border-radius:6px; background:#EA5B0C; color:#fff;" href="${reminderMailto({ animalName: c.animalName, owner: c.ownerName, email: c.ownerEmail }, c)}">✉️</a>` : '';
+                return `<div class="list-item" style="align-items:flex-start;">
+                    <div class="list-info" style="flex:1;">
+                        <h4 ${p ? `onclick="openPatientDetail(${arg(p.id)})"` : ''}>${esc(c.animalName)} (${esc(c.animalSpecies)}) ${p ? '›' : ''}</h4>
+                        <p>${esc(c.ownerName)} · ${esc(c.ownerAddress || 'Clinique')} · ${esc(formatDate(c.consultDate || c.date))}</p>
+                        ${c.consultReason ? `<p style="color:var(--text);">${esc(c.consultReason)}</p>` : ''}
+                        <p style="font-size:0.75rem; color:var(--primary); font-weight:bold; margin-top:2px;">Prochain RDV : ${esc(formatDate(c.nextConsultDate)) || 'Non défini'}</p>
                     </div>
-                `;
-            });
+                    <div class="actions-group">
+                        ${reminder}
+                        <button class="secondary" onclick="generateReport(${arg(c.id)})">📄</button>
+                        <button class="btn-dark" onclick="editConsultation(${arg(c.id)})">✏️</button>
+                        <button class="danger" onclick="deleteConsultation(${arg(c.id)})">🗑️</button>
+                    </div>
+                </div>`;
+            }).join('');
         }
+        function renderHistory() { loadHistory(); }
 
-        function editConsultation(id) {
-            const c = consultationsData.find(item => item.id === id);
-            if (!c) return;
-
-            showView('consultView');
-            document.getElementById('consultFormTitle').innerText = "✏️ Modifier la Consultation";
-            document.getElementById('editConsultId').value = c.id;
-            
-            document.getElementById('consultDateInput').value = c.consultDate || new Date().toISOString().split('T')[0];
-            document.getElementById('nextConsultDate').value = c.nextConsultDate || '';
-            document.getElementById('ownerName').value = c.ownerName;
-            document.getElementById('ownerPhone').value = c.ownerPhone;
-            document.getElementById('ownerEmail').value = c.ownerEmail;
-            document.getElementById('ownerAddress').value = c.ownerAddress || 'Clinique';
-            document.getElementById('animalName').value = c.animalName;
-            document.getElementById('animalSpecies').value = c.animalSpecies;
-            document.getElementById('consultReason').value = c.consultReason || '';
-            document.getElementById('anamnesis').value = c.anamnesis;
-            document.getElementById('dynamicBilan').value = c.dynamicBilan;
-            document.getElementById('osteotests').value = c.osteotests;
-            document.getElementById('treatment').value = c.treatment;
-            document.getElementById('vetNotes').value = c.vetNotes || '';
-            document.getElementById('advice').value = c.advice;
-
-            currentConsultPhotos = c.photos || [];
-            renderConsultPhotosPreview();
-
-            currentRecordedAudioUrl = {};
-            if (c.audioBilan) {
-                currentRecordedAudioUrl['dynamicBilanAudio'] = c.audioBilan;
-                document.getElementById('dynamicBilanAudioContainer').innerHTML = `<audio controls src="${c.audioBilan}" style="width:100%; margin-top:5px;"></audio>`;
-            } else {
-                document.getElementById('dynamicBilanAudioContainer').innerHTML = '';
-            }
-
-            if (c.audioTests) {
-                currentRecordedAudioUrl['osteotestsAudio'] = c.audioTests;
-                document.getElementById('osteotestsAudioContainer').innerHTML = `<audio controls src="${c.audioTests}" style="width:100%; margin-top:5px;"></audio>`;
-            } else {
-                document.getElementById('osteotestsAudioContainer').innerHTML = '';
-            }
-
-            initCanvas(c.sketchCombined);
-        }
-
-        function deleteConsultation(id) {
-            if (confirm("Supprimer ce compte rendu ?")) {
-                db.collection("consultations").doc(id).delete();
-            }
-        }
-
+        /* ================= RAPPORT ================= */
         function generateReport(id) {
             const c = consultationsData.find(item => item.id === id);
             if (!c) return;
-
-            let photosHtml = '';
-            if (c.photos && c.photos.length > 0) {
-                photosHtml = `
-                    <div class="section">
-                        <h3>Photos de la Séance</h3>
-                        <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                            ${c.photos.map(p => `<img src="${p}" style="max-width:200px; border-radius:6px; border:1px solid #ccc;">`).join('')}
-                        </div>
-                    </div>
-                `;
-            }
-
-            let audioBilanHtml = c.audioBilan ? `<div class="section"><h3>Mémo vocal - Bilan dynamique</h3><audio controls src="${c.audioBilan}" style="width:100%;"></audio></div>` : '';
-            let audioTestsHtml = c.audioTests ? `<div class="section"><h3>Mémo vocal - Tests ostéopathiques</h3><audio controls src="${c.audioTests}" style="width:100%;"></audio></div>` : '';
-
-            const formattedConsultDate = formatDate(c.consultDate || c.date);
-            const formattedNextDate = formatDate(c.nextConsultDate);
+            const t = s => nl2br(s || '');
+            const photosHtml = (c.photos && c.photos.length) ? `
+                <div class="section"><h3>Photos de la Séance</h3>
+                    <div style="display:flex; gap:10px; flex-wrap:wrap;">${c.photos.map(p => `<img src="${p}" style="max-width:200px; border-radius:6px; border:1px solid #ccc;">`).join('')}</div>
+                </div>` : '';
+            const audioBilanHtml = c.audioBilan ? `<div class="section no-print"><h3>Mémo vocal - Bilan dynamique</h3><audio controls src="${c.audioBilan}" style="width:100%;"></audio></div>` : '';
+            const audioTestsHtml = c.audioTests ? `<div class="section no-print"><h3>Mémo vocal - Tests ostéopathiques</h3><audio controls src="${c.audioTests}" style="width:100%;"></audio></div>` : '';
+            const fDate = formatDate(c.consultDate || c.date);
+            const fNext = formatDate(c.nextConsultDate);
+            const mailBody = `Bonjour,\n\nVoici le compte rendu de la consultation ostéopathique pour ${c.animalName} du ${fDate}.\n\nProchain RDV préconisé : ${fNext || 'N/C'}\n\nBien cordialement,\n${proProfile.firstName} ${proProfile.lastName}`;
+            const mailHref = c.ownerEmail ? `mailto:${encodeURIComponent(c.ownerEmail)}?subject=${encodeURIComponent('Compte rendu ostéopathie - ' + c.animalName)}&body=${encodeURIComponent(mailBody)}` : '';
 
             const win = window.open('', '_blank');
-            win.document.write(`
-                <html>
-                <head>
-                    <title>Compte Rendu - ${c.animalName}</title>
+            if (!win) { toast('Autorisez les pop-ups pour afficher le rapport.', 'err'); return; }
+            win.document.write(`<!DOCTYPE html>
+                <html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Compte Rendu - ${esc(c.animalName)}</title>
                     <style>
                         body { font-family: Arial, sans-serif; padding: 30px; color: #333; max-width: 800px; margin: auto; line-height: 1.5; }
-                        .pro-header { background: #5F998E; color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+                        .pro-header { background: #5F998E; color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
                         .pro-header-left { display: flex; align-items: center; gap: 15px; }
                         .pro-header-logo { height: 52px; width: auto; object-fit: contain; border-radius: 4px; background: #fff; padding: 2px; }
                         .pro-header h2 { margin: 0; font-size: 1.3rem; }
                         .pro-header p { margin: 2px 0 0 0; font-size: 0.85rem; opacity: 0.9; }
                         h1 { color: #5F998E; border-bottom: 2px solid #5F998E; padding-bottom: 10px; font-size: 1.3rem; margin-top: 10px; }
                         .header-info { background: #F4F6F4; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-                        .section { margin-bottom: 15px; }
+                        .header-info p { margin: 2px 0; }
+                        .section { margin-bottom: 15px; page-break-inside: avoid; }
                         .section h3 { color: #5F998E; font-size: 1rem; margin-bottom: 5px; border-left: 3px solid #EA5B0C; padding-left: 8px; }
-                        .section p { background: #FAFAFA; padding: 10px; border-radius: 6px; white-space: pre-line; border: 1px solid #eee; }
+                        .section p { background: #FAFAFA; padding: 10px; border-radius: 6px; border: 1px solid #eee; margin: 0; }
                         .sketch-view { text-align: center; margin: 15px 0; }
                         .sketch-view img { max-width: 100%; border: 1px solid #ccc; border-radius: 6px; }
-                        .btn-group { display: flex; gap: 10px; margin-top: 25px; padding-top: 15px; border-top: 2px solid #eee; }
+                        .btn-group { display: flex; gap: 10px; margin-top: 25px; padding-top: 15px; border-top: 2px solid #eee; flex-wrap: wrap; }
                         .btn { padding: 12px 20px; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 0.95rem; font-weight: bold; text-decoration: none; text-align: center; display: inline-block; }
-                        .btn-back { background: #4A5568; }
-                        .btn-print { background: #5F998E; }
-                        .btn-email { background: #EA5B0C; }
-                        @media print { .btn-group { display: none; } }
+                        .btn-back { background: #4A5568; } .btn-print { background: #5F998E; } .btn-email { background: #EA5B0C; }
+                        @media print { .btn-group, .no-print { display: none; } body { padding: 0; } }
                     </style>
-                </head>
-                <body>
+                </head><body>
                     <div class="pro-header">
                         <div class="pro-header-left">
                             <img src="https://i.postimg.cc/6QWy5MnP/Logo-lynette-V1.jpg" alt="Logo" class="pro-header-logo">
                             <div>
-                                <h2>${proProfile.firstName} ${proProfile.lastName}</h2>
-                                <p>${proProfile.status}</p>
-                                ${proProfile.siret ? `<p>SIRET : ${proProfile.siret}</p>` : ''}
+                                <h2>${esc(proProfile.firstName)} ${esc(proProfile.lastName)}</h2>
+                                <p>${esc(proProfile.status)}</p>
+                                ${proProfile.siret ? `<p>SIRET : ${esc(proProfile.siret)}</p>` : ''}
                             </div>
                         </div>
                         <div style="text-align: right;">
-                            <p>📞 ${proProfile.phone}</p>
-                            <p>✉️ ${proProfile.email}</p>
-                            ${proProfile.address ? `<p>📍 ${proProfile.address}</p>` : ''}
+                            <p>📞 ${esc(proProfile.phone)}</p>
+                            <p>✉️ ${esc(proProfile.email)}</p>
+                            ${proProfile.address ? `<p>📍 ${esc(proProfile.address)}</p>` : ''}
                         </div>
                     </div>
-
                     <h1>Compte Rendu de Consultation Ostéopathique</h1>
                     <div class="header-info">
                         <div>
-                            <p><strong>Date de séance :</strong> ${formattedConsultDate}</p>
-                            <p><strong>Prochain RDV préconisé :</strong> ${formattedNextDate || 'Non défini'}</p>
-                            <p><strong>Propriétaire :</strong> ${c.ownerName}</p>
-                            <p><strong>Lieu / Écurie :</strong> ${c.ownerAddress || 'Clinique'}</p>
-                            <p><strong>Tél :</strong> ${c.ownerPhone || 'N/C'}</p>
-                            <p><strong>E-mail :</strong> ${c.ownerEmail || 'N/C'}</p>
+                            <p><strong>Date de séance :</strong> ${esc(fDate)}</p>
+                            <p><strong>Prochain RDV préconisé :</strong> ${esc(fNext) || 'Non défini'}</p>
+                            <p><strong>Propriétaire :</strong> ${esc(c.ownerName)}</p>
+                            <p><strong>Lieu / Écurie :</strong> ${esc(c.ownerAddress || 'Clinique')}</p>
+                            <p><strong>Tél :</strong> ${esc(c.ownerPhone || 'N/C')}</p>
+                            <p><strong>E-mail :</strong> ${esc(c.ownerEmail || 'N/C')}</p>
                         </div>
                         <div>
-                            <p><strong>Patient :</strong> ${c.animalName}</p>
-                            <p><strong>Espèce :</strong> ${c.animalSpecies}</p>
+                            <p><strong>Patient :</strong> ${esc(c.animalName)}</p>
+                            <p><strong>Espèce :</strong> ${esc(c.animalSpecies === 'Custom' ? 'Autre' : c.animalSpecies)}</p>
                         </div>
                     </div>
-                    
-                    <div class="section">
-                        <h3>Schéma Anatomique Annoté</h3>
-                        <div class="sketch-view"><img src="${c.sketchCombined}"></div>
-                    </div>
-
+                    <div class="section"><h3>Schéma Anatomique Annoté</h3><div class="sketch-view"><img src="${c.sketchCombined}"></div></div>
                     ${photosHtml}
-
-                    ${c.consultReason ? `<div class="section"><h3>1. Motif de Consultation</h3><p>${c.consultReason}</p></div>` : ''}
-                    <div class="section"><h3>2. Anamnèse et commémoratifs</h3><p>${c.anamnesis || 'Non renseigné'}</p></div>
-                    <div class="section">
-                        <h3>3. Bilan statique et/ou dynamique</h3>
-                        <p>${c.dynamicBilan || 'Non renseigné'}</p>
-                    </div>
+                    ${c.consultReason ? `<div class="section"><h3>1. Motif de Consultation</h3><p>${t(c.consultReason)}</p></div>` : ''}
+                    <div class="section"><h3>2. Anamnèse et commémoratifs</h3><p>${t(c.anamnesis) || 'Non renseigné'}</p></div>
+                    <div class="section"><h3>3. Bilan statique et/ou dynamique</h3><p>${t(c.dynamicBilan) || 'Non renseigné'}</p></div>
                     ${audioBilanHtml}
-
-                    <div class="section">
-                        <h3>4. Tests Ostéopathiques</h3>
-                        <p>${c.osteotests || 'Non renseigné'}</p>
-                    </div>
+                    <div class="section"><h3>4. Tests Ostéopathiques</h3><p>${t(c.osteotests) || 'Non renseigné'}</p></div>
                     ${audioTestsHtml}
-
-                    <div class="section"><h3>5. Traitement</h3><p>${c.treatment || 'Non renseigné'}</p></div>
-                    ${c.vetNotes ? `<div class="section"><h3>6. Notes & Confrères (Véto, Maréchal...)</h3><p>${c.vetNotes}</p></div>` : ''}
-                    <div class="section"><h3>7. Conseils Post-Séance</h3><p>${c.advice || 'Non renseigné'}</p></div>
-                    
+                    <div class="section"><h3>5. Traitement</h3><p>${t(c.treatment) || 'Non renseigné'}</p></div>
+                    ${c.vetNotes ? `<div class="section"><h3>6. Notes & Confrères (Véto, Maréchal...)</h3><p>${t(c.vetNotes)}</p></div>` : ''}
+                    <div class="section"><h3>7. Conseils Post-Séance</h3><p>${t(c.advice) || 'Non renseigné'}</p></div>
                     <div class="btn-group">
                         <button class="btn btn-back" onclick="window.close()">⬅️ Revenir à l'application</button>
                         <button class="btn btn-print" onclick="window.print()">🖨️ Imprimer / Enregistrer en PDF</button>
-                        ${c.ownerEmail ? `<a class="btn btn-email" href="mailto:${c.ownerEmail}?subject=Compte rendu ostéopathie - ${c.animalName}&body=Bonjour,%0A%0AVoici le compte rendu de la consultation ostéopathique pour ${c.animalName} du ${formattedConsultDate}.%0A%0AProchain RDV préconisé : ${formattedNextDate || 'N/C'}%0ABien cordialement,%0A${encodeURIComponent(proProfile.firstName + ' ' + proProfile.lastName)}">✉️ Envoyer par e-mail</a>` : ''}
+                        ${mailHref ? `<a class="btn btn-email" href="${mailHref}">✉️ Envoyer par e-mail</a>` : ''}
                     </div>
-                </body>
-                </html>
-            `);
+                </body></html>`);
+            win.document.close();
         }
 
-        // Démarrage automatique des listeners Firestore au chargement de la page
+        /* ================= DÉMARRAGE ================= */
+        setupPicker('consultPatientSearch', 'consultPickerResults', id => selectPatientForConsult(id, { prefill: true }), ' — remplissez les infos ci-dessous pour en créer un.');
+        setupPicker('homeSearch', 'homeSearchResults', id => openPatientDetail(id));
+        history.replaceState({ view: 'homeView' }, '');
+        fillProProfileForm();
         startFirestoreListeners();
     </script>
 </body>
