@@ -615,7 +615,7 @@
                 </div>
                 <span class="grow"></span>
                 <button class="secondary icon-btn" title="Envoyer les rendez-vous à venir vers l'agenda de l'iPhone" aria-label="Exporter vers l'agenda de l'iPhone" onclick="exportUpcomingIcs()"><svg class="ico"><use href="#i-cal"/></svg></button>
-                <button class="btn-inline" onclick="openCreateSlots()" aria-label="Ajouter des créneaux"><svg class="ico"><use href="#i-plus"/></svg><span class="lbl">Créneaux</span></button>
+                <button class="btn-inline" onclick="openCreateSlots()" aria-label="Ajouter un rendez-vous ou des créneaux"><svg class="ico"><use href="#i-plus"/></svg><span class="lbl">Ajouter</span></button>
             </div>
             <div class="ag-nav">
                 <h3 id="agendaTitle"></h3>
@@ -2571,7 +2571,7 @@
             return `<div class="dayblock">
                 <div class="dayblock-head">
                     <h4 class="${isToday ? 'today' : ''}" ${opts.clickable ? `style="cursor:pointer" onclick="agendaOpenDay(${arg(iso)})"` : ''}>${esc(opts.short ? shortDate(iso) : longDate(iso))}${isToday && !opts.short ? ' · aujourd\'hui' : ''}</h4>
-                    ${opts.noAdd ? '' : `<button class="secondary" onclick="openCreateSlots({ date: ${arg(iso)} })"><svg class="ico"><use href="#i-plus"/></svg>${opts.short ? '' : 'Créneaux'}</button>`}
+                    ${opts.noAdd ? '' : `<button class="secondary" onclick="openCreateSlots({ date: ${arg(iso)} })"><svg class="ico"><use href="#i-plus"/></svg>${opts.short ? '' : 'Ajouter'}</button>`}
                 </div>
                 ${items.length ? items.map(slotHtml).join('') : `<div class="empty-day">${opts.short ? 'Libre' : 'Rien de prévu ce jour.'}</div>`}
             </div>`;
@@ -2692,58 +2692,67 @@
 
         /* ----- Création de créneaux (un ou plusieurs à la suite) ----- */
         let slotForm = null;
+        let lastSlotKind = 'rdv';
         function openCreateSlots(opts = {}) {
             const p = opts.patientId ? getPatient(opts.patientId) : null;
             slotForm = {
+                kind: p ? 'rdv' : (opts.kind || lastSlotKind),
                 date: opts.date || isoOf(agenda.cursor < dateOf(todayISO()) ? new Date() : agenda.cursor),
                 start: opts.start || '09:00', dur: 60, count: 1, gap: 15,
                 location: p ? (p.address || 'Clinique') : '', patientId: p ? p.id : '', reason: ''
             };
             renderCreateSlots();
         }
+        function setSlotKind(k) { slotForm.kind = k; lastSlotKind = k; renderCreateSlots(); }
         function slotTimes() {
+            const n = slotForm.kind === 'rdv' ? 1 : slotForm.count;
             const out = []; let m = toMin(slotForm.start);
-            for (let i = 0; i < slotForm.count; i++) { out.push([fromMin(m), fromMin(m + slotForm.dur)]); m += slotForm.dur + slotForm.gap; }
+            for (let i = 0; i < n; i++) { out.push([fromMin(m), fromMin(m + slotForm.dur)]); m += slotForm.dur + slotForm.gap; }
             return out;
         }
         function renderCreateSlots() {
-            const f = slotForm;
-            const p = f.patientId ? getPatient(f.patientId) : null;
+            const f = slotForm, rdv = f.kind === 'rdv';
+            const p = rdv && f.patientId ? getPatient(f.patientId) : null;
             const times = slotTimes();
             const overflow = toMin(times[times.length - 1][1]) > 24 * 60;
-            const label = p
-                ? (f.count === 1 ? 'Créer le rendez-vous' : `Créer 1 rendez-vous + ${f.count - 1} créneau${f.count > 2 ? 'x' : ''} libre${f.count > 2 ? 's' : ''}`)
-                : `Créer ${f.count} créneau${f.count > 1 ? 'x' : ''} libre${f.count > 1 ? 's' : ''}`;
-            openSheet(`${sheetHead(p ? 'Nouveau rendez-vous' : 'Ajouter des créneaux', esc(longDate(f.date)))}
+            const label = rdv ? 'Créer le rendez-vous' : `Créer ${times.length} créneau${times.length > 1 ? 'x' : ''} libre${times.length > 1 ? 's' : ''}`;
+            const durLabel = d => d < 60 ? d + ' min' : Math.floor(d / 60) + 'h' + (d % 60 ? d % 60 : '');
+
+            const patientBlock = !rdv ? '' : (p
+                ? `<div class="appt-patient"><div class="avatar">${initials(p.animalName)}</div><div style="flex:1; min-width:0;"><strong>${esc(p.animalName)}</strong><p>${esc(p.owner || '')}</p>${alertsHtml(p)}</div>
+                    <button type="button" class="btn-ghost btn-inline" onclick="slotForm.patientId=''; renderCreateSlots()">Changer</button></div>
+                   <div class="form-group"><label>Motif</label><input type="text" value="${esc(f.reason)}" oninput="slotForm.reason=this.value" placeholder="Ex : contrôle, boiterie…"></div>`
+                : `<div class="form-group"><label>Pour quel patient ?</label>
+                    <div class="search-wrap"><svg class="ico"><use href="#i-search"/></svg><input type="text" id="slotPatientSearch" placeholder="Nom de l'animal ou du propriétaire" autocomplete="off"></div>
+                    <div id="slotPatientResults" class="picker-results"></div></div>`);
+
+            openSheet(`${sheetHead(rdv ? 'Nouveau rendez-vous' : 'Ajouter des créneaux libres', esc(longDate(f.date)))}
+                <div class="seg" style="display:flex; margin-bottom:16px;">
+                    <button type="button" style="flex:1" class="${rdv ? 'on' : ''}" onclick="setSlotKind('rdv')">Rendez-vous</button>
+                    <button type="button" style="flex:1" class="${!rdv ? 'on' : ''}" onclick="setSlotKind('free')">Créneaux libres</button>
+                </div>
+                ${patientBlock}
                 <div class="row">
                     <div class="form-group"><label>Date</label><input type="date" value="${esc(f.date)}" onchange="slotForm.date=this.value; renderCreateSlots()"></div>
                     <div class="form-group"><label>Début</label><input type="time" step="900" value="${esc(f.start)}" onchange="slotForm.start=this.value||'09:00'; renderCreateSlots()"></div>
                 </div>
                 <div class="form-group"><label>Durée</label>
-                    <div class="chips">${[30, 45, 60, 90, 120].map(d => `<button type="button" class="${f.dur === d ? 'on' : ''}" onclick="slotForm.dur=${d}; renderCreateSlots()">${d < 60 ? d + ' min' : Math.floor(d / 60) + 'h' + (d % 60 ? d % 60 : '')}</button>`).join('')}</div>
+                    <div class="chips">${[30, 45, 60, 90, 120].map(d => `<button type="button" class="${f.dur === d ? 'on' : ''}" onclick="slotForm.dur=${d}; renderCreateSlots()">${durLabel(d)}</button>`).join('')}</div>
                 </div>
-                <div class="row">
+                ${rdv ? '' : `<div class="row">
                     <div class="form-group"><label>Nombre de créneaux à la suite</label>
                         <div class="stepper"><button type="button" onclick="slotForm.count=Math.max(1,slotForm.count-1); renderCreateSlots()">−</button><output>${f.count}</output><button type="button" onclick="slotForm.count=Math.min(10,slotForm.count+1); renderCreateSlots()">+</button></div>
                     </div>
                     ${f.count > 1 ? `<div class="form-group"><label>Pause entre deux</label>
                         <div class="chips">${[0, 15, 30, 60].map(g => `<button type="button" class="${f.gap === g ? 'on' : ''}" onclick="slotForm.gap=${g}; renderCreateSlots()">${g ? g + ' min' : 'Aucune'}</button>`).join('')}</div></div>` : ''}
-                </div>
+                </div>`}
                 <div class="form-group"><label>Lieu</label><select onchange="slotForm.location=this.value">${locationOptions(f.location)}</select></div>
                 <div class="form-group"><label>Aperçu</label>
-                    <div class="preview-times">${times.map((t, i) => `<span class="${p && i === 0 ? 'booked' : ''}">${fmtTime(t[0])} – ${fmtTime(t[1])}${p && i === 0 ? ' · ' + esc(p.animalName) : ''}</span>`).join('')}</div>
+                    <div class="preview-times">${times.map(t => `<span class="${rdv ? 'booked' : ''}">${fmtTime(t[0])} – ${fmtTime(t[1])}${rdv && p ? ' · ' + esc(p.animalName) : ''}</span>`).join('')}</div>
                     ${overflow ? '<p class="hint" style="color:var(--danger)">Le dernier créneau dépasse minuit : réduisez le nombre.</p>' : ''}
                 </div>
-                <details class="block" ${p ? 'open' : ''}>
-                    <summary>${p ? 'Patient : ' + esc(p.animalName) : 'Réserver directement pour un patient (facultatif)'}</summary>
-                    ${p ? `<div class="appt-patient"><div class="avatar">${initials(p.animalName)}</div><div style="flex:1"><strong>${esc(p.animalName)}</strong><p>${esc(p.owner || '')}</p></div>
-                        <button type="button" class="btn-ghost btn-inline" onclick="slotForm.patientId=''; renderCreateSlots()">Retirer</button></div>
-                        <div class="form-group" style="margin-bottom:0"><label>Motif</label><input type="text" value="${esc(f.reason)}" oninput="slotForm.reason=this.value" placeholder="Ex : contrôle, boiterie…"></div>`
-                    : `<div class="search-wrap"><svg class="ico"><use href="#i-search"/></svg><input type="text" id="slotPatientSearch" placeholder="Nom de l'animal ou du propriétaire" autocomplete="off"></div>
-                        <div id="slotPatientResults" class="picker-results"></div>`}
-                </details>
-                <div class="sheet-actions"><button class="${p ? 'accent' : ''}" ${overflow ? 'disabled' : ''} onclick="saveSlots(this)"><svg class="ico"><use href="#i-save"/></svg>${label}</button></div>`);
-            if (!p) setupPicker('slotPatientSearch', 'slotPatientResults', id => {
+                <div class="sheet-actions"><button class="${rdv ? 'accent' : ''}" ${overflow || (rdv && !p) ? 'disabled' : ''} onclick="saveSlots(this)"><svg class="ico"><use href="#i-save"/></svg>${rdv && !p ? 'Choisissez d\'abord un patient' : label}</button></div>`);
+            if (rdv && !p) setupPicker('slotPatientSearch', 'slotPatientResults', id => {
                 slotForm.patientId = id;
                 const pp = getPatient(id);
                 if (pp && !slotForm.location) slotForm.location = pp.address || 'Clinique';
@@ -2751,7 +2760,8 @@
             });
         }
         async function saveSlots(btn) {
-            const f = slotForm, p = f.patientId ? getPatient(f.patientId) : null;
+            const f = slotForm, p = f.kind === 'rdv' && f.patientId ? getPatient(f.patientId) : null;
+            if (f.kind === 'rdv' && !p) { toast('Choisissez un patient.', 'err'); return; }
             btn.disabled = true;
             try {
                 const times = slotTimes();
