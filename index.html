@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ostéo Pattes - Lynette</title>
+    <title>OstéoAnimal - Lynette</title>
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -299,7 +299,8 @@
         .dossier-info .full { grid-column: 1 / -1; }
         .dossier-info .k { display: block; font-size: 0.8rem; color: var(--muted); }
         .dossier-info a { font-weight: 500; }
-        .dossier-actions { display: flex; gap: 8px; margin-bottom: 8px; }
+        .dossier-actions { display: grid; grid-template-columns: minmax(0, 1fr) auto 48px; gap: 8px; margin-bottom: 8px; }
+        @media (max-width: 480px) { .dossier-actions { grid-template-columns: minmax(0, 1fr) 48px 48px; } .dossier-actions .lbl { display: none; } }
         .dossier-actions button { width: auto; flex: 1; white-space: nowrap; padding: 13px 12px; }
         .dossier-actions .icon-btn { flex: 0 0 48px; height: auto; }
         details.consult-item { border-left: 2px solid var(--line); margin-left: 6px; padding-left: 16px; position: relative; }
@@ -337,6 +338,148 @@
             .container, .header-inner { max-width: 760px; }
             .hero { margin: 0 0 22px; border-radius: 28px; }
         }
+
+        /* ================= AGENDA ================= */
+        .ag-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+        .seg { display: inline-flex; background: var(--white); border: 1px solid var(--line); border-radius: 12px; padding: 3px; gap: 2px; }
+        .seg button { width: auto; padding: 8px 13px; font-size: 0.88rem; background: none; color: var(--muted); border-radius: 9px; }
+        .seg button.on { background: var(--pine); color: #fff; }
+        .ag-bar .grow { flex: 1; }
+        .ag-bar .btn-inline { padding: 9px 13px; }
+        .ag-nav { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+        .ag-bar { flex-wrap: nowrap; }
+        @media (max-width: 480px) {
+            .ag-bar .lbl { display: none; }
+            .ag-bar .btn-inline { width: 42px; height: 42px; padding: 0; }
+            .seg button { padding: 8px 11px; }
+            .ag-nav h3 { font-size: 1.1rem !important; }
+            .ag-nav .navbtns .today-btn { padding: 0 10px; font-size: 0.8rem; }
+            .ag-nav .navbtns button { width: 38px; height: 38px; }
+        }
+        @media (min-width: 760px) { .legend-dots { display: none; } }
+        .ag-nav h3 { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;
+            font-size: 1.25rem; font-weight: 600; letter-spacing: -0.02em; text-transform: none; font-variation-settings: "opsz" 48; }
+        .ag-nav h3::first-letter { text-transform: uppercase; }
+        .ag-nav .navbtns { display: flex; gap: 6px; }
+        .ag-nav .navbtns button { width: 40px; height: 40px; padding: 0; background: var(--white); color: var(--pine); border: 1px solid var(--line); }
+        .ag-nav .navbtns .today-btn { width: auto; padding: 0 12px; font-size: 0.85rem; }
+
+        /* Vue mois */
+        .month { background: var(--white); border: 1px solid var(--line); border-radius: var(--r-sheet); overflow: hidden; }
+        .month-head, .month-grid { display: grid; grid-template-columns: repeat(7, 1fr); }
+        .month-head span { text-align: center; font-size: 0.75rem; color: var(--muted); padding: 8px 0 6px; font-weight: 500; }
+        .mcell { min-height: 58px; border-top: 1px solid var(--line); padding: 6px 4px 5px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; position: relative; }
+        .mcell + .mcell { }
+        .month-grid .mcell:not(:nth-child(7n+1)) { border-left: 1px solid var(--line); }
+        .mcell .dnum { font-size: 0.9rem; font-weight: 500; width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; }
+        .mcell.other { background: #F8FAF9; }
+        .mcell.other .dnum { color: #A9B7B3; }
+        .mcell.past .dnum { color: var(--muted); }
+        .mcell.today .dnum { background: var(--ember); color: #fff; font-weight: 700; }
+        .mcell.sel { background: var(--mist); }
+        .mcell.sel .dnum { outline: 2px solid var(--pine); outline-offset: -1px; }
+        .mcell.today.sel .dnum { outline-color: var(--ember); outline-offset: 1px; }
+        .mdots { display: flex; gap: 3px; flex-wrap: wrap; justify-content: center; max-width: 40px; }
+        .mdots i { width: 7px; height: 7px; border-radius: 50%; background: var(--sage-deep); }
+        .mdots i.free { background: #fff; border: 1.5px solid var(--sage); }
+        .mdots i.done { background: #A9B7B3; }
+        .mitems { display: none; width: 100%; }
+        @media (min-width: 760px) {
+            .mcell { min-height: 104px; align-items: stretch; padding: 6px; }
+            .mcell .dnum { margin-left: -2px; }
+            .mdots { display: none; }
+            .mitems { display: flex; flex-direction: column; gap: 3px; }
+            .mitems span { font-size: 0.74rem; padding: 2px 6px; border-radius: 6px; background: var(--mist); color: var(--pine); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .mitems span.free { background: #fff; border: 1px dashed var(--sage); color: var(--sage-deep); }
+            .mitems span.done { background: #EEF1F0; color: var(--muted); }
+            .mitems em { font-style: normal; font-size: 0.72rem; color: var(--muted); padding-left: 4px; }
+        }
+
+        /* Liste des créneaux d'un jour */
+        .dayblock { margin-top: 16px; }
+        .dayblock-head { display: flex; justify-content: space-between; align-items: center; margin: 0 2px 8px; gap: 8px; }
+        .dayblock-head h4 { font-size: 1.02rem; font-weight: 600; }
+        .dayblock-head h4::first-letter { text-transform: uppercase; }
+        .dayblock-head button { width: auto; padding: 7px 11px; font-size: 0.85rem; }
+        .slot { display: flex; align-items: stretch; gap: 12px; background: var(--white); border: 1px solid var(--line); border-radius: 14px; padding: 11px 12px; margin-bottom: 8px; cursor: pointer; }
+        .slot:hover { border-color: #BFD0CA; }
+        .slot .t { font-weight: 600; font-size: 0.95rem; min-width: 54px; font-variant-numeric: tabular-nums; }
+        .slot .t small { display: block; font-weight: 400; color: var(--muted); font-size: 0.8rem; }
+        .slot .bar { width: 4px; border-radius: 4px; background: var(--sage-deep); flex-shrink: 0; }
+        .slot .body { flex: 1; min-width: 0; }
+        .slot .body strong { font-weight: 600; display: block; }
+        .slot .body span { font-size: 0.85rem; color: var(--muted); }
+        .slot.free { background: transparent; border-style: dashed; border-color: var(--sage); }
+        .slot.free .bar { background: transparent; border: 1.5px dashed var(--sage); width: 0; }
+        .slot.free strong { color: var(--sage-deep); font-weight: 500; }
+        .slot.done { opacity: .75; }
+        .slot.done .bar { background: #A9B7B3; }
+        .empty-day { font-size: 0.9rem; color: var(--muted); padding: 14px; text-align: center; border: 1px dashed var(--line); border-radius: 14px; }
+
+        /* Vue semaine */
+        .week { display: grid; gap: 4px; }
+        .week .dayblock { margin-top: 10px; }
+        @media (min-width: 900px) {
+            .week { grid-template-columns: repeat(7, 1fr); gap: 8px; }
+            .week .dayblock { margin-top: 0; }
+            .week .dayblock-head { flex-direction: column; align-items: flex-start; gap: 4px; }
+            .week .slot { flex-direction: column; gap: 4px; padding: 8px; }
+            .week .slot .bar { display: none; }
+            .week .slot .t { min-width: 0; }
+            .week .empty-day { padding: 10px 4px; font-size: 0.8rem; }
+        }
+        .week .dayblock-head h4.today { color: var(--ember); }
+
+        /* Vue jour (frise horaire) */
+        .timeline-wrap { background: var(--white); border: 1px solid var(--line); border-radius: var(--r-sheet); padding: 12px 12px 12px 0; }
+        .timeline { position: relative; margin-left: 52px; cursor: copy; }
+        .timeline .hour { position: absolute; left: 0; right: 0; border-top: 1px solid var(--line); }
+        .timeline .hour span { position: absolute; left: -46px; top: -9px; font-size: 0.75rem; color: var(--muted); width: 40px; text-align: right; font-variant-numeric: tabular-nums; }
+        .timeline .half { position: absolute; left: 0; right: 0; border-top: 1px dashed #EDF2F0; }
+        .tblock { position: absolute; left: 6px; right: 4px; border-radius: 10px; padding: 5px 9px; font-size: 0.85rem; overflow: hidden; cursor: pointer; background: var(--mist); border-left: 4px solid var(--sage-deep); }
+        .tblock strong { font-weight: 600; }
+        .tblock span { color: var(--muted); }
+        .tblock.free { background: #fff; border: 1.5px dashed var(--sage); color: var(--sage-deep); }
+        .tblock.done { background: #EEF1F0; border-left-color: #A9B7B3; }
+        .now-line { position: absolute; left: -6px; right: 0; height: 2px; background: var(--ember); z-index: 2; pointer-events: none; }
+        .now-line::before { content: ""; position: absolute; left: -4px; top: -4px; width: 10px; height: 10px; border-radius: 50%; background: var(--ember); }
+
+        /* Feuille (bottom sheet) */
+        .sheet { position: fixed; inset: 0; z-index: 1100; background: rgba(30, 54, 50, .38); display: none; }
+        .sheet.open { display: block; }
+        .sheet-panel { position: absolute; left: 0; right: 0; bottom: 0; max-height: 90vh; overflow-y: auto; background: var(--white); border-radius: 24px 24px 0 0; padding: 8px 18px calc(22px + env(safe-area-inset-bottom)); animation: sheetUp .22s ease-out; }
+        @keyframes sheetUp { from { transform: translateY(30px); opacity: 0; } to { transform: none; opacity: 1; } }
+        .sheet-grip { width: 40px; height: 5px; border-radius: 3px; background: var(--line); margin: 4px auto 12px; }
+        .sheet-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 14px; }
+        .sheet-head h3 { font-size: 1.25rem; font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; }
+        .sheet-head p { color: var(--muted); font-size: 0.92rem; margin-top: 2px; }
+        .sheet-head p::first-letter { text-transform: uppercase; }
+        .sheet-head button { width: 38px; height: 38px; padding: 0; flex-shrink: 0; }
+        .sheet-actions { display: grid; gap: 8px; margin-top: 14px; }
+        .sheet-actions .two { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        @media (min-width: 700px) {
+            .sheet-panel { left: 50%; bottom: auto; top: 50%; transform: translate(-50%, -50%); width: 520px; border-radius: 24px; max-height: 86vh; animation: none; }
+            .sheet-grip { display: none; }
+        }
+        .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+        .chips button { width: auto; padding: 8px 13px; font-size: 0.9rem; font-weight: 500; background: var(--paper); color: var(--pine); border: 1px solid var(--line); }
+        .chips button.on { background: var(--pine); color: #fff; border-color: var(--pine); }
+        .stepper { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+        .stepper button { width: 44px; height: 44px; padding: 0; background: var(--paper); color: var(--pine); border-radius: 0; font-size: 1.2rem; }
+        .stepper output { min-width: 44px; text-align: center; font-weight: 600; font-size: 1.05rem; }
+        .preview-times { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+        .preview-times span { font-size: 0.85rem; padding: 5px 10px; border-radius: 8px; border: 1px dashed var(--sage); color: var(--sage-deep); font-variant-numeric: tabular-nums; }
+        .preview-times span.booked { border-style: solid; background: var(--mist); }
+        .appt-patient { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 12px; display: flex; gap: 12px; align-items: center; margin-bottom: 10px; }
+        .appt-patient strong { font-weight: 600; }
+        .appt-patient p { font-size: 0.88rem; color: var(--muted); }
+        .free-slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+        .free-slots button { background: #fff; color: var(--sage-deep); border: 1.5px dashed var(--sage); padding: 10px; font-weight: 500; font-size: 0.9rem; flex-direction: column; gap: 0; }
+        .free-slots button small { color: var(--muted); font-weight: 400; font-size: 0.78rem; }
+        .free-slots button.on { background: var(--pine); color: #fff; border-style: solid; border-color: var(--pine); }
+        .free-slots button.on small { color: rgba(255,255,255,.75); }
+        .sheet .picker-results { position: static; box-shadow: none; margin-top: 6px; max-height: 240px; }
+
         /* ---------- Écran code PIN ---------- */
         #lockScreen { position: fixed; inset: 0; z-index: 5000; background: var(--pine); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px 24px calc(30px + env(safe-area-inset-bottom)); overflow: hidden; isolation: isolate; }
         #lockScreen.hidden { display: none; }
@@ -414,7 +557,7 @@
             <div class="header-brand">
                 <img class="header-logo" data-logo src="" alt="Logo" onclick="showView('homeView')" style="cursor:pointer" title="Accueil">
                 <span class="sep"></span>
-                <h1 id="headerTitle">Ostéo Pattes</h1>
+                <h1 id="headerTitle">OstéoAnimal</h1>
             </div>
             <button id="headerAction" type="button" hidden></button>
         </div>
@@ -442,6 +585,11 @@
             </section>
 
             <div class="home-section">
+                <h3>Aujourd'hui <small id="todaySub"></small></h3>
+                <div id="todayContainer"><p class="muted">Chargement…</p></div>
+            </div>
+
+            <div class="home-section">
                 <h3>À relancer <small>30 prochains jours</small></h3>
                 <div class="relances-box" id="relancesContainer"><p class="muted">Chargement…</p></div>
             </div>
@@ -457,10 +605,34 @@
             </div>
         </div>
 
+        <!-- AGENDA -->
+        <div id="agendaView" class="view">
+            <div class="ag-bar">
+                <div class="seg" id="agendaSeg">
+                    <button data-m="month" class="on" onclick="setAgendaMode('month')">Mois</button>
+                    <button data-m="week" onclick="setAgendaMode('week')">Semaine</button>
+                    <button data-m="day" onclick="setAgendaMode('day')">Jour</button>
+                </div>
+                <span class="grow"></span>
+                <button class="secondary icon-btn" title="Envoyer les rendez-vous à venir vers l'agenda de l'iPhone" aria-label="Exporter vers l'agenda de l'iPhone" onclick="exportUpcomingIcs()"><svg class="ico"><use href="#i-cal"/></svg></button>
+                <button class="btn-inline" onclick="openCreateSlots()" aria-label="Ajouter des créneaux"><svg class="ico"><use href="#i-plus"/></svg><span class="lbl">Créneaux</span></button>
+            </div>
+            <div class="ag-nav">
+                <h3 id="agendaTitle"></h3>
+                <div class="navbtns">
+                    <button class="today-btn" onclick="agendaToday()">Aujourd'hui</button>
+                    <button onclick="agendaStep(-1)" aria-label="Précédent"><svg class="ico"><use href="#i-back"/></svg></button>
+                    <button onclick="agendaStep(1)" aria-label="Suivant"><svg class="ico"><use href="#i-chev"/></svg></button>
+                </div>
+            </div>
+            <div id="agendaBody"></div>
+        </div>
+
         <!-- PLUS -->
         <div id="moreView" class="view">
             <h2 class="section-title" style="margin:8px 4px 14px;">Plus</h2>
             <div class="menu-list">
+                <button onclick="showView('historyView')"><svg class="ico"><use href="#i-clock"/></svg><span>Toutes les séances<small>Historique des comptes rendus</small></span><svg class="ico chev"><use href="#i-chev"/></svg></button>
                 <button onclick="showView('locationsView')"><svg class="ico"><use href="#i-pin"/></svg><span>Lieux & écuries<small>Contacts, accès, animaux suivis</small></span><svg class="ico chev"><use href="#i-chev"/></svg></button>
                 <button onclick="showView('notesView')"><svg class="ico"><use href="#i-mic"/></svg><span>Notes vocales<small>Mémos enregistrés sur le terrain</small></span><svg class="ico chev"><use href="#i-chev"/></svg></button>
                 <button onclick="showView('proProfileView')"><svg class="ico"><use href="#i-user"/></svg><span>Mon profil pro<small>En-tête des comptes rendus</small></span><svg class="ico chev"><use href="#i-chev"/></svg></button>
@@ -842,9 +1014,14 @@
         <button data-tab="homeView" onclick="showView('homeView')"><svg class="ico"><use href="#i-home"/></svg>Accueil</button>
         <button data-tab="patientsView" onclick="showView('patientsView')"><svg class="ico"><use href="#i-paw"/></svg>Patients</button>
         <button class="tab-new" onclick="startNewConsult()" aria-label="Nouvelle séance"><svg class="ico"><use href="#i-plus"/></svg></button>
-        <button data-tab="historyView" onclick="showView('historyView')"><svg class="ico"><use href="#i-clock"/></svg>Séances</button>
+        <button data-tab="agendaView" onclick="showView('agendaView')"><svg class="ico"><use href="#i-cal"/></svg>Agenda</button>
         <button data-tab="moreView" onclick="showView('moreView')"><svg class="ico"><use href="#i-more"/></svg>Plus</button>
     </nav>
+
+    <!-- FEUILLE (agenda) -->
+    <div id="sheet" class="sheet" onclick="if(event.target===this) closeSheet()">
+        <div class="sheet-panel" role="dialog" aria-modal="true"><div id="sheetContent"></div></div>
+    </div>
 
     <!-- POP-UP FICHE PATIENT (pendant la saisie d'un CR) -->
     <div id="dossierModal" class="modal" onclick="if(event.target===this) closeDossierModal()">
@@ -1068,6 +1245,7 @@
                 refreshPatientDetailIfOpen();
             }, (err) => fail(err, "Chargement des notes"));
 
+            startAppointmentsListener();
             db.collection("locations").onSnapshot((snapshot) => {
                 locationsData = [];
                 snapshot.forEach((doc) => { locationsData.push({ id: doc.id, ...doc.data() }); });
@@ -1144,14 +1322,14 @@
         const viewTitles = {
             homeView: 'OstéoAnimal', consultView: 'Nouvelle séance', locationsView: 'Lieux & écuries',
             patientsView: 'Patients', patientDetailView: 'Fiche patient', patientFormView: 'Fiche patient',
-            historyView: 'Séances', notesView: 'Notes vocales', proProfileView: 'Profil pro', locationDetailView: 'Lieu', moreView: 'Plus'
+            historyView: 'Séances', notesView: 'Notes vocales', proProfileView: 'Profil pro', locationDetailView: 'Lieu', moreView: 'Plus', agendaView: 'Agenda'
         };
         function showView(viewId, opts = {}) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.getElementById(viewId).classList.add('active');
             document.body.classList.toggle('on-home', viewId === 'homeView');
             document.body.classList.toggle('in-consult', viewId === 'consultView' || viewId === 'patientFormView');
-            const tabOf = { homeView: 'homeView', patientsView: 'patientsView', patientDetailView: 'patientsView', patientFormView: 'patientsView', historyView: 'historyView', moreView: 'moreView', locationsView: 'moreView', locationDetailView: 'moreView', notesView: 'moreView', proProfileView: 'moreView' };
+            const tabOf = { homeView: 'homeView', patientsView: 'patientsView', patientDetailView: 'patientsView', patientFormView: 'patientsView', historyView: 'moreView', agendaView: 'agendaView', moreView: 'moreView', locationsView: 'moreView', locationDetailView: 'moreView', notesView: 'moreView', proProfileView: 'moreView' };
             document.querySelectorAll('.tabbar [data-tab]').forEach(b => b.classList.toggle('on', b.dataset.tab === tabOf[viewId]));
             document.getElementById('headerTitle').innerText = viewTitles[viewId] || 'OstéoAnimal';
             const ha = document.getElementById('headerAction');
@@ -1164,6 +1342,7 @@
             if (viewId === 'locationsView') loadLocations();
             if (viewId === 'patientsView') loadPatients();
             if (viewId === 'historyView') loadHistory();
+            if (viewId === 'agendaView') { opts_scrollTimeline = true; renderAgenda(); }
             if (viewId === 'notesView') { populateSelects(); loadQuickNotes(); }
             if (viewId === 'proProfileView') fillProProfileForm();
 
@@ -1175,6 +1354,7 @@
         let ignoreNextPop = false;
         window.addEventListener('popstate', (e) => {
             if (ignoreNextPop) { ignoreNextPop = false; return; }
+            if (document.getElementById('sheet').classList.contains('open')) { closeSheet(true); return; }
             if (document.getElementById('dossierModal').classList.contains('open')) { closeDossierModal(true); return; }
             const s = e.state || { view: 'homeView' };
             // Retour (bouton du téléphone) pendant la saisie d'un CR : on demande confirmation
@@ -1261,6 +1441,7 @@
 
         function resetConsultForm() {
             consultDirty = false;
+            pendingApptId = null;
             cancelTextInput();
             setSketchMode('draw');
             document.getElementById('consultForm').reset();
@@ -1711,7 +1892,13 @@
                 consultation.patientId = patientId || '';
 
                 if (editId) await db.collection("consultations").doc(editId).set(consultation);
-                else await db.collection("consultations").add(consultation);
+                let savedConsultId = editId;
+                if (!editId) { const r = await db.collection("consultations").add(consultation); savedConsultId = r.id; }
+                // Séance lancée depuis un rendez-vous : on marque le RDV comme fait
+                if (pendingApptId) {
+                    await db.collection('appointments').doc(pendingApptId).update({ consultId: savedConsultId }).catch(() => {});
+                    pendingApptId = null;
+                }
 
                 // Coordonnées modifiées pendant la séance -> on met à jour la fiche
                 const p = getPatient(patientId);
@@ -2039,9 +2226,18 @@
                 </div>
                 ${inModal ? '' : `<div class="dossier-actions">
                     <button class="accent" onclick="startConsultForPatient(${arg(p.id)})"><svg class="ico"><use href="#i-plus"/></svg>Nouvelle séance</button>
-                    <button class="secondary" onclick="openPatientForm(${arg(p.id)})"><svg class="ico"><use href="#i-edit"/></svg>Modifier</button>
+                    <button class="secondary" title="Modifier la fiche" onclick="openPatientForm(${arg(p.id)})"><svg class="ico"><use href="#i-edit"/></svg><span class="lbl">Modifier</span></button>
                     <button class="danger icon-btn" title="Supprimer la fiche" onclick="deletePatient(${arg(p.id)})"><svg class="ico"><use href="#i-trash"/></svg></button>
                 </div>`}
+                ${(() => {
+                    const ups = upcomingApptsForPatient(p.id);
+                    return `<h3 class="sub-title" style="justify-content:space-between;">Rendez-vous
+                        ${inModal ? '' : `<button class="secondary btn-inline" style="white-space:nowrap" onclick="openBookForPatient(${arg(p.id)})"><svg class="ico"><use href="#i-cal"/></svg>Prendre RDV</button>`}</h3>
+                        ${ups.length ? ups.map(a => `<div class="slot" onclick="${inModal ? '' : `openApptSheet(${arg(a.id)})`}">
+                            <div class="t">${esc(fmtTime(a.start))}<small>${esc(fmtTime(a.end))}</small></div><div class="bar"></div>
+                            <div class="body"><strong>${esc(longDate(a.date))}</strong><span>${esc([a.reason, a.location].filter(Boolean).join(' · ') || 'Rendez-vous')}</span></div></div>`).join('')
+                        : '<p class="muted">Aucun rendez-vous prévu.</p>'}`;
+                })()}
                 <h3 class="sub-title">Séances <span class="badge soft">${consults.length}</span></h3>
                 ${consultsHtml}
                 ${notesHtml ? `<h3 class="sub-title">Mémos vocaux</h3>${notesHtml}` : ''}
@@ -2294,6 +2490,460 @@
                     </div>
                 </body></html>`);
             win.document.close();
+        }
+
+
+        /* ================= AGENDA ================= */
+        let appointmentsData = [];
+        const agenda = { mode: 'month', cursor: new Date() };
+        agenda.cursor.setHours(0, 0, 0, 0);
+        let pendingApptId = null;
+        let opts_scrollTimeline = false;
+
+        const pad2 = n => String(n).padStart(2, '0');
+        const isoOf = d => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+        const dateOf = iso => { const [y, m, d] = iso.split('-').map(Number); return new Date(y, m - 1, d); };
+        const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+        const mondayOf = d => addDays(d, -((d.getDay() + 6) % 7));
+        const toMin = t => { const [h, m] = (t || '0:0').split(':').map(Number); return h * 60 + m; };
+        const fromMin = m => `${pad2(Math.floor(m / 60))}:${pad2(m % 60)}`;
+        const fmtTime = t => (t || '').replace(':', 'h');
+        const longDate = iso => dateOf(iso).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+        const shortDate = iso => dateOf(iso).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' });
+
+        function apptsOn(iso) {
+            return appointmentsData.filter(a => a.date === iso).sort((a, b) => toMin(a.start) - toMin(b.start));
+        }
+        function apptState(a) { return a.status !== 'booked' ? 'free' : (a.consultId ? 'done' : 'booked'); }
+        function apptTitle(a) {
+            if (a.status !== 'booked') return 'Créneau libre';
+            return a.patientName ? `${a.patientName}${a.owner ? ' (' + a.owner + ')' : ''}` : 'Rendez-vous';
+        }
+        function upcomingApptsForPatient(pid) {
+            const today = todayISO();
+            return appointmentsData.filter(a => a.status === 'booked' && a.patientId === pid && a.date >= today && !a.consultId)
+                .sort((a, b) => (a.date + a.start).localeCompare(b.date + b.start));
+        }
+        function upcomingFreeSlots(limit = 12) {
+            const now = todayISO(), nowMin = new Date().getHours() * 60 + new Date().getMinutes();
+            return appointmentsData.filter(a => a.status !== 'booked' && (a.date > now || (a.date === now && toMin(a.start) > nowMin)))
+                .sort((a, b) => (a.date + a.start).localeCompare(b.date + b.start)).slice(0, limit);
+        }
+
+        function startAppointmentsListener() {
+            db.collection('appointments').onSnapshot(snap => {
+                appointmentsData = [];
+                snap.forEach(doc => appointmentsData.push({ id: doc.id, ...doc.data() }));
+                if (document.getElementById('agendaView').classList.contains('active')) renderAgenda();
+                renderTodayHome();
+                refreshPatientDetailIfOpen();
+                if (sheetRefresh) sheetRefresh();
+            }, err => fail(err, 'Chargement de l\'agenda'));
+        }
+
+        function setAgendaMode(m) { agenda.mode = m; opts_scrollTimeline = m === 'day'; renderAgenda(); }
+        function agendaStep(dir) {
+            const c = agenda.cursor;
+            if (agenda.mode === 'month') agenda.cursor = new Date(c.getFullYear(), c.getMonth() + dir, Math.min(c.getDate(), 28));
+            else agenda.cursor = addDays(c, agenda.mode === 'week' ? 7 * dir : dir);
+            renderAgenda();
+        }
+        function agendaToday() { agenda.cursor = new Date(); agenda.cursor.setHours(0, 0, 0, 0); renderAgenda(); }
+        function agendaSelect(iso) { agenda.cursor = dateOf(iso); renderAgenda(); }
+        function agendaOpenDay(iso) { agenda.cursor = dateOf(iso); agenda.mode = 'day'; opts_scrollTimeline = true; renderAgenda(); }
+
+        function slotHtml(a) {
+            const st = apptState(a);
+            const p = a.patientId ? getPatient(a.patientId) : null;
+            const sub = [a.reason, a.location].filter(Boolean).map(esc).join(' · ');
+            return `<div class="slot ${st}" onclick="openApptSheet(${arg(a.id)})">
+                <div class="t">${esc(fmtTime(a.start))}<small>${esc(fmtTime(a.end))}</small></div>
+                <div class="bar"></div>
+                <div class="body">
+                    <strong>${esc(st === 'free' ? 'Créneau libre' : (a.patientName || 'Rendez-vous'))}${p && p.isDifficult ? ' <span class="badge danger">Difficile</span>' : ''}${st === 'done' ? ' <span class="badge soft">Séance faite</span>' : ''}</strong>
+                    <span>${st === 'free' ? (a.location ? esc(a.location) : 'Touchez pour attribuer à un patient') : (esc(a.owner || '') + (sub ? (a.owner ? ' · ' : '') + sub : ''))}</span>
+                </div>
+            </div>`;
+        }
+        function dayListHtml(iso, opts = {}) {
+            const items = apptsOn(iso);
+            const isToday = iso === todayISO();
+            return `<div class="dayblock">
+                <div class="dayblock-head">
+                    <h4 class="${isToday ? 'today' : ''}" ${opts.clickable ? `style="cursor:pointer" onclick="agendaOpenDay(${arg(iso)})"` : ''}>${esc(opts.short ? shortDate(iso) : longDate(iso))}${isToday && !opts.short ? ' · aujourd\'hui' : ''}</h4>
+                    ${opts.noAdd ? '' : `<button class="secondary" onclick="openCreateSlots({ date: ${arg(iso)} })"><svg class="ico"><use href="#i-plus"/></svg>${opts.short ? '' : 'Créneaux'}</button>`}
+                </div>
+                ${items.length ? items.map(slotHtml).join('') : `<div class="empty-day">${opts.short ? 'Libre' : 'Rien de prévu ce jour.'}</div>`}
+            </div>`;
+        }
+
+        function renderAgenda() {
+            const box = document.getElementById('agendaBody');
+            if (!box) return;
+            document.querySelectorAll('#agendaSeg button').forEach(b => b.classList.toggle('on', b.dataset.m === agenda.mode));
+            const c = agenda.cursor, today = todayISO(), selIso = isoOf(c);
+            let title = '', html = '';
+
+            if (agenda.mode === 'month') {
+                title = c.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+                const first = new Date(c.getFullYear(), c.getMonth(), 1);
+                const start = mondayOf(first);
+                const last = new Date(c.getFullYear(), c.getMonth() + 1, 0);
+                const end = addDays(mondayOf(last), 6);
+                let cells = '';
+                for (let d = new Date(start); d <= end; d = addDays(d, 1)) {
+                    const iso = isoOf(d);
+                    const items = apptsOn(iso);
+                    const cls = [d.getMonth() !== c.getMonth() ? 'other' : '', iso === today ? 'today' : '', iso === selIso ? 'sel' : '', iso < today ? 'past' : ''].join(' ');
+                    const dots = items.slice(0, 6).map(a => `<i class="${apptState(a)}"></i>`).join('');
+                    const lines = items.slice(0, 3).map(a => `<span class="${apptState(a)}">${esc(fmtTime(a.start))} ${esc(a.status === 'booked' ? (a.patientName || 'RDV') : 'libre')}</span>`).join('')
+                        + (items.length > 3 ? `<em>+${items.length - 3} autre${items.length > 4 ? 's' : ''}</em>` : '');
+                    cells += `<div class="mcell ${cls}" onclick="agendaSelect(${arg(iso)})" ondblclick="agendaOpenDay(${arg(iso)})">
+                        <span class="dnum">${d.getDate()}</span><div class="mdots">${dots}</div><div class="mitems">${lines}</div></div>`;
+                }
+                html = `<div class="month">
+                    <div class="month-head">${['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map(x => `<span>${x}</span>`).join('')}</div>
+                    <div class="month-grid">${cells}</div></div>
+                    ${dayListHtml(selIso)}
+                    <p class="muted legend-dots" style="text-align:center; margin-top:10px; font-size:0.82rem;">Point plein : rendez-vous · point vide : créneau libre</p>`;
+            } else if (agenda.mode === 'week') {
+                const mon = mondayOf(c), sun = addDays(mon, 6);
+                title = mon.getMonth() === sun.getMonth()
+                    ? `${mon.getDate()} – ${sun.getDate()} ${sun.toLocaleDateString('fr-FR', { month: 'long' })}`
+                    : `${mon.getDate()} ${mon.toLocaleDateString('fr-FR', { month: 'short' })} – ${sun.getDate()} ${sun.toLocaleDateString('fr-FR', { month: 'short' })}`;
+                let days = '';
+                for (let i = 0; i < 7; i++) days += dayListHtml(isoOf(addDays(mon, i)), { short: true, clickable: true });
+                html = `<div class="week">${days}</div>`;
+            } else {
+                title = dateOf(selIso).toLocaleDateString('fr-FR', window.innerWidth < 480 ? { weekday: 'short', day: 'numeric', month: 'short' } : { weekday: 'long', day: 'numeric', month: 'long' });
+                html = timelineHtml(selIso);
+            }
+            document.getElementById('agendaTitle').textContent = title;
+            box.innerHTML = html;
+            if (agenda.mode === 'day') {
+                const tl = document.getElementById('timeline');
+                tl.addEventListener('click', e => {
+                    if (e.target.closest('.tblock')) return;
+                    const y = e.clientY - tl.getBoundingClientRect().top;
+                    const m = Math.max(TL_START, Math.min(TL_END - 30, TL_START + Math.round(y / TL_K / 15) * 15));
+                    openCreateSlots({ date: selIso, start: fromMin(m) });
+                });
+                const first = apptsOn(selIso)[0];
+                const target = first ? (toMin(first.start) - TL_START - 30) * TL_K : (8 * 60 - TL_START) * TL_K;
+                if (opts_scrollTimeline) window.scrollTo({ top: Math.max(0, tl.getBoundingClientRect().top + window.scrollY + target - 140) });
+            }
+            opts_scrollTimeline = false;
+        }
+        const TL_START = 7 * 60, TL_END = 21 * 60, TL_K = 64 / 60; // px par minute
+        function timelineHtml(iso) {
+            let lines = '';
+            for (let m = TL_START; m <= TL_END; m += 30) {
+                const top = (m - TL_START) * TL_K;
+                lines += m % 60 === 0 ? `<div class="hour" style="top:${top}px"><span>${m / 60}h</span></div>` : `<div class="half" style="top:${top}px"></div>`;
+            }
+            const blocks = apptsOn(iso).map(a => {
+                const s = Math.max(TL_START, toMin(a.start)), e = Math.min(TL_END, Math.max(toMin(a.end), s + 20));
+                const st = apptState(a);
+                return `<div class="tblock ${st}" style="top:${(s - TL_START) * TL_K}px; height:${(e - s) * TL_K - 3}px" onclick="openApptSheet(${arg(a.id)})">
+                    <strong>${esc(fmtTime(a.start))} – ${esc(st === 'free' ? 'Créneau libre' : (a.patientName || 'Rendez-vous'))}</strong>
+                    ${st !== 'free' && (a.reason || a.location) ? `<br><span>${esc([a.reason, a.location].filter(Boolean).join(' · '))}</span>` : ''}
+                </div>`;
+            }).join('');
+            let now = '';
+            if (iso === todayISO()) {
+                const n = new Date(), m = n.getHours() * 60 + n.getMinutes();
+                if (m >= TL_START && m <= TL_END) now = `<div class="now-line" style="top:${(m - TL_START) * TL_K}px"></div>`;
+            }
+            return `<div class="timeline-wrap">
+                <div class="timeline" id="timeline" style="height:${(TL_END - TL_START) * TL_K}px">${lines}${blocks}${now}</div>
+            </div>
+            <p class="muted" style="text-align:center; margin-top:10px; font-size:0.82rem;">Touchez une heure vide pour y ajouter un créneau.</p>`;
+        }
+
+        /* ----- Feuille (bottom sheet) ----- */
+        let sheetRefresh = null;
+        function openSheet(html, refresh = null) {
+            const sh = document.getElementById('sheet');
+            document.getElementById('sheetContent').innerHTML = html;
+            sheetRefresh = refresh;
+            if (!sh.classList.contains('open')) {
+                sh.classList.add('open');
+                document.body.style.overflow = 'hidden';
+                history.pushState({ ...(history.state || {}), sheet: true }, '');
+            }
+        }
+        function closeSheet(fromPop) {
+            const sh = document.getElementById('sheet');
+            if (!sh.classList.contains('open')) return;
+            sh.classList.remove('open');
+            document.body.style.overflow = '';
+            sheetRefresh = null;
+            if (!fromPop) { ignoreNextPop = true; history.back(); }
+        }
+        function sheetHead(title, sub) {
+            return `<div class="sheet-grip"></div><div class="sheet-head"><div><h3>${title}</h3>${sub ? `<p>${sub}</p>` : ''}</div>
+                <button class="btn-ghost" aria-label="Fermer" onclick="closeSheet()"><svg class="ico"><use href="#i-x"/></svg></button></div>`;
+        }
+        function locationOptions(selected) {
+            const all = [...new Set(['Clinique', ...locationsData.map(l => l.name)])];
+            if (selected && !all.includes(selected)) all.push(selected);
+            return `<option value="">Non précisé</option>` + all.map(l => `<option value="${esc(l)}" ${l === selected ? 'selected' : ''}>${esc(l)}</option>`).join('');
+        }
+
+        /* ----- Création de créneaux (un ou plusieurs à la suite) ----- */
+        let slotForm = null;
+        function openCreateSlots(opts = {}) {
+            const p = opts.patientId ? getPatient(opts.patientId) : null;
+            slotForm = {
+                date: opts.date || isoOf(agenda.cursor < dateOf(todayISO()) ? new Date() : agenda.cursor),
+                start: opts.start || '09:00', dur: 60, count: 1, gap: 15,
+                location: p ? (p.address || 'Clinique') : '', patientId: p ? p.id : '', reason: ''
+            };
+            renderCreateSlots();
+        }
+        function slotTimes() {
+            const out = []; let m = toMin(slotForm.start);
+            for (let i = 0; i < slotForm.count; i++) { out.push([fromMin(m), fromMin(m + slotForm.dur)]); m += slotForm.dur + slotForm.gap; }
+            return out;
+        }
+        function renderCreateSlots() {
+            const f = slotForm;
+            const p = f.patientId ? getPatient(f.patientId) : null;
+            const times = slotTimes();
+            const overflow = toMin(times[times.length - 1][1]) > 24 * 60;
+            const label = p
+                ? (f.count === 1 ? 'Créer le rendez-vous' : `Créer 1 rendez-vous + ${f.count - 1} créneau${f.count > 2 ? 'x' : ''} libre${f.count > 2 ? 's' : ''}`)
+                : `Créer ${f.count} créneau${f.count > 1 ? 'x' : ''} libre${f.count > 1 ? 's' : ''}`;
+            openSheet(`${sheetHead(p ? 'Nouveau rendez-vous' : 'Ajouter des créneaux', esc(longDate(f.date)))}
+                <div class="row">
+                    <div class="form-group"><label>Date</label><input type="date" value="${esc(f.date)}" onchange="slotForm.date=this.value; renderCreateSlots()"></div>
+                    <div class="form-group"><label>Début</label><input type="time" step="900" value="${esc(f.start)}" onchange="slotForm.start=this.value||'09:00'; renderCreateSlots()"></div>
+                </div>
+                <div class="form-group"><label>Durée</label>
+                    <div class="chips">${[30, 45, 60, 90, 120].map(d => `<button type="button" class="${f.dur === d ? 'on' : ''}" onclick="slotForm.dur=${d}; renderCreateSlots()">${d < 60 ? d + ' min' : Math.floor(d / 60) + 'h' + (d % 60 ? d % 60 : '')}</button>`).join('')}</div>
+                </div>
+                <div class="row">
+                    <div class="form-group"><label>Nombre de créneaux à la suite</label>
+                        <div class="stepper"><button type="button" onclick="slotForm.count=Math.max(1,slotForm.count-1); renderCreateSlots()">−</button><output>${f.count}</output><button type="button" onclick="slotForm.count=Math.min(10,slotForm.count+1); renderCreateSlots()">+</button></div>
+                    </div>
+                    ${f.count > 1 ? `<div class="form-group"><label>Pause entre deux</label>
+                        <div class="chips">${[0, 15, 30, 60].map(g => `<button type="button" class="${f.gap === g ? 'on' : ''}" onclick="slotForm.gap=${g}; renderCreateSlots()">${g ? g + ' min' : 'Aucune'}</button>`).join('')}</div></div>` : ''}
+                </div>
+                <div class="form-group"><label>Lieu</label><select onchange="slotForm.location=this.value">${locationOptions(f.location)}</select></div>
+                <div class="form-group"><label>Aperçu</label>
+                    <div class="preview-times">${times.map((t, i) => `<span class="${p && i === 0 ? 'booked' : ''}">${fmtTime(t[0])} – ${fmtTime(t[1])}${p && i === 0 ? ' · ' + esc(p.animalName) : ''}</span>`).join('')}</div>
+                    ${overflow ? '<p class="hint" style="color:var(--danger)">Le dernier créneau dépasse minuit : réduisez le nombre.</p>' : ''}
+                </div>
+                <details class="block" ${p ? 'open' : ''}>
+                    <summary>${p ? 'Patient : ' + esc(p.animalName) : 'Réserver directement pour un patient (facultatif)'}</summary>
+                    ${p ? `<div class="appt-patient"><div class="avatar">${initials(p.animalName)}</div><div style="flex:1"><strong>${esc(p.animalName)}</strong><p>${esc(p.owner || '')}</p></div>
+                        <button type="button" class="btn-ghost btn-inline" onclick="slotForm.patientId=''; renderCreateSlots()">Retirer</button></div>
+                        <div class="form-group" style="margin-bottom:0"><label>Motif</label><input type="text" value="${esc(f.reason)}" oninput="slotForm.reason=this.value" placeholder="Ex : contrôle, boiterie…"></div>`
+                    : `<div class="search-wrap"><svg class="ico"><use href="#i-search"/></svg><input type="text" id="slotPatientSearch" placeholder="Nom de l'animal ou du propriétaire" autocomplete="off"></div>
+                        <div id="slotPatientResults" class="picker-results"></div>`}
+                </details>
+                <div class="sheet-actions"><button class="${p ? 'accent' : ''}" ${overflow ? 'disabled' : ''} onclick="saveSlots(this)"><svg class="ico"><use href="#i-save"/></svg>${label}</button></div>`);
+            if (!p) setupPicker('slotPatientSearch', 'slotPatientResults', id => {
+                slotForm.patientId = id;
+                const pp = getPatient(id);
+                if (pp && !slotForm.location) slotForm.location = pp.address || 'Clinique';
+                renderCreateSlots();
+            });
+        }
+        async function saveSlots(btn) {
+            const f = slotForm, p = f.patientId ? getPatient(f.patientId) : null;
+            btn.disabled = true;
+            try {
+                const times = slotTimes();
+                // Chevauchement avec l'existant ?
+                const clash = times.some(([s, e]) => apptsOn(f.date).some(a => toMin(s) < toMin(a.end) && toMin(e) > toMin(a.start)));
+                if (clash && !confirm('Certains créneaux chevauchent des rendez-vous déjà prévus ce jour-là. Créer quand même ?')) { btn.disabled = false; return; }
+                const batch = db.batch();
+                times.forEach(([s, e], i) => {
+                    const ref = db.collection('appointments').doc();
+                    const booked = p && i === 0;
+                    batch.set(ref, {
+                        date: f.date, start: s, end: e, location: f.location || '',
+                        status: booked ? 'booked' : 'free',
+                        patientId: booked ? p.id : '', patientName: booked ? p.animalName : '', owner: booked ? (p.owner || '') : '',
+                        reason: booked ? (f.reason || '') : '', notes: '', consultId: '', timestamp: Date.now()
+                    });
+                });
+                await batch.commit();
+                closeSheet();
+                agenda.cursor = dateOf(f.date);
+                if (document.getElementById('agendaView').classList.contains('active')) renderAgenda();
+                toast(p ? 'Rendez-vous créé' : `${times.length} créneau${times.length > 1 ? 'x' : ''} libre${times.length > 1 ? 's' : ''} ajouté${times.length > 1 ? 's' : ''}`);
+            } catch (err) { btn.disabled = false; fail(err, 'Création des créneaux'); }
+        }
+
+        /* ----- Détail d'un créneau / rendez-vous ----- */
+        let apptEditTime = false;
+        function openApptSheet(id) { apptEditTime = false; renderApptSheet(id); }
+        function renderApptSheet(id) {
+            const a = appointmentsData.find(x => x.id === id);
+            if (!a) { closeSheet(); return; }
+            const st = apptState(a);
+            const p = a.patientId ? getPatient(a.patientId) : null;
+            const sub = `${esc(longDate(a.date))} · ${esc(fmtTime(a.start))} – ${esc(fmtTime(a.end))}${a.location ? ' · ' + esc(a.location) : ''}`;
+            const timeEditor = apptEditTime ? `
+                <div class="block" style="padding:12px; border:1px solid var(--line); border-radius:14px; margin-bottom:12px;">
+                    <div class="row">
+                        <div class="form-group"><label>Date</label><input type="date" id="apDate" value="${esc(a.date)}"></div>
+                        <div class="form-group"><label>Début</label><input type="time" step="900" id="apStart" value="${esc(a.start)}"></div>
+                        <div class="form-group"><label>Fin</label><input type="time" step="900" id="apEnd" value="${esc(a.end)}"></div>
+                    </div>
+                    <div class="form-group"><label>Lieu</label><select id="apLoc">${locationOptions(a.location)}</select></div>
+                    <div class="two" style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                        <button class="btn-ghost" onclick="apptEditTime=false; renderApptSheet(${arg(a.id)})">Annuler</button>
+                        <button onclick="saveApptTime(${arg(a.id)})">Enregistrer</button>
+                    </div>
+                </div>` : '';
+
+            let body = '';
+            if (st === 'free') {
+                body = `${timeEditor}
+                    <div class="form-group"><label>Attribuer ce créneau à un patient</label>
+                        <div class="search-wrap"><svg class="ico"><use href="#i-search"/></svg><input type="text" id="apptPatientSearch" placeholder="Nom de l'animal ou du propriétaire" autocomplete="off"></div>
+                        <div id="apptPatientResults" class="picker-results"></div>
+                    </div>
+                    <div class="sheet-actions">
+                        <div class="two">
+                            <button class="secondary" onclick="apptEditTime=true; renderApptSheet(${arg(a.id)})"><svg class="ico"><use href="#i-clock"/></svg>Horaire</button>
+                            <button class="danger" onclick="deleteAppt(${arg(a.id)})"><svg class="ico"><use href="#i-trash"/></svg>Supprimer</button>
+                        </div>
+                    </div>`;
+            } else {
+                body = `${timeEditor}
+                    <div class="appt-patient" ${p ? `style="cursor:pointer" onclick="closeSheet(); openPatientDetail(${arg(p.id)})"` : ''}>
+                        <div class="avatar">${initials(a.patientName)}</div>
+                        <div style="flex:1; min-width:0;"><strong>${esc(a.patientName || 'Patient')}</strong>
+                            <p>${esc(a.owner || '')}${p && p.phone ? ` · <a href="tel:${esc(p.phone)}" onclick="event.stopPropagation()">${esc(p.phone)}</a>` : ''}</p>
+                            ${p ? alertsHtml(p) : '<p class="hint">Fiche patient supprimée</p>'}</div>
+                        ${p ? '<svg class="ico" style="color:var(--muted)"><use href="#i-chev"/></svg>' : ''}
+                    </div>
+                    <div class="form-group"><label>Motif</label><input type="text" id="apReason" value="${esc(a.reason || '')}" placeholder="Ex : contrôle, boiterie…" onchange="db.collection('appointments').doc(${arg(a.id)}).update({ reason: this.value.trim() }).catch(err => fail(err, 'Motif'))"></div>
+                    <div class="sheet-actions">
+                        ${st === 'done'
+                            ? `<button class="secondary" onclick="generateReport(${arg(a.consultId)})"><svg class="ico"><use href="#i-file"/></svg>Voir le compte rendu</button>`
+                            : (p ? `<button class="accent" onclick="startConsultFromAppt(${arg(a.id)})"><svg class="ico"><use href="#i-plus"/></svg>Commencer la séance</button>` : '')}
+                        <button class="secondary" onclick="downloadIcs([${arg(a.id)}])"><svg class="ico"><use href="#i-cal"/></svg>Ajouter à l'agenda de l'iPhone</button>
+                        <div class="two">
+                            <button class="secondary" onclick="apptEditTime=true; renderApptSheet(${arg(a.id)})"><svg class="ico"><use href="#i-clock"/></svg>Déplacer</button>
+                            <button class="secondary" onclick="releaseAppt(${arg(a.id)})">Libérer le créneau</button>
+                        </div>
+                        <button class="danger" onclick="deleteAppt(${arg(a.id)})"><svg class="ico"><use href="#i-trash"/></svg>Supprimer</button>
+                    </div>`;
+            }
+            openSheet(sheetHead(st === 'free' ? 'Créneau libre' : 'Rendez-vous', sub) + body, () => renderApptSheet(id));
+            if (st === 'free') setupPicker('apptPatientSearch', 'apptPatientResults', pid => bookAppt(a.id, pid));
+        }
+        async function bookAppt(apptId, pid, reason = '') {
+            const p = getPatient(pid), a = appointmentsData.find(x => x.id === apptId);
+            if (!p || !a) return;
+            try {
+                await db.collection('appointments').doc(apptId).update({
+                    status: 'booked', patientId: p.id, patientName: p.animalName, owner: p.owner || '',
+                    reason, location: a.location || p.address || ''
+                });
+                toast(`Rendez-vous réservé pour ${p.animalName}`);
+            } catch (err) { fail(err, 'Réservation'); }
+        }
+        async function saveApptTime(id) {
+            const date = document.getElementById('apDate').value, start = document.getElementById('apStart').value, end = document.getElementById('apEnd').value;
+            if (!date || !start || !end || toMin(end) <= toMin(start)) { toast('L\'heure de fin doit être après l\'heure de début.', 'err'); return; }
+            try {
+                await db.collection('appointments').doc(id).update({ date, start, end, location: document.getElementById('apLoc').value });
+                apptEditTime = false;
+                agenda.cursor = dateOf(date);
+                toast('Horaire mis à jour');
+            } catch (err) { fail(err, 'Modification'); }
+        }
+        async function releaseAppt(id) {
+            if (!confirm('Libérer ce créneau ? Le rendez-vous sera annulé mais le créneau restera disponible.')) return;
+            try {
+                await db.collection('appointments').doc(id).update({ status: 'free', patientId: '', patientName: '', owner: '', reason: '', consultId: '' });
+                toast('Créneau libéré');
+            } catch (err) { fail(err, 'Annulation'); }
+        }
+        async function deleteAppt(id) {
+            if (!confirm('Supprimer ce créneau de l\'agenda ?')) return;
+            try { await db.collection('appointments').doc(id).delete(); closeSheet(); toast('Supprimé de l\'agenda'); }
+            catch (err) { fail(err, 'Suppression'); }
+        }
+        function startConsultFromAppt(id) {
+            const a = appointmentsData.find(x => x.id === id);
+            if (!a || !a.patientId) return;
+            closeSheet(true);
+            startNewConsult(a.patientId);
+            document.getElementById('consultDateInput').value = a.date;
+            if (a.reason) document.getElementById('consultReason').value = a.reason;
+            if (a.location) { ensureLocationOption('ownerAddress', a.location); document.getElementById('ownerAddress').value = a.location; }
+            pendingApptId = id;
+        }
+
+        /* ----- Prendre RDV depuis la fiche patient ----- */
+        let bookChoice = null;
+        function openBookForPatient(pid) {
+            bookChoice = null;
+            renderBookForPatient(pid);
+        }
+        function renderBookForPatient(pid) {
+            const p = getPatient(pid);
+            if (!p) return;
+            const free = upcomingFreeSlots(12);
+            openSheet(`${sheetHead('Prendre rendez-vous', esc(p.animalName) + (p.owner ? ' · ' + esc(p.owner) : ''))}
+                ${free.length ? `<div class="form-group"><label>Choisir un créneau libre</label>
+                    <div class="free-slots">${free.map(a => `<button type="button" class="${bookChoice === a.id ? 'on' : ''}" onclick="bookChoice=${arg(a.id)}; renderBookForPatient(${arg(pid)})">${esc(shortDate(a.date))}<small>${esc(fmtTime(a.start))} – ${esc(fmtTime(a.end))}${a.location ? ' · ' + esc(a.location) : ''}</small></button>`).join('')}</div></div>
+                    ${bookChoice ? `<div class="form-group"><label>Motif</label><input type="text" id="bookReason" placeholder="Ex : contrôle, boiterie…"></div>` : ''}`
+                : '<p class="muted" style="margin-bottom:12px;">Aucun créneau libre à venir dans l\'agenda.</p>'}
+                <div class="sheet-actions">
+                    ${bookChoice ? `<button class="accent" onclick="bookAppt(${arg(bookChoice)}, ${arg(pid)}, (document.getElementById('bookReason')||{}).value||''); closeSheet();"><svg class="ico"><use href="#i-save"/></svg>Réserver ce créneau</button>` : ''}
+                    <button class="secondary" onclick="openCreateSlots({ patientId: ${arg(pid)} })"><svg class="ico"><use href="#i-cal"/></svg>Choisir une autre date et heure</button>
+                </div>`, () => renderBookForPatient(pid));
+        }
+
+        /* ----- Export vers l'agenda de l'iPhone (.ics) ----- */
+        function icsEsc(s) { return String(s || '').replace(/\\/g, '\\\\').replace(/\n/g, '\\n').replace(/,/g, '\\,').replace(/;/g, '\\;'); }
+        function icsDate(iso, t) { return iso.replace(/-/g, '') + 'T' + t.replace(':', '') + '00'; }
+        function downloadIcs(ids) {
+            const list = ids.map(id => appointmentsData.find(a => a.id === id)).filter(a => a && a.status === 'booked');
+            if (!list.length) { toast('Aucun rendez-vous à exporter.', 'err'); return; }
+            const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d+/, '');
+            const ev = list.map(a => {
+                const p = a.patientId ? getPatient(a.patientId) : null;
+                const desc = [a.reason && 'Motif : ' + a.reason, a.owner && 'Propriétaire : ' + a.owner, p && p.phone && 'Tél : ' + p.phone, p && p.isDifficult && 'Animal difficile', p && p.ownerMandatory && 'Présence du propriétaire impérative'].filter(Boolean).join('\n');
+                return ['BEGIN:VEVENT', `UID:${a.id}@app-ostep`, `DTSTAMP:${stamp}`,
+                    `DTSTART:${icsDate(a.date, a.start)}`, `DTEND:${icsDate(a.date, a.end)}`,
+                    `SUMMARY:${icsEsc('Ostéo – ' + (a.patientName || 'Rendez-vous') + (a.owner ? ' (' + a.owner + ')' : ''))}`,
+                    a.location ? `LOCATION:${icsEsc(a.location)}` : null, desc ? `DESCRIPTION:${icsEsc(desc)}` : null,
+                    'BEGIN:VALARM', 'TRIGGER:-PT1H', 'ACTION:DISPLAY', 'DESCRIPTION:Rendez-vous ostéo', 'END:VALARM', 'END:VEVENT'].filter(Boolean).join('\r\n');
+            }).join('\r\n');
+            const ics = `BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//OsteoAnimal//FR\r\nCALSCALE:GREGORIAN\r\nMETHOD:PUBLISH\r\n${ev}\r\nEND:VCALENDAR\r\n`;
+            const url = URL.createObjectURL(new Blob([ics], { type: 'text/calendar;charset=utf-8' }));
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = list.length === 1 ? `rdv-${(list[0].patientName || 'osteo').toLowerCase().replace(/[^a-z0-9]+/gi, '-')}-${list[0].date}.ics` : 'rendez-vous-osteo.ics';
+            document.body.appendChild(link); link.click(); link.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 10000);
+        }
+        function exportUpcomingIcs() {
+            const today = todayISO();
+            const ids = appointmentsData.filter(a => a.status === 'booked' && a.date >= today).map(a => a.id);
+            if (!ids.length) { toast('Aucun rendez-vous à venir.', 'err'); return; }
+            downloadIcs(ids);
+        }
+
+        /* ----- Accueil : rendez-vous du jour ----- */
+        function renderTodayHome() {
+            const box = document.getElementById('todayContainer');
+            if (!box) return;
+            const items = apptsOn(todayISO());
+            const booked = items.filter(a => a.status === 'booked'), free = items.length - booked.length;
+            document.getElementById('todaySub').textContent = items.length
+                ? `${booked.length} rendez-vous${free ? ` · ${free} créneau${free > 1 ? 'x' : ''} libre${free > 1 ? 's' : ''}` : ''}` : '';
+            box.innerHTML = items.length ? items.map(slotHtml).join('')
+                : `<div class="empty-day">Aucun rendez-vous aujourd'hui. <a href="#" onclick="event.preventDefault(); showView('agendaView')">Ouvrir l'agenda</a></div>`;
         }
 
         /* ================= CODE PIN ================= */
